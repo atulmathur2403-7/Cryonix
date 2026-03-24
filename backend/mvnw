@@ -1,0 +1,19 @@
+#!/bin/sh
+# Maven Wrapper script
+# Downloads and runs Maven if not already cached
+
+set -e
+
+MAVEN_VERSION="3.9.9"
+MAVEN_HOME="$HOME/.m2/wrapper/dists/apache-maven-${MAVEN_VERSION}"
+MAVEN_BIN="$MAVEN_HOME/bin/mvn"
+
+if [ ! -f "$MAVEN_BIN" ]; then
+    echo "Downloading Apache Maven ${MAVEN_VERSION}..."
+    mkdir -p "$MAVEN_HOME"
+    DOWNLOAD_URL="https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
+    curl -fsSL "$DOWNLOAD_URL" | tar -xz -C "$MAVEN_HOME" --strip-components=1
+    echo "Maven ${MAVEN_VERSION} installed."
+fi
+
+exec "$MAVEN_BIN" "$@"
