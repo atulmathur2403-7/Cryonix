@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -24,11 +24,19 @@ import {
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
 import { AnimatedPage, FadeIn } from '../components/animations';
+import { ProfileHeaderSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
 const MentorProfile: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, [mentorId]);
 
   const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
   const reviews = sampleReviews.filter((r) => r.mentorId === mentor.id);
@@ -45,6 +53,9 @@ const MentorProfile: React.FC = () => {
       <Grid container spacing={3}>
         {/* Main Profile Section */}
         <Grid size={{ xs: 12, md: 8 }}>
+          {loading ? (
+            <Box sx={{ mb: 3 }}><ProfileHeaderSkeleton /></Box>
+          ) : (
           <Paper
             elevation={0}
             sx={{
@@ -150,8 +161,14 @@ const MentorProfile: React.FC = () => {
               </Button>
             </Box>
           </Paper>
+          )}
 
           {/* Reviews Section */}
+          {loading ? (
+            <Box sx={{ mb: 3 }}>
+              {Array.from({ length: 3 }).map((_, i) => <ReviewCardSkeleton key={i} />)}
+            </Box>
+          ) : (
           <Paper
             elevation={0}
             sx={{
@@ -193,8 +210,14 @@ const MentorProfile: React.FC = () => {
               </Box>
             ))}
           </Paper>
+          )}
 
           {/* Video Gallery */}
+          {loading ? (
+            <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
+              {Array.from({ length: 3 }).map((_, i) => <VideoCardSkeleton key={i} />)}
+            </Box>
+          ) : (
           <Paper
             elevation={0}
             sx={{
@@ -240,6 +263,7 @@ const MentorProfile: React.FC = () => {
               ))}
             </Box>
           </Paper>
+          )}
         </Grid>
 
         {/* Right Sidebar */}

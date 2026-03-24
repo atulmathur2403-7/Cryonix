@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatedPage } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
@@ -10,14 +10,23 @@ import {
   LinearProgress,
   useTheme,
   Chip,
+  Skeleton,
 } from '@mui/material';
 import { sampleReviews, sampleMentors } from '../data/mockData';
+import { ReviewCardSkeleton } from '../components/Skeletons';
 
 const ReviewsList: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
   const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
   const reviews = sampleReviews;
+
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, [mentorId]);
 
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
   const ratingBreakdown = [5, 4, 3, 2, 1].map((star) => ({
@@ -34,6 +43,11 @@ const ReviewsList: React.FC = () => {
       </Typography>
 
       {/* Rating Summary */}
+      {loading ? (
+        <Box sx={{ mb: 4 }}>
+          <Skeleton variant="rounded" width="100%" height={120} sx={{ borderRadius: 3 }} />
+        </Box>
+      ) : (
       <Paper
         elevation={0}
         sx={{
@@ -82,6 +96,7 @@ const ReviewsList: React.FC = () => {
           ))}
         </Box>
       </Paper>
+      )}
 
       {/* Filter Chips */}
       <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
@@ -93,7 +108,10 @@ const ReviewsList: React.FC = () => {
       </Box>
 
       {/* Reviews List */}
-      {reviews.map((review) => (
+      {loading ? (
+        Array.from({ length: 4 }).map((_, i) => <ReviewCardSkeleton key={i} />)
+      ) : (
+      reviews.map((review) => (
         <Paper
           key={review.id}
           elevation={0}
@@ -120,7 +138,8 @@ const ReviewsList: React.FC = () => {
           </Box>
           <Typography variant="body2">{review.text}</Typography>
         </Paper>
-      ))}
+      ))
+      )}
     </Box>
     </AnimatedPage>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -13,6 +13,7 @@ import {
   ListItemText,
   useTheme,
   Chip,
+  Skeleton,
 } from '@mui/material';
 import {
   Send,
@@ -28,11 +29,18 @@ import {
 } from '@mui/icons-material';
 import { sampleConversations } from '../data/mockData';
 import { AnimatedPage } from '../components/animations';
+import { ConversationSkeleton, MessageBubbleSkeleton } from '../components/Skeletons';
 
 const MessagesPage: React.FC = () => {
   const theme = useTheme();
-  const [selectedConv, setSelectedConv] = useState(sampleConversations[3]); // Michelle
+  const [selectedConv, setSelectedConv] = useState(sampleConversations[3]);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, []);
 
   const chatMessages = [
     { id: '1', type: 'received', content: 'It comes with a complete package. We get it delivered with the needed packing', time: '2:30 PM' },
@@ -93,7 +101,10 @@ const MessagesPage: React.FC = () => {
           </Box>
 
           <List sx={{ overflow: 'auto', flex: 1 }}>
-            {sampleConversations.map((conv) => (
+            {loading ? (
+              Array.from({ length: 6 }).map((_, i) => <ConversationSkeleton key={i} />)
+            ) : (
+            sampleConversations.map((conv) => (
               <ListItemButton
                 key={conv.id}
                 selected={selectedConv?.id === conv.id}
@@ -153,7 +164,8 @@ const MessagesPage: React.FC = () => {
                   }
                 />
               </ListItemButton>
-            ))}
+            ))
+            )}
           </List>
         </Box>
 
@@ -191,7 +203,10 @@ const MessagesPage: React.FC = () => {
 
               {/* Messages */}
               <Box sx={{ flex: 1, overflow: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                {chatMessages.map((msg) => (
+                {loading ? (
+                  Array.from({ length: 4 }).map((_, i) => <MessageBubbleSkeleton key={i} sent={i % 2 === 1} />)
+                ) : (
+                chatMessages.map((msg) => (
                   <Box
                     key={msg.id}
                     sx={{
@@ -228,7 +243,8 @@ const MessagesPage: React.FC = () => {
                       </Typography>
                     </Paper>
                   </Box>
-                ))}
+                ))
+                )}
               </Box>
 
               {/* Chat Input */}

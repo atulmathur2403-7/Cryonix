@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -17,11 +17,18 @@ import {
 } from '@mui/material';
 import { sampleSessions } from '../data/mockData';
 import { AnimatedPage, FadeIn } from '../components/animations';
+import { TableSkeleton } from '../components/Skeletons';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [mentorToggle, setMentorToggle] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, []);
 
   const upcomingSessions = sampleSessions.filter((s) => s.status === 'upcoming');
   const pastSessions = sampleSessions.filter((s) => s.status === 'completed');
@@ -69,6 +76,12 @@ const Dashboard: React.FC = () => {
 
       {/* Upcoming Sessions */}
       <FadeIn delay={200}>
+      {loading ? (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Upcoming Sessions</Typography>
+          <TableSkeleton rows={3} columns={5} />
+        </Box>
+      ) : (
       <Paper
         elevation={0}
         sx={{
@@ -135,10 +148,17 @@ const Dashboard: React.FC = () => {
           </TableBody>
         </Table>
       </Paper>
+      )}
       </FadeIn>
 
       {/* Past Sessions */}
       <FadeIn delay={350}>
+      {loading ? (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Past Sessions</Typography>
+          <TableSkeleton rows={3} columns={5} />
+        </Box>
+      ) : (
       <Paper
         elevation={0}
         sx={{
@@ -196,6 +216,7 @@ const Dashboard: React.FC = () => {
           </TableBody>
         </Table>
       </Paper>
+      )}
       </FadeIn>
 
       {/* Action Buttons */}

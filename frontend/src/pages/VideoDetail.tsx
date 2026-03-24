@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatedPage } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
@@ -11,6 +11,7 @@ import {
   Button,
   Chip,
   useTheme,
+  Skeleton,
 } from '@mui/material';
 import {
   ThumbUp,
@@ -20,21 +21,44 @@ import {
   Send,
 } from '@mui/icons-material';
 import { sampleVideos, sampleMentors } from '../data/mockData';
+import { VideoPlayerSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
 const VideoDetail: React.FC = () => {
   const { videoId } = useParams<{ videoId: string }>();
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
   const video = sampleVideos.find((v) => v.id === videoId) || sampleVideos[0];
   const mentor = sampleMentors.find((m) => m.id === video.mentorId) || sampleMentors[0];
   const [comment, setComment] = useState('');
 
   const relatedVideos = sampleVideos.filter((v) => v.id !== video.id).slice(0, 4);
 
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, [videoId]);
+
   return (
     <AnimatedPage>
     <Box sx={{ display: 'flex', gap: 3, flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
       {/* Main Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
+        {loading ? (
+          <Box>
+            <VideoPlayerSkeleton />
+            <Box sx={{ mt: 2 }}>
+              <Skeleton variant="text" width="60%" height={32} />
+              <Skeleton variant="text" width="30%" height={20} sx={{ mb: 2 }} />
+              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+                {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} variant="rounded" width={80} height={32} />)}
+              </Box>
+              <Skeleton variant="rounded" width="100%" height={72} sx={{ mb: 3 }} />
+              <Skeleton variant="rounded" width="100%" height={60} sx={{ mb: 3 }} />
+            </Box>
+          </Box>
+        ) : (
+        <>
         {/* Video Player */}
         <Paper
           sx={{
@@ -164,6 +188,8 @@ const VideoDetail: React.FC = () => {
             </Box>
           </Box>
         ))}
+        </>
+        )}
       </Box>
 
       {/* Sidebar - Related Videos */}
@@ -171,7 +197,18 @@ const VideoDetail: React.FC = () => {
         <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
           Related Videos
         </Typography>
-        {relatedVideos.map((v) => (
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <Box key={i} sx={{ display: 'flex', gap: 1.5, p: 1, mb: 1 }}>
+              <Skeleton variant="rounded" width={160} height={90} />
+              <Box sx={{ flex: 1 }}>
+                <Skeleton variant="text" width="80%" />
+                <Skeleton variant="text" width="50%" />
+              </Box>
+            </Box>
+          ))
+        ) : (
+        relatedVideos.map((v) => (
           <Paper
             key={v.id}
             elevation={0}
@@ -210,7 +247,8 @@ const VideoDetail: React.FC = () => {
               </Typography>
             </Box>
           </Paper>
-        ))}
+        ))
+        )}
       </Box>
     </Box>
     </AnimatedPage>

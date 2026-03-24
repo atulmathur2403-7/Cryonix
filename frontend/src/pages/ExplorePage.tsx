@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -33,11 +33,18 @@ import {
 } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
 import { AnimatedPage, FadeIn, GrowIn } from '../components/animations';
+import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [priceRange, setPriceRange] = useState<number[]>([0, 100]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, []);
   const [audioOnly, setAudioOnly] = useState(false);
   const [verifiedOnly, setVerifiedOnly] = useState(true);
 
@@ -72,6 +79,11 @@ const ExplorePage: React.FC = () => {
                 <IconButton size="small"><ArrowForward fontSize="small" /></IconButton>
               </Box>
             </Box>
+            {loading ? (
+              <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
+                {Array.from({ length: 5 }).map((_, i) => <MentorCardSkeleton key={i} />)}
+              </Box>
+            ) : (
             <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
               {sampleMentors.map((m) => (
                 <Card
@@ -109,6 +121,7 @@ const ExplorePage: React.FC = () => {
                 </Card>
               ))}
             </Box>
+            )}
           </Box>
 
           {/* Online Now */}
@@ -125,6 +138,11 @@ const ExplorePage: React.FC = () => {
                 <IconButton size="small"><ArrowForward fontSize="small" /></IconButton>
               </Box>
             </Box>
+            {loading ? (
+              <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
+                {Array.from({ length: 4 }).map((_, i) => <MentorCardSkeleton key={i} />)}
+              </Box>
+            ) : (
             <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
               {sampleMentors.filter((m) => m.isOnline).map((m) => (
                 <Card
@@ -166,6 +184,7 @@ const ExplorePage: React.FC = () => {
                 </Card>
               ))}
             </Box>
+            )}
           </Box>
 
           {/* What Mentors are Saying */}
@@ -176,6 +195,11 @@ const ExplorePage: React.FC = () => {
               </Typography>
               <Button size="small">View More &gt;</Button>
             </Box>
+            {loading ? (
+              <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
+                {Array.from({ length: 4 }).map((_, i) => <VideoCardSkeleton key={i} />)}
+              </Box>
+            ) : (
             <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
               {sampleVideos.filter((v) => !v.isLive).map((v) => (
                 <Box
@@ -213,6 +237,7 @@ const ExplorePage: React.FC = () => {
                 </Box>
               ))}
             </Box>
+            )}
           </Box>
         </Grid>
 
@@ -311,7 +336,7 @@ const ExplorePage: React.FC = () => {
             <Typography variant="body1" fontWeight={600} sx={{ mb: 2 }}>
               Trending Topics
             </Typography>
-            {trendingTopics.map((topic) => (
+            {loading ? <ChipSkeleton count={6} /> : trendingTopics.map((topic) => (
               <Box
                 key={topic}
                 sx={{

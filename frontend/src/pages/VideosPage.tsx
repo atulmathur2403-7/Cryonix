@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -12,10 +12,17 @@ import {
 import { PlayArrow, ThumbUp, Visibility } from '@mui/icons-material';
 import { sampleVideos } from '../data/mockData';
 import { AnimatedPage, FadeIn, GrowIn } from '../components/animations';
+import { VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const VideosPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <AnimatedPage>
@@ -26,7 +33,7 @@ const VideosPage: React.FC = () => {
 
       {/* Categories */}
       <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
-        {['All', 'UX Design', 'Product Management', 'Data Science', 'React', 'Startups'].map((cat, i) => (
+        {loading ? <ChipSkeleton count={6} /> : ['All', 'UX Design', 'Product Management', 'Data Science', 'React', 'Startups'].map((cat, i) => (
           <Chip
             key={cat}
             label={cat}
@@ -38,6 +45,17 @@ const VideosPage: React.FC = () => {
       </Box>
 
       {/* Video Grid */}
+      {loading ? (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+            gap: 3,
+          }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => <VideoCardSkeleton key={i} />)}
+        </Box>
+      ) : (
       <Box
         sx={{
           display: 'grid',
@@ -136,6 +154,7 @@ const VideosPage: React.FC = () => {
           </Paper>
         ))}
       </Box>
+      )}
     </Box>
     </AnimatedPage>
   );

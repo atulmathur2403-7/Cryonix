@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
@@ -17,13 +17,21 @@ import {
 import { Call, PlayArrow, People } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
 import { AnimatedPage, FadeIn } from '../components/animations';
+import { MentorCardGridSkeleton, VideoCardGridSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || 'CSAT Coaching';
   const [activeTab, setActiveTab] = useState(0);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
+
+  useEffect(() => {
+    setLoading(true);
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, [query]);
 
   const tabLabels = ['Experts', 'Videos', 'Live'];
 
@@ -54,6 +62,9 @@ const SearchResults: React.FC = () => {
       {/* Experts Tab */}
       {activeTab === 0 && (
         <>
+          {loading ? (
+            <Box sx={{ mb: 4 }}><MentorCardGridSkeleton count={6} /></Box>
+          ) : (
           <Grid container spacing={3} sx={{ mb: 4 }}>
             {sampleMentors.map((mentor) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={mentor.id}>
@@ -134,6 +145,7 @@ const SearchResults: React.FC = () => {
               </Grid>
             ))}
           </Grid>
+          )}
 
           {/* People also searching */}
           <Box sx={{ mb: 4 }}>
@@ -141,7 +153,7 @@ const SearchResults: React.FC = () => {
               People are also Searching for
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {searchSuggestions.map((s) => (
+              {loading ? <ChipSkeleton count={8} /> : searchSuggestions.map((s) => (
                 <Chip
                   key={s}
                   label={s}
@@ -165,6 +177,7 @@ const SearchResults: React.FC = () => {
 
       {/* Videos Tab */}
       {activeTab === 1 && (
+        loading ? <VideoCardGridSkeleton count={6} /> :
         <Grid container spacing={3}>
           {sampleVideos
             .filter((v) => !v.isLive)

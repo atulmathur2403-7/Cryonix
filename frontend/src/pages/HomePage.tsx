@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -11,16 +11,24 @@ import {
   Paper,
   Fade,
   Grow,
+  Skeleton,
   useTheme,
 } from '@mui/material';
 import { Search, LocalFireDepartment } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
 import { AnimatedPage, FadeIn } from '../components/animations';
+import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';
 
 const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, []);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -71,7 +79,10 @@ const HomePage: React.FC = () => {
         {/* Category Tags */}
         <FadeIn delay={300}>
         <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap', mb: 4 }}>
-          {categories.map((cat, i) => (
+          {loading ? (
+            <ChipSkeleton count={7} />
+          ) : (
+          categories.map((cat, i) => (
             <Grow in timeout={400 + i * 80} key={cat.label}>
               <Chip
                 label={`${cat.icon} ${cat.label}`}
@@ -91,7 +102,7 @@ const HomePage: React.FC = () => {
                 variant="outlined"
               />
             </Grow>
-          ))}
+          )))}
         </Box>
         </FadeIn>
 
@@ -168,7 +179,12 @@ const HomePage: React.FC = () => {
             },
           }}
         >
-          {sampleMentors.map((mentor, idx) => (
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <Box key={i} sx={{ minWidth: 200 }}><HomeMentorCardSkeleton /></Box>
+            ))
+          ) : (
+          sampleMentors.map((mentor, idx) => (
             <Grow in timeout={500 + idx * 120} key={mentor.id}>
             <Paper
               elevation={0}
@@ -232,7 +248,8 @@ const HomePage: React.FC = () => {
               </Typography>
             </Paper>
             </Grow>
-          ))}
+          ))
+          )}
         </Box>
       </Box>
       </FadeIn>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -16,10 +16,17 @@ import {
 import { Download } from '@mui/icons-material';
 import { sampleCallHistory } from '../data/mockData';
 import { AnimatedPage } from '../components/animations';
+import { TableSkeleton } from '../components/Skeletons';
 
 const CallHistoryPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <AnimatedPage>
@@ -28,6 +35,9 @@ const CallHistoryPage: React.FC = () => {
         Call History
       </Typography>
 
+      {loading ? (
+        <Box sx={{ mb: 3 }}><TableSkeleton rows={5} columns={8} /></Box>
+      ) : (
       <Paper
         elevation={0}
         sx={{
@@ -89,6 +99,7 @@ const CallHistoryPage: React.FC = () => {
           </TableBody>
         </Table>
       </Paper>
+      )}
 
       <Button variant="contained" onClick={() => navigate('/dashboard')}>
         Return to Your Dashboard
