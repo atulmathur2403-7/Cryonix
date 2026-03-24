@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { sampleMentors } from '../data/mockData';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const BookingConfirmation: React.FC = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const BookingConfirmation: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Booking Confirmed Successfully!
       </Typography>
 
@@ -31,8 +31,8 @@ const BookingConfirmation: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
@@ -61,8 +61,8 @@ const BookingConfirmation: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 2,
             }}
           >
@@ -88,8 +88,8 @@ const BookingConfirmation: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               textAlign: 'center',
               mb: 3,
             }}

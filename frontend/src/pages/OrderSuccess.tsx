@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const OrderSuccess: React.FC = () => {
   const navigate = useNavigate();
@@ -27,13 +27,13 @@ const OrderSuccess: React.FC = () => {
         elevation={0}
         sx={{
           p: 4,
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
           mb: 3,
         }}
       >
         <CheckCircle sx={{ fontSize: 72, color: '#4CAF50', mb: 2 }} />
-        <Typography variant="h5" fontWeight={700} sx={{ color: '#4CAF50', mb: 1 }}>
+        <Typography variant="h4" fontWeight={800} sx={{ color: '#4CAF50', mb: 1, letterSpacing: '-0.03em' }}>
           Order placed successfully
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>

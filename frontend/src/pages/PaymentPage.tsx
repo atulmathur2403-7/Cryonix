@@ -19,7 +19,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Videocam } from '@mui/icons-material';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const PaymentPage: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         You are just one step away from your live call with{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>
           Andrew Smith
@@ -85,8 +85,8 @@ const PaymentPage: React.FC = () => {
           <Paper
             elevation={0}
             sx={{
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               overflow: 'hidden',
             }}
           >
@@ -190,8 +190,8 @@ const PaymentPage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >

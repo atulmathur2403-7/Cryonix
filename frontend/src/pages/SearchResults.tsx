@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Call, PlayArrow, People } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 import { MentorCardGridSkeleton, VideoCardGridSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const SearchResults: React.FC = () => {
@@ -38,7 +38,7 @@ const SearchResults: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
+      <Typography variant="h4" sx={{ mb: 3, fontWeight: 800, letterSpacing: '-0.03em' }}>
         Here are the experts on{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>
           "{query}"

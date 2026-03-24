@@ -19,7 +19,7 @@ import {
   CheckCircle,
 } from '@mui/icons-material';
 import { currentUser } from '../data/mockData';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const ProfilePage: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 900, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         My Profile
       </Typography>
 
@@ -46,8 +46,8 @@ const ProfilePage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
@@ -90,8 +90,8 @@ const ProfilePage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
@@ -108,8 +108,8 @@ const ProfilePage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
             }}
           >
             <Typography variant="body1" fontWeight={600} sx={{ mb: 2 }}>
@@ -156,8 +156,8 @@ const ProfilePage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
             }}
           >
             <Typography variant="body1" fontWeight={600} sx={{ mb: 2 }}>

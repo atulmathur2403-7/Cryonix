@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -38,7 +38,7 @@ const ReviewsList: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Reviews for {mentor.name}
       </Typography>
 
@@ -52,8 +52,8 @@ const ReviewsList: React.FC = () => {
         elevation={0}
         sx={{
           p: 3,
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
           mb: 4,
           display: 'flex',
           gap: 4,

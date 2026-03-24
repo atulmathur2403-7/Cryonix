@@ -9,7 +9,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { School, CheckCircle } from '@mui/icons-material';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 
 const BecomeMentorPage: React.FC = () => {
   const theme = useTheme();
@@ -54,7 +54,7 @@ const BecomeMentorPage: React.FC = () => {
     <Box sx={{ maxWidth: 700, mx: 'auto' }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <School sx={{ fontSize: 56, color: 'primary.main', mb: 1 }} />
-        <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>
+        <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
           Become a Mentor
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 500, mx: 'auto' }}>
@@ -74,8 +74,8 @@ const BecomeMentorPage: React.FC = () => {
         elevation={0}
         sx={{
           p: 4,
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
         }}
       >
         <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>

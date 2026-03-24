@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Search, LocalFireDepartment } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, gradientTextSx } from '../components/animations';
 import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';
 
 const HomePage: React.FC = () => {
@@ -40,23 +40,23 @@ const HomePage: React.FC = () => {
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       {/* Hero Section */}
-      <Box sx={{ textAlign: 'center', py: { xs: 4, md: 8 } }}>
+      <Box sx={{ textAlign: 'center', py: { xs: 6, md: 12 }, position: 'relative' }}>
         <FadeIn delay={100}>
         <Typography
-          variant="h3"
+          variant="h2"
           sx={{
             fontWeight: 800,
             mb: 1,
-            fontSize: { xs: '2rem', md: '3rem' },
+            fontSize: { xs: '2.5rem', md: '4rem' },
+            letterSpacing: '-0.03em',
+            lineHeight: 1.1,
           }}
         >
           Talk with Experts in{' '}
           <Box
             component="span"
             sx={{
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
+              ...gradientTextSx(theme.palette.primary.main, theme.palette.secondary.main),
               backgroundSize: '200% 200%',
               animation: 'gradientShift 4s ease infinite',
               '@keyframes gradientShift': {
@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
         </Typography>
         </FadeIn>
         <FadeIn delay={200}>
-        <Typography variant="h6" color="text.secondary" sx={{ mb: 4, fontWeight: 400 }}>
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 5, fontWeight: 400, fontSize: { xs: '1rem', md: '1.25rem' }, maxWidth: 600, mx: 'auto' }}>
           Real Experienced People, Real Guidance, Real Results
         </Typography>
         </FadeIn>
@@ -108,7 +108,7 @@ const HomePage: React.FC = () => {
 
         {/* Search Bar */}
         <FadeIn delay={400}>
-        <Box sx={{ maxWidth: 640, mx: 'auto', mb: 3 }}>
+        <Box sx={{ maxWidth: 640, mx: 'auto', mb: 4 }}>
           <TextField
             fullWidth
             placeholder="What guidance do you need today?"
@@ -122,13 +122,16 @@ const HomePage: React.FC = () => {
                 </InputAdornment>
               ),
               sx: {
-                borderRadius: 3,
+                borderRadius: 4,
                 bgcolor: 'background.paper',
                 fontSize: '1.1rem',
-                py: 0.5,
-                boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-                '&:hover': { boxShadow: '0 4px 20px rgba(0,0,0,0.1)' },
-                transition: 'box-shadow 0.3s ease',
+                py: 0.8,
+                px: 1,
+                boxShadow: `0 4px 24px rgba(0,0,0,0.06)`,
+                border: `1px solid ${theme.palette.divider}`,
+                '&:hover': { boxShadow: '0 8px 32px rgba(0,0,0,0.1)', borderColor: theme.palette.primary.main + '40' },
+                '&.Mui-focused': { boxShadow: `0 8px 32px ${theme.palette.primary.main}15`, borderColor: theme.palette.primary.main },
+                transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
               },
             }}
           />
@@ -150,10 +153,10 @@ const HomePage: React.FC = () => {
       </Box>
 
       {/* Trending Mentors Section */}
-      <FadeIn delay={500}>
-      <Box sx={{ mb: 6 }}>
+      <RevealOnScroll>
+      <Box sx={{ mb: 8 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <Typography variant="h5" fontWeight={700}>
+          <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
             Trending Mentors
           </Typography>
           <LocalFireDepartment sx={{
@@ -190,15 +193,16 @@ const HomePage: React.FC = () => {
               elevation={0}
               sx={{
                 p: 3,
-                minWidth: 200,
+                minWidth: 210,
                 textAlign: 'center',
                 cursor: 'pointer',
-                border: `1px solid ${theme.palette.divider}`,
-                transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                borderRadius: 4,
+                ...glassSx(theme.palette.mode === 'dark'),
+                transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
                 '&:hover': {
-                  borderColor: theme.palette.primary.main,
-                  transform: 'translateY(-6px)',
-                  boxShadow: `0 12px 32px ${theme.palette.primary.main}18`,
+                  borderColor: theme.palette.primary.main + '40',
+                  transform: 'translateY(-8px) scale(1.02)',
+                  boxShadow: `0 20px 48px ${theme.palette.primary.main}15`,
                 },
               }}
               onClick={() => navigate(`/mentor/${mentor.id}`)}
@@ -252,15 +256,16 @@ const HomePage: React.FC = () => {
           )}
         </Box>
       </Box>
-      </FadeIn>
+      </RevealOnScroll>
 
       {/* Value Propositions */}
+      <RevealOnScroll delay={100}>
       <Box
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' },
           gap: 3,
-          mb: 4,
+          mb: 6,
         }}
       >
         {[
@@ -272,44 +277,45 @@ const HomePage: React.FC = () => {
           <Paper
             elevation={0}
             sx={{
-              p: 3,
+              p: 4,
               textAlign: 'center',
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
-              transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
               '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
-                borderColor: theme.palette.primary.main + '40',
+                transform: 'translateY(-6px) scale(1.02)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.08)',
+                borderColor: theme.palette.primary.main + '30',
               },
             }}
           >
-            <Typography variant="h4" sx={{ mb: 1 }}>
+            <Typography variant="h3" sx={{ mb: 1.5 }}>
               {item.icon}
             </Typography>
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5, letterSpacing: '-0.01em' }}>
               {item.title}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
               {item.desc}
             </Typography>
           </Paper>
           </Grow>
         ))}
       </Box>
+      </RevealOnScroll>
 
       {/* Get Help Link */}
-      <FadeIn delay={800}>
-      <Box sx={{ textAlign: 'left', mb: 4 }}>
+      <RevealOnScroll delay={200}>
+      <Box sx={{ textAlign: 'left', mb: 6 }}>
         <Button
           color="error"
           onClick={() => navigate('/support')}
-          sx={{ textTransform: 'none' }}
+          sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 3 }}
         >
           Get Help
         </Button>
       </Box>
-      </FadeIn>
+      </RevealOnScroll>
     </Box>
     </AnimatedPage>
   );

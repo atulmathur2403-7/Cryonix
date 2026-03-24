@@ -16,7 +16,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { sampleSessions } from '../data/mockData';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
 
 const Dashboard: React.FC = () => {
@@ -38,8 +38,8 @@ const Dashboard: React.FC = () => {
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
       {/* Header */}
       <FadeIn delay={100}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', mb: 4 }}>
-        <Typography variant="h5" fontWeight={700}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', mb: 5 }}>
+        <Typography variant="h4" fontWeight={800} sx={{ letterSpacing: '-0.03em' }}>
           Welcome back, Dear Learner!
         </Typography>
         <Box sx={{ textAlign: 'right' }}>
@@ -85,14 +85,14 @@ const Dashboard: React.FC = () => {
       <Paper
         elevation={0}
         sx={{
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
           mb: 3,
           overflow: 'hidden',
         }}
       >
-        <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="h6" fontWeight={600}>
+        <Box sx={{ p: 2.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
+          <Typography variant="h6" fontWeight={700} sx={{ letterSpacing: '-0.01em' }}>
             Upcoming Sessions
           </Typography>
         </Box>
@@ -162,14 +162,14 @@ const Dashboard: React.FC = () => {
       <Paper
         elevation={0}
         sx={{
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
           mb: 4,
           overflow: 'hidden',
         }}
       >
-        <Box sx={{ p: 2, borderBottom: `1px solid ${theme.palette.divider}` }}>
-          <Typography variant="h6" fontWeight={600}>
+        <Box sx={{ p: 2.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
+          <Typography variant="h6" fontWeight={700} sx={{ letterSpacing: '-0.01em' }}>
             Past Sessions
           </Typography>
         </Box>
@@ -222,13 +222,13 @@ const Dashboard: React.FC = () => {
       {/* Action Buttons */}
       <FadeIn delay={500}>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <Button variant="contained" onClick={() => navigate('/explore')}>
+        <Button variant="contained" onClick={() => navigate('/explore')} sx={{ borderRadius: 3, px: 3 }}>
           Book New Sessions
         </Button>
-        <Button variant="contained" onClick={() => navigate('/call-history')}>
+        <Button variant="outlined" onClick={() => navigate('/call-history')} sx={{ borderRadius: 3, px: 3 }}>
           View Call / Chat History
         </Button>
-        <Button variant="contained" onClick={() => navigate('/profile')}>
+        <Button variant="outlined" onClick={() => navigate('/profile')} sx={{ borderRadius: 3, px: 3 }}>
           Profile Settings
         </Button>
       </Box>

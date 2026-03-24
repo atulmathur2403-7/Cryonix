@@ -23,7 +23,7 @@ import {
   PlayArrow,
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx } from '../components/animations';
 import { ProfileHeaderSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
 const MentorProfile: React.FC = () => {
@@ -60,8 +60,8 @@ const MentorProfile: React.FC = () => {
             elevation={0}
             sx={{
               p: 4,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
@@ -119,28 +119,28 @@ const MentorProfile: React.FC = () => {
 
             {/* Action Buttons */}
             <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mb: 3 }}>
-              <Button variant="contained" color="success" startIcon={<PersonAdd />}>
+              <Button variant="contained" color="success" startIcon={<PersonAdd />} sx={{ borderRadius: 3 }}>
                 Follow
               </Button>
               <Button
                 variant="contained"
                 startIcon={<Mail />}
-                sx={{ bgcolor: '#E57373', '&:hover': { bgcolor: '#d32f2f' } }}
+                sx={{ borderRadius: 3 }}
               >
                 Message (${mentor.messagePrice})
               </Button>
               <Button
                 variant="contained"
                 startIcon={<Call />}
-                sx={{ bgcolor: '#E57373', '&:hover': { bgcolor: '#d32f2f' } }}
+                sx={{ borderRadius: 3 }}
                 onClick={() => navigate(`/book/${mentor.id}`)}
               >
                 Call (${mentor.callPrice}/30 min)
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
                 startIcon={<CalendarMonth />}
-                sx={{ bgcolor: '#E57373', '&:hover': { bgcolor: '#d32f2f' } }}
+                sx={{ borderRadius: 3 }}
               >
                 Subscribe (${mentor.subscriptionPrice}/month)
               </Button>
@@ -173,13 +173,13 @@ const MentorProfile: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" fontWeight={600}>
+              <Typography variant="h6" fontWeight={700} sx={{ letterSpacing: '-0.01em' }}>
                 Reviews
               </Typography>
               <Button
@@ -222,11 +222,11 @@ const MentorProfile: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
             }}
           >
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            <Typography variant="h6" fontWeight={700} sx={{ mb: 2, letterSpacing: '-0.01em' }}>
               Videos
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
@@ -273,13 +273,13 @@ const MentorProfile: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
               textAlign: 'center',
             }}
           >
-            <Typography variant="body2" fontWeight={600} color="text.secondary" sx={{ mb: 1 }}>
+            <Typography variant="body2" fontWeight={600} color="text.secondary" sx={{ mb: 1, letterSpacing: '0.05em', fontSize: '0.75rem' }}>
               RATING
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
@@ -298,9 +298,9 @@ const MentorProfile: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.primary.main}40`,
-              borderRadius: 3,
-              bgcolor: theme.palette.primary.main + '08',
+              border: `1px solid ${theme.palette.primary.main}20`,
+              borderRadius: 4,
+              background: `linear-gradient(135deg, ${theme.palette.primary.main}08, ${theme.palette.secondary.main}06)`,
             }}
           >
             <Chip

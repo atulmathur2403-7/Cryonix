@@ -28,7 +28,7 @@ import {
   HelpOutline,
 } from '@mui/icons-material';
 import { sampleFaqs } from '../data/mockData';
-import { AnimatedPage, FadeIn } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 
 const SupportPage: React.FC = () => {
   const theme = useTheme();
@@ -49,7 +49,7 @@ const SupportPage: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 2, letterSpacing: '-0.03em' }}>
         Get Support
       </Typography>
 
@@ -77,8 +77,8 @@ const SupportPage: React.FC = () => {
           <Paper
             elevation={0}
             sx={{
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
               overflow: 'hidden',
             }}
@@ -118,8 +118,8 @@ const SupportPage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
@@ -163,8 +163,8 @@ const SupportPage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
             }}
           >
             <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
@@ -191,8 +191,8 @@ const SupportPage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               mb: 3,
             }}
           >
@@ -213,8 +213,8 @@ const SupportPage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
             }}
           >
             <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>

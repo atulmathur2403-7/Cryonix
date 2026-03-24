@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -28,7 +28,7 @@ const WriteReview: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Share Review for{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>
           {mentor.name} ✓
@@ -39,8 +39,8 @@ const WriteReview: React.FC = () => {
         elevation={0}
         sx={{
           p: 4,
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
         }}
       >
         <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>

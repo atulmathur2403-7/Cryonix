@@ -13,7 +13,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const PaymentFailed: React.FC = () => {
   const navigate = useNavigate();
@@ -26,12 +26,12 @@ const PaymentFailed: React.FC = () => {
         elevation={0}
         sx={{
           p: 4,
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
         }}
       >
         <Cancel sx={{ fontSize: 72, color: '#E53935', mb: 2 }} />
-        <Typography variant="h5" fontWeight={700} color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="h4" fontWeight={800} color="text.secondary" sx={{ mb: 3, letterSpacing: '-0.03em' }}>
           Payment Failed
         </Typography>
 

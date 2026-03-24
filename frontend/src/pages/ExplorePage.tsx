@@ -32,7 +32,7 @@ import {
   LibraryBooks,
 } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
-import { AnimatedPage, FadeIn, GrowIn } from '../components/animations';
+import { AnimatedPage, FadeIn, GrowIn, RevealOnScroll, glassSx } from '../components/animations';
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const ExplorePage: React.FC = () => {
@@ -52,12 +52,12 @@ const ExplorePage: React.FC = () => {
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <FadeIn delay={100}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         Find your next mentor session.
       </Typography>
       </FadeIn>
       <FadeIn delay={200}>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: '1.1rem' }}>
         Explore by topic, rating, or availability.
       </Typography>
       </FadeIn>
@@ -91,10 +91,11 @@ const ExplorePage: React.FC = () => {
                   elevation={0}
                   sx={{
                     minWidth: 220,
-                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 4,
+                    ...glassSx(theme.palette.mode === 'dark'),
                     cursor: 'pointer',
-                    transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-                    '&:hover': { borderColor: theme.palette.primary.main, transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${theme.palette.primary.main}15` },
+                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                    '&:hover': { borderColor: theme.palette.primary.main + '40', transform: 'translateY(-6px) scale(1.02)', boxShadow: `0 16px 40px ${theme.palette.primary.main}12` },
                   }}
                   onClick={() => navigate(`/mentor/${m.id}`)}
                 >
@@ -150,9 +151,11 @@ const ExplorePage: React.FC = () => {
                   elevation={0}
                   sx={{
                     minWidth: 220,
-                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 4,
+                    ...glassSx(theme.palette.mode === 'dark'),
                     cursor: 'pointer',
-                    '&:hover': { borderColor: theme.palette.primary.main },
+                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                    '&:hover': { borderColor: theme.palette.primary.main + '40', transform: 'translateY(-6px)', boxShadow: `0 12px 32px ${theme.palette.primary.main}12` },
                   }}
                   onClick={() => navigate(`/mentor/${m.id}`)}
                 >
@@ -247,14 +250,14 @@ const ExplorePage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
               position: 'sticky',
               top: 80,
               mb: 3,
             }}
           >
-            <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>
+            <Typography variant="h6" fontWeight={700} sx={{ mb: 2, letterSpacing: '-0.01em' }}>
               Filters
             </Typography>
 
@@ -329,8 +332,8 @@ const ExplorePage: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
             }}
           >
             <Typography variant="body1" fontWeight={600} sx={{ mb: 2 }}>

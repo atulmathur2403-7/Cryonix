@@ -58,9 +58,9 @@ const MessagesPage: React.FC = () => {
         sx={{
           p: 1.5,
           mb: 2,
-          border: `1px solid ${theme.palette.primary.main}30`,
-          bgcolor: theme.palette.primary.main + '08',
-          borderRadius: 2,
+          border: `1px solid ${theme.palette.primary.main}15`,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}06, ${theme.palette.secondary.main}04)`,
+          borderRadius: 3,
         }}
       >
         <Typography variant="body2" color="text.secondary">
@@ -68,7 +68,7 @@ const MessagesPage: React.FC = () => {
         </Typography>
       </Paper>
 
-      <Box sx={{ display: 'flex', height: 'calc(100vh - 220px)', border: `1px solid ${theme.palette.divider}`, borderRadius: 3, overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', height: 'calc(100vh - 220px)', border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`, borderRadius: 4, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.04)' }}>
         {/* Left Panel - Conversations */}
         <Box
           sx={{

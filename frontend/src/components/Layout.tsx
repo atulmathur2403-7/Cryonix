@@ -224,12 +224,32 @@ const Layout: React.FC = () => {
       {/* Main content */}
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <AppBar position="sticky" elevation={0}>
-          <Toolbar>
+          <Toolbar sx={{ minHeight: { xs: 56, md: 64 } }}>
             {isMobile && (
               <IconButton edge="start" onClick={() => setMobileOpen(true)} sx={{ mr: 1 }}>
                 <MenuIcon />
               </IconButton>
             )}
+
+            {/* App Name in Header */}
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 800,
+                fontSize: { xs: '1.1rem', md: '1.25rem' },
+                letterSpacing: '-0.02em',
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': { opacity: 0.8 },
+              }}
+              onClick={() => navigate('/')}
+            >
+              Mentr
+            </Typography>
+
             <Box sx={{ flexGrow: 1 }} />
 
             <Tooltip title={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}>
@@ -263,13 +283,13 @@ const Layout: React.FC = () => {
           component="main"
           sx={{
             flexGrow: 1,
-            p: { xs: 2, md: 3 },
+            p: { xs: 2, md: 4 },
             bgcolor: 'background.default',
             overflow: 'auto',
-            animation: 'fadeInMain 0.4s ease-out',
+            animation: 'fadeInMain 0.5s ease-out',
             '@keyframes fadeInMain': {
-              from: { opacity: 0 },
-              to: { opacity: 1 },
+              from: { opacity: 0, transform: 'translateY(8px)' },
+              to: { opacity: 1, transform: 'translateY(0)' },
             },
           }}
         >

@@ -1,234 +1,309 @@
-import React, { useState } from 'react';
-import { AnimatedPage } from '../components/animations';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
   TextField,
   Button,
-  Paper,
   Divider,
-  Grid,
   IconButton,
   InputAdornment,
   useTheme,
+  Fade,
+  Grow,
 } from '@mui/material';
-import { Visibility, VisibilityOff, Google, Facebook, Apple } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Google, Facebook, Apple, ArrowForward } from '@mui/icons-material';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showSignInPassword, setShowSignInPassword] = useState(false);
-  const [signUpData, setSignUpData] = useState({
-    fullName: '',
-    username: '',
-    password: '',
-    email: '',
-    phone: '',
-  });
-  const [signInData, setSignInData] = useState({
-    username: '',
-    password: '',
-  });
+  const [mounted, setMounted] = useState(false);
+  const [signUpData, setSignUpData] = useState({ fullName: '', username: '', password: '', email: '', phone: '' });
+  const [signInData, setSignInData] = useState({ username: '', password: '' });
 
-  const handleSignUp = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate('/dashboard');
-  };
+  useEffect(() => { setMounted(true); }, []);
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate('/dashboard');
-  };
+  const handleSignUp = (e: React.FormEvent) => { e.preventDefault(); navigate('/dashboard'); };
+  const handleSignIn = (e: React.FormEvent) => { e.preventDefault(); navigate('/dashboard'); };
 
   return (
-    <AnimatedPage>
     <Box
       sx={{
-        maxWidth: 1000,
-        mx: 'auto',
+        minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        minHeight: '70vh',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        background: isDark
+          ? 'radial-gradient(ellipse at 20% 50%, rgba(78,107,219,0.15) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(124,92,252,0.1) 0%, transparent 50%), #000'
+          : 'radial-gradient(ellipse at 20% 50%, rgba(26,63,196,0.06) 0%, transparent 50%), radial-gradient(ellipse at 80% 50%, rgba(124,92,252,0.04) 0%, transparent 50%), #f8f9fb',
       }}
     >
-      <Grid container spacing={0}>
-        {/* Sign Up Panel */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              borderRadius: { xs: '12px 12px 0 0', md: '12px 0 0 12px' },
-              border: `1px solid ${theme.palette.divider}`,
-              borderRight: { md: 'none' },
-              height: '100%',
-            }}
-          >
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-              Sign Up
-            </Typography>
-            <Box component="form" onSubmit={handleSignUp}>
-              <TextField
-                fullWidth
-                label="Your full name"
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signUpData.fullName}
-                onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
-              />
-              <TextField
-                fullWidth
-                label="Your username"
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signUpData.username}
-                onChange={(e) => setSignUpData({ ...signUpData, username: e.target.value })}
-              />
-              <TextField
-                fullWidth
-                label="Your Password"
-                type={showPassword ? 'text' : 'password'}
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signUpData.password}
-                onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton size="small" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <TextField
-                fullWidth
-                label="Your Email"
-                type="email"
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signUpData.email}
-                onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-              />
-              <TextField
-                fullWidth
-                label="Your Contact No"
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signUpData.phone}
-                onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
-              />
-              <Divider sx={{ my: 2 }}>or</Divider>
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
+      {/* Floating orbs background */}
+      <Box sx={{
+        position: 'absolute', width: 500, height: 500, borderRadius: '50%',
+        background: `radial-gradient(circle, ${theme.palette.primary.main}15, transparent 70%)`,
+        top: '-15%', left: '-10%', filter: 'blur(60px)',
+        animation: 'floatOrb1 8s ease-in-out infinite',
+        '@keyframes floatOrb1': { '0%,100%': { transform: 'translate(0,0)' }, '50%': { transform: 'translate(30px, 20px)' } },
+      }} />
+      <Box sx={{
+        position: 'absolute', width: 400, height: 400, borderRadius: '50%',
+        background: `radial-gradient(circle, ${theme.palette.secondary.main}12, transparent 70%)`,
+        bottom: '-10%', right: '-5%', filter: 'blur(60px)',
+        animation: 'floatOrb2 10s ease-in-out infinite',
+        '@keyframes floatOrb2': { '0%,100%': { transform: 'translate(0,0)' }, '50%': { transform: 'translate(-20px, -30px)' } },
+      }} />
+
+      <Fade in={mounted} timeout={800}>
+        <Box sx={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 480, mx: 'auto', px: 3 }}>
+          {/* Logo */}
+          <Grow in={mounted} timeout={600}>
+            <Box sx={{ textAlign: 'center', mb: 5 }}>
+              <Typography
+                variant="h3"
                 sx={{
-                  bgcolor: theme.palette.primary.main,
-                  py: 1.2,
+                  fontWeight: 800,
+                  letterSpacing: '-0.03em',
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  mb: 1,
                 }}
               >
-                Sign up
-              </Button>
+                Mentr
+              </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 400 }}>
+                {isSignUp ? 'Create your account to get started' : 'Welcome back. Sign in to continue.'}
+              </Typography>
             </Box>
-          </Paper>
-        </Grid>
+          </Grow>
 
-        {/* Sign In Panel */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              borderRadius: { xs: '0 0 12px 12px', md: '0 12px 12px 0' },
-              border: `1px solid ${theme.palette.divider}`,
-              height: '100%',
-              bgcolor: theme.palette.mode === 'dark' ? 'background.paper' : '#fafbfc',
-            }}
-          >
-            <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
-              Sign In
+          {/* Glass card */}
+          <Grow in={mounted} timeout={800}>
+            <Box
+              sx={{
+                p: { xs: 3, sm: 4.5 },
+                borderRadius: 4,
+                background: isDark ? 'rgba(28,28,30,0.6)' : 'rgba(255,255,255,0.72)',
+                backdropFilter: 'saturate(180%) blur(24px)',
+                WebkitBackdropFilter: 'saturate(180%) blur(24px)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                boxShadow: isDark
+                  ? '0 24px 80px rgba(0,0,0,0.5)'
+                  : '0 24px 80px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1)',
+              }}
+            >
+              {!isSignUp ? (
+                /* Sign In */
+                <Box component="form" onSubmit={handleSignIn}>
+                  {/* Social buttons */}
+                  <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
+                    {[
+                      { icon: <Google />, label: 'Google', bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
+                      { icon: <Facebook />, label: 'Facebook', bg: '#1877F2', color: '#fff' },
+                      { icon: <Apple />, label: 'Apple', bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
+                    ].map((s) => (
+                      <Button
+                        key={s.label}
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          py: 1.3,
+                          bgcolor: s.bg,
+                          color: s.color,
+                          borderRadius: 3,
+                          boxShadow: 'none',
+                          minWidth: 0,
+                          background: s.bg,
+                          '&:hover': { background: s.bg, opacity: 0.9, boxShadow: `0 4px 16px ${s.bg}30`, transform: 'translateY(-2px)' },
+                        }}
+                      >
+                        {s.icon}
+                      </Button>
+                    ))}
+                  </Box>
+
+                  <Divider sx={{ my: 3, '&::before, &::after': { borderColor: theme.palette.divider } }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ px: 2, fontSize: '0.8rem' }}>
+                      or continue with email
+                    </Typography>
+                  </Divider>
+
+                  <TextField
+                    fullWidth
+                    label="Email or Username"
+                    variant="outlined"
+                    sx={{ mb: 2 }}
+                    value={signInData.username}
+                    onChange={(e) => setSignInData({ ...signInData, username: e.target.value })}
+                  />
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    variant="outlined"
+                    sx={{ mb: 1 }}
+                    value={signInData.password}
+                    onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end">
+                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <Box sx={{ textAlign: 'right', mb: 3 }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'primary.main', cursor: 'pointer', fontWeight: 500, '&:hover': { textDecoration: 'underline' } }}
+                    >
+                      Forgot password?
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    endIcon={<ArrowForward />}
+                    sx={{
+                      py: 1.5,
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      borderRadius: 3,
+                      mb: 3,
+                    }}
+                  >
+                    Sign In
+                  </Button>
+
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    Don't have an account?{' '}
+                    <Box
+                      component="span"
+                      sx={{ color: 'primary.main', fontWeight: 600, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                      onClick={() => setIsSignUp(true)}
+                    >
+                      Sign Up
+                    </Box>
+                  </Typography>
+                </Box>
+              ) : (
+                /* Sign Up */
+                <Box component="form" onSubmit={handleSignUp}>
+                  <TextField
+                    fullWidth label="Full Name" variant="outlined" sx={{ mb: 2 }}
+                    value={signUpData.fullName}
+                    onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
+                  />
+                  <TextField
+                    fullWidth label="Username" variant="outlined" sx={{ mb: 2 }}
+                    value={signUpData.username}
+                    onChange={(e) => setSignUpData({ ...signUpData, username: e.target.value })}
+                  />
+                  <TextField
+                    fullWidth label="Email" type="email" variant="outlined" sx={{ mb: 2 }}
+                    value={signUpData.email}
+                    onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
+                  />
+                  <TextField
+                    fullWidth label="Phone Number" variant="outlined" sx={{ mb: 2 }}
+                    value={signUpData.phone}
+                    onChange={(e) => setSignUpData({ ...signUpData, phone: e.target.value })}
+                  />
+                  <TextField
+                    fullWidth label="Password" variant="outlined" sx={{ mb: 3 }}
+                    type={showPassword ? 'text' : 'password'}
+                    value={signUpData.password}
+                    onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton size="small" onClick={() => setShowPassword(!showPassword)} edge="end">
+                            {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    endIcon={<ArrowForward />}
+                    sx={{
+                      py: 1.5,
+                      fontSize: '1rem',
+                      fontWeight: 700,
+                      borderRadius: 3,
+                      mb: 3,
+                    }}
+                  >
+                    Create Account
+                  </Button>
+
+                  <Divider sx={{ mb: 3 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ px: 2 }}>
+                      or sign up with
+                    </Typography>
+                  </Divider>
+
+                  <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
+                    {[
+                      { icon: <Google />, bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
+                      { icon: <Facebook />, bg: '#1877F2', color: '#fff' },
+                      { icon: <Apple />, bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
+                    ].map((s, i) => (
+                      <Button
+                        key={i}
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          py: 1.3, bgcolor: s.bg, color: s.color, borderRadius: 3,
+                          boxShadow: 'none', minWidth: 0, background: s.bg,
+                          '&:hover': { background: s.bg, opacity: 0.9, boxShadow: `0 4px 16px ${s.bg}30`, transform: 'translateY(-2px)' },
+                        }}
+                      >
+                        {s.icon}
+                      </Button>
+                    ))}
+                  </Box>
+
+                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    Already have an account?{' '}
+                    <Box
+                      component="span"
+                      sx={{ color: 'primary.main', fontWeight: 600, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                      onClick={() => setIsSignUp(false)}
+                    >
+                      Sign In
+                    </Box>
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Grow>
+
+          {/* Footer */}
+          <Fade in={mounted} timeout={1200}>
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 4, opacity: 0.6 }}>
+              By continuing, you agree to Mentr's Terms of Service and Privacy Policy.
             </Typography>
-
-            {/* Social Login Buttons */}
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<Google />}
-              sx={{ mb: 1.5, justifyContent: 'flex-start', py: 1 }}
-            >
-              Sign in with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<Facebook />}
-              sx={{ mb: 1.5, justifyContent: 'flex-start', py: 1 }}
-            >
-              Sign in with Facebook
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              startIcon={<Apple />}
-              sx={{ mb: 2, justifyContent: 'flex-start', py: 1 }}
-            >
-              Sign in with Apple Id
-            </Button>
-
-            <Divider sx={{ my: 2 }}>or</Divider>
-
-            <Box component="form" onSubmit={handleSignIn}>
-              <TextField
-                fullWidth
-                label="Username / Email / Contact No"
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signInData.username}
-                onChange={(e) => setSignInData({ ...signInData, username: e.target.value })}
-              />
-              <TextField
-                fullWidth
-                label="Your Password"
-                type={showSignInPassword ? 'text' : 'password'}
-                variant="outlined"
-                size="small"
-                sx={{ mb: 2 }}
-                value={signInData.password}
-                onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton size="small" onClick={() => setShowSignInPassword(!showSignInPassword)}>
-                        {showSignInPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{ py: 1.2 }}
-              >
-                Sign in
-              </Button>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+          </Fade>
+        </Box>
+      </Fade>
     </Box>
-    </AnimatedPage>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -65,7 +65,7 @@ const VideoDetail: React.FC = () => {
             width: '100%',
             aspectRatio: '16/9',
             bgcolor: '#000',
-            borderRadius: 3,
+            borderRadius: 4,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -110,8 +110,8 @@ const VideoDetail: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             gap: 2,
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: 2,
+            borderRadius: 4,
+            ...glassSx(theme.palette.mode === 'dark'),
             mb: 3,
           }}
         >
@@ -135,8 +135,8 @@ const VideoDetail: React.FC = () => {
           elevation={0}
           sx={{
             p: 2,
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: 2,
+            borderRadius: 4,
+            ...glassSx(theme.palette.mode === 'dark'),
             mb: 3,
           }}
         >

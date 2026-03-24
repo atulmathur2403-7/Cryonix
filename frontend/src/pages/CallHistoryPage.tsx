@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Download } from '@mui/icons-material';
 import { sampleCallHistory } from '../data/mockData';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
 
 const CallHistoryPage: React.FC = () => {
@@ -31,7 +31,7 @@ const CallHistoryPage: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Call History
       </Typography>
 
@@ -41,8 +41,8 @@ const CallHistoryPage: React.FC = () => {
       <Paper
         elevation={0}
         sx={{
-          border: `1px solid ${theme.palette.divider}`,
-          borderRadius: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
           overflow: 'hidden',
           mb: 3,
         }}

@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Box, Fade, Grow, Slide } from '@mui/material';
+
+// ─── Apple-style spring easing ────
+const appleEase = 'cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+const springEase = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 // ─── Animated Page Wrapper — fades + slides entire page on mount ────
 interface AnimatedPageProps {
@@ -11,13 +15,13 @@ export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children }) => {
   useEffect(() => { setShow(true); }, []);
 
   return (
-    <Fade in={show} timeout={500}>
+    <Fade in={show} timeout={600}>
       <Box
         sx={{
-          animation: show ? 'slideUp 0.45s cubic-bezier(0.22, 1, 0.36, 1)' : 'none',
-          '@keyframes slideUp': {
-            from: { opacity: 0, transform: 'translateY(18px)' },
-            to: { opacity: 1, transform: 'translateY(0)' },
+          animation: show ? 'pageReveal 0.7s ' + springEase : 'none',
+          '@keyframes pageReveal': {
+            from: { opacity: 0, transform: 'translateY(24px) scale(0.99)' },
+            to: { opacity: 1, transform: 'translateY(0) scale(1)' },
           },
         }}
       >
@@ -27,10 +31,90 @@ export const AnimatedPage: React.FC<AnimatedPageProps> = ({ children }) => {
   );
 };
 
+// ─── Scroll-triggered reveal (Apple-style) ────
+interface RevealOnScrollProps {
+  children: React.ReactNode;
+  delay?: number;
+  direction?: 'up' | 'down' | 'left' | 'right';
+  distance?: number;
+}
+
+export const RevealOnScroll: React.FC<RevealOnScrollProps> = ({
+  children,
+  delay = 0,
+  direction = 'up',
+  distance = 40,
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  const getTransform = useCallback(() => {
+    switch (direction) {
+      case 'up': return `translateY(${distance}px)`;
+      case 'down': return `translateY(-${distance}px)`;
+      case 'left': return `translateX(${distance}px)`;
+      case 'right': return `translateX(-${distance}px)`;
+    }
+  }, [direction, distance]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.unobserve(el); } },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <Box
+      ref={ref}
+      sx={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translate(0) scale(1)' : `${getTransform()} scale(0.98)`,
+        transition: `opacity 0.8s ${appleEase} ${delay}ms, transform 0.8s ${springEase} ${delay}ms`,
+        willChange: 'opacity, transform',
+      }}
+    >
+      {children}
+    </Box>
+  );
+};
+
+// ─── Parallax float (subtle Y offset on scroll) ────
+interface ParallaxFloatProps {
+  children: React.ReactNode;
+  speed?: number; // 0.1 = subtle, 0.3 = pronounced
+}
+
+export const ParallaxFloat: React.FC<ParallaxFloatProps> = ({ children, speed = 0.15 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const center = rect.top + rect.height / 2 - window.innerHeight / 2;
+      setOffset(center * speed);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [speed]);
+
+  return (
+    <Box ref={ref} sx={{ transform: `translateY(${offset}px)`, transition: 'transform 0.1s linear', willChange: 'transform' }}>
+      {children}
+    </Box>
+  );
+};
+
 // ─── Staggered children — each child fades in with a delay ────
 interface StaggeredListProps {
   children: React.ReactNode[];
-  delay?: number; // ms between each child, default 80
+  delay?: number;
 }
 
 export const StaggeredList: React.FC<StaggeredListProps> = ({ children, delay = 80 }) => (
@@ -43,21 +127,16 @@ export const StaggeredList: React.FC<StaggeredListProps> = ({ children, delay = 
   </>
 );
 
-// ─── Hover-lift Card wrapper ────
-interface HoverCardProps {
-  children: React.ReactNode;
-  elevation?: 'sm' | 'md' | 'lg';
-}
-
+// ─── Hover-lift utilities ────
 export const hoverSx = (elevation: 'sm' | 'md' | 'lg' = 'md') => {
   const shadows: Record<string, string> = {
-    sm: '0 4px 12px rgba(0,0,0,0.08)',
-    md: '0 8px 30px rgba(0,0,0,0.12)',
-    lg: '0 12px 40px rgba(0,0,0,0.16)',
+    sm: '0 4px 16px rgba(0,0,0,0.06)',
+    md: '0 12px 40px rgba(0,0,0,0.08)',
+    lg: '0 20px 60px rgba(0,0,0,0.12)',
   };
-  const lifts: Record<string, string> = { sm: '-2px', md: '-4px', lg: '-6px' };
+  const lifts: Record<string, string> = { sm: '-2px', md: '-6px', lg: '-10px' };
   return {
-    transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+    transition: `all 0.4s ${springEase}`,
     '&:hover': {
       transform: `translateY(${lifts[elevation]})`,
       boxShadow: shadows[elevation],
@@ -65,9 +144,17 @@ export const hoverSx = (elevation: 'sm' | 'md' | 'lg' = 'md') => {
   };
 };
 
+// ─── Glass card style ────
+export const glassSx = (isDark: boolean = false) => ({
+  background: isDark ? 'rgba(28,28,30,0.6)' : 'rgba(255,255,255,0.6)',
+  backdropFilter: 'saturate(180%) blur(20px)',
+  WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+});
+
 // ─── Scale-on-hover for buttons/icons ────
 export const scaleOnHover = {
-  transition: 'transform 0.2s ease',
+  transition: `transform 0.25s ${springEase}`,
   '&:hover': { transform: 'scale(1.05)' },
   '&:active': { transform: 'scale(0.97)' },
 };
@@ -101,6 +188,14 @@ export const shimmerSx = {
   },
 };
 
+// ─── Gradient text utility ────
+export const gradientTextSx = (from: string = '#1a3fc4', to: string = '#7C5CFC') => ({
+  background: `linear-gradient(135deg, ${from}, ${to})`,
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+});
+
 // ─── Slide-in from side ────
 interface SlideInProps {
   children: React.ReactNode;
@@ -116,7 +211,7 @@ export const SlideIn: React.FC<SlideInProps> = ({ children, direction = 'up', de
   }, [delay]);
 
   return (
-    <Slide direction={direction} in={show} timeout={450} mountOnEnter>
+    <Slide direction={direction} in={show} timeout={500} mountOnEnter>
       <Box>{children}</Box>
     </Slide>
   );
@@ -129,7 +224,7 @@ interface FadeInProps {
   timeout?: number;
 }
 
-export const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, timeout = 500 }) => {
+export const FadeIn: React.FC<FadeInProps> = ({ children, delay = 0, timeout = 600 }) => {
   const [show, setShow] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setShow(true), delay);
