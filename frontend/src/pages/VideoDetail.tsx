@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatedPage } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -30,6 +31,7 @@ const VideoDetail: React.FC = () => {
   const relatedVideos = sampleVideos.filter((v) => v.id !== video.id).slice(0, 4);
 
   return (
+    <AnimatedPage>
     <Box sx={{ display: 'flex', gap: 3, flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
       {/* Main Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -211,6 +213,7 @@ const VideoDetail: React.FC = () => {
         ))}
       </Box>
     </Box>
+    </AnimatedPage>
   );
 };
 

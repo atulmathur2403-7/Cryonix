@@ -19,6 +19,7 @@ import {
   CheckCircle,
 } from '@mui/icons-material';
 import { currentUser } from '../data/mockData';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const ProfilePage: React.FC = () => {
   ];
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 900, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
         My Profile
@@ -200,6 +202,7 @@ const ProfilePage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </AnimatedPage>
   );
 };
 

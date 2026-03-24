@@ -11,12 +11,12 @@ import {
   TableRow,
   TableCell,
   TableHead,
-  Chip,
   Switch,
   FormControlLabel,
   useTheme,
 } from '@mui/material';
 import { sampleSessions } from '../data/mockData';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -27,8 +27,10 @@ const Dashboard: React.FC = () => {
   const pastSessions = sampleSessions.filter((s) => s.status === 'completed');
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
       {/* Header */}
+      <FadeIn delay={100}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', mb: 4 }}>
         <Typography variant="h5" fontWeight={700}>
           Welcome back, Dear Learner!
@@ -63,8 +65,10 @@ const Dashboard: React.FC = () => {
           </Typography>
         </Box>
       </Box>
+      </FadeIn>
 
       {/* Upcoming Sessions */}
+      <FadeIn delay={200}>
       <Paper
         elevation={0}
         sx={{
@@ -131,8 +135,10 @@ const Dashboard: React.FC = () => {
           </TableBody>
         </Table>
       </Paper>
+      </FadeIn>
 
       {/* Past Sessions */}
+      <FadeIn delay={350}>
       <Paper
         elevation={0}
         sx={{
@@ -190,8 +196,10 @@ const Dashboard: React.FC = () => {
           </TableBody>
         </Table>
       </Paper>
+      </FadeIn>
 
       {/* Action Buttons */}
+      <FadeIn delay={500}>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
         <Button variant="contained" onClick={() => navigate('/explore')}>
           Book New Sessions
@@ -203,7 +211,9 @@ const Dashboard: React.FC = () => {
           Profile Settings
         </Button>
       </Box>
+      </FadeIn>
     </Box>
+    </AnimatedPage>
   );
 };
 

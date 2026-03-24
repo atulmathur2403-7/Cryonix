@@ -6,11 +6,11 @@ import {
   Paper,
   Avatar,
   Button,
-  Chip,
   TextField,
   useTheme,
 } from '@mui/material';
 import { sampleMentors } from '../data/mockData';
+import { AnimatedPage } from '../components/animations';
 
 const BookingConfirmation: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const BookingConfirmation: React.FC = () => {
   const mentor = sampleMentors[0];
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 900, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
         Booking Confirmed Successfully!
@@ -128,6 +129,7 @@ const BookingConfirmation: React.FC = () => {
         </Box>
       </Box>
     </Box>
+    </AnimatedPage>
   );
 };
 

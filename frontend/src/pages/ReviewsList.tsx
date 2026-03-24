@@ -1,4 +1,5 @@
 import React from 'react';
+import { AnimatedPage } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -26,6 +27,7 @@ const ReviewsList: React.FC = () => {
   }));
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
         Reviews for {mentor.name}
@@ -120,6 +122,7 @@ const ReviewsList: React.FC = () => {
         </Paper>
       ))}
     </Box>
+    </AnimatedPage>
   );
 };
 

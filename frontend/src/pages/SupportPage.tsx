@@ -28,6 +28,7 @@ import {
   HelpOutline,
 } from '@mui/icons-material';
 import { sampleFaqs } from '../data/mockData';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const SupportPage: React.FC = () => {
   const theme = useTheme();
@@ -46,6 +47,7 @@ const SupportPage: React.FC = () => {
   ];
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 2 }}>
         Get Support
@@ -252,6 +254,7 @@ const SupportPage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </AnimatedPage>
   );
 };
 

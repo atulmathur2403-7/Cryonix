@@ -11,7 +11,6 @@ import {
   ListItemButton,
   ListItemAvatar,
   ListItemText,
-  Divider,
   useTheme,
   Chip,
 } from '@mui/material';
@@ -28,6 +27,7 @@ import {
   Settings,
 } from '@mui/icons-material';
 import { sampleConversations } from '../data/mockData';
+import { AnimatedPage } from '../components/animations';
 
 const MessagesPage: React.FC = () => {
   const theme = useTheme();
@@ -42,6 +42,7 @@ const MessagesPage: React.FC = () => {
   ];
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       {/* Info Banner */}
       <Paper
@@ -274,6 +275,7 @@ const MessagesPage: React.FC = () => {
         </Box>
       </Box>
     </Box>
+    </AnimatedPage>
   );
 };
 

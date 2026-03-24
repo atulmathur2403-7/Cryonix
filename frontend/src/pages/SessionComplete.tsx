@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatedPage } from '../components/animations';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -42,6 +43,7 @@ const SessionComplete: React.FC = () => {
   });
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1000, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
         "Session Completed Successfully"
@@ -248,6 +250,7 @@ const SessionComplete: React.FC = () => {
         </DialogActions>
       </Dialog>
     </Box>
+    </AnimatedPage>
   );
 };
 

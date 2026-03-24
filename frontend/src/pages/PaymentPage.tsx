@@ -19,6 +19,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Videocam } from '@mui/icons-material';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ const PaymentPage: React.FC = () => {
   };
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
         You are just one step away from your live call with{' '}
@@ -255,6 +257,7 @@ const PaymentPage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </AnimatedPage>
   );
 };
 

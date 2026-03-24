@@ -13,10 +13,10 @@ import {
   Chip,
   Grid,
   useTheme,
-  Badge,
 } from '@mui/material';
 import { Call, PlayArrow, People } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -28,6 +28,7 @@ const SearchResults: React.FC = () => {
   const tabLabels = ['Experts', 'Videos', 'Live'];
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
         Here are the experts on{' '}
@@ -61,11 +62,11 @@ const SearchResults: React.FC = () => {
                   sx={{
                     border: `1px solid ${theme.palette.divider}`,
                     cursor: 'pointer',
-                    transition: 'all 0.2s',
+                    transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
                       borderColor: theme.palette.primary.main,
-                      transform: 'translateY(-2px)',
-                      boxShadow: `0 4px 20px ${theme.palette.primary.main}15`,
+                      transform: 'translateY(-6px)',
+                      boxShadow: `0 12px 32px ${theme.palette.primary.main}15`,
                     },
                   }}
                   onClick={() => navigate(`/mentor/${mentor.id}`)}
@@ -289,6 +290,7 @@ const SearchResults: React.FC = () => {
         </Grid>
       )}
     </Box>
+    </AnimatedPage>
   );
 };
 

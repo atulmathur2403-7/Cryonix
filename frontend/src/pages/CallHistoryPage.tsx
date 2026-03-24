@@ -15,12 +15,14 @@ import {
 } from '@mui/material';
 import { Download } from '@mui/icons-material';
 import { sampleCallHistory } from '../data/mockData';
+import { AnimatedPage } from '../components/animations';
 
 const CallHistoryPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
         Call History
@@ -92,6 +94,7 @@ const CallHistoryPage: React.FC = () => {
         Return to Your Dashboard
       </Button>
     </Box>
+    </AnimatedPage>
   );
 };
 

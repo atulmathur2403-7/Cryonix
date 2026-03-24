@@ -13,8 +13,9 @@ import {
   DialogActions,
   useTheme,
 } from '@mui/material';
-import { Sensors, CalendarMonth, AccessTime } from '@mui/icons-material';
+import { Sensors, CalendarMonth } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const CallBooking: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();
@@ -42,6 +43,7 @@ const CallBooking: React.FC = () => {
   };
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto' }}>
       <Typography variant="h5" sx={{ mb: 1, fontWeight: 700 }}>
         <Box component="span" sx={{ color: 'primary.main' }}>
@@ -223,6 +225,7 @@ const CallBooking: React.FC = () => {
         }
       `}</style>
     </Box>
+    </AnimatedPage>
   );
 };
 

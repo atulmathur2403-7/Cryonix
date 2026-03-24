@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatedPage } from '../components/animations';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -25,6 +26,7 @@ const WriteReview: React.FC = () => {
   };
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto' }}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 3 }}>
         Share Review for{' '}
@@ -79,6 +81,7 @@ const WriteReview: React.FC = () => {
         </Button>
       </Paper>
     </Box>
+    </AnimatedPage>
   );
 };
 

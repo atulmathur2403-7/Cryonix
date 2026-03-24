@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AnimatedPage } from '../components/animations';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -6,7 +7,6 @@ import {
   Paper,
   IconButton,
   TextField,
-  Button,
   useTheme,
 } from '@mui/material';
 import {
@@ -52,6 +52,7 @@ const VideoCall: React.FC = () => {
   };
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       {/* Call Info Bar */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -210,6 +211,7 @@ const VideoCall: React.FC = () => {
         </Paper>
       </Box>
     </Box>
+    </AnimatedPage>
   );
 };
 

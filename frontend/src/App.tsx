@@ -21,6 +21,8 @@ import SupportPage from './pages/SupportPage';
 import WriteReview from './pages/WriteReview';
 import VideoDetail from './pages/VideoDetail';
 import ReviewsList from './pages/ReviewsList';
+import VideosPage from './pages/VideosPage';
+import BecomeMentorPage from './pages/BecomeMentorPage';
 
 function App() {
   return (
@@ -38,17 +40,19 @@ function App() {
           <Route path="explore" element={<ExplorePage />} />
           <Route path="mentor/:mentorId" element={<MentorProfile />} />
           <Route path="mentor/:mentorId/reviews" element={<ReviewsList />} />
-          <Route path="booking/:mentorId" element={<CallBooking />} />
+          <Route path="book/:mentorId" element={<CallBooking />} />
           <Route path="booking-confirmation/:sessionId" element={<BookingConfirmation />} />
           <Route path="payment/:sessionId" element={<PaymentPage />} />
-          <Route path="order-success/:sessionId" element={<OrderSuccess />} />
-          <Route path="payment-failed/:sessionId" element={<PaymentFailed />} />
+          <Route path="order/success" element={<OrderSuccess />} />
+          <Route path="payment/failed" element={<PaymentFailed />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="call-history" element={<CallHistoryPage />} />
           <Route path="session-complete/:sessionId" element={<SessionComplete />} />
           <Route path="review/:mentorId" element={<WriteReview />} />
           <Route path="video/:videoId" element={<VideoDetail />} />
+          <Route path="videos" element={<VideosPage />} />
+          <Route path="become-mentor" element={<BecomeMentorPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="support" element={<SupportPage />} />
         </Route>

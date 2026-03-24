@@ -13,12 +13,14 @@ import {
   useTheme,
 } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
+import { AnimatedPage } from '../components/animations';
 
 const PaymentFailed: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto', textAlign: 'center', py: 4 }}>
       <Paper
         elevation={0}
@@ -84,6 +86,7 @@ const PaymentFailed: React.FC = () => {
         </Button>
       </Paper>
     </Box>
+    </AnimatedPage>
   );
 };
 

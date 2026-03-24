@@ -14,12 +14,14 @@ import {
   useTheme,
 } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
+import { AnimatedPage } from '../components/animations';
 
 const OrderSuccess: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto', textAlign: 'center', py: 4 }}>
       <Paper
         elevation={0}
@@ -106,6 +108,7 @@ const OrderSuccess: React.FC = () => {
         </Box>
       </Paper>
     </Box>
+    </AnimatedPage>
   );
 };
 

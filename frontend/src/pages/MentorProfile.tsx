@@ -9,8 +9,6 @@ import {
   Rating,
   Chip,
   Grid,
-  Card,
-  CardContent,
   Divider,
   useTheme,
 } from '@mui/material';
@@ -23,9 +21,9 @@ import {
   Link as LinkIcon,
   Share,
   PlayArrow,
-  Star,
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
+import { AnimatedPage, FadeIn } from '../components/animations';
 
 const MentorProfile: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();
@@ -42,6 +40,7 @@ const MentorProfile: React.FC = () => {
   };
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Grid container spacing={3}>
         {/* Main Profile Section */}
@@ -58,7 +57,13 @@ const MentorProfile: React.FC = () => {
             {/* Profile Header */}
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 3 }}>
               <Box sx={{ position: 'relative' }}>
-                <Avatar src={mentor.avatar} sx={{ width: 100, height: 100 }} />
+                <Avatar src={mentor.avatar} sx={{
+                    width: 100,
+                    height: 100,
+                    border: `3px solid ${theme.palette.primary.main}30`,
+                    transition: 'all 0.3s ease',
+                    '&:hover': { transform: 'scale(1.08)', borderColor: theme.palette.primary.main },
+                  }} />
                 {mentor.isOnline && (
                   <Box
                     sx={{
@@ -287,6 +292,7 @@ const MentorProfile: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </AnimatedPage>
   );
 };
 

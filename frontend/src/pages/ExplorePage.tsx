@@ -32,6 +32,7 @@ import {
   LibraryBooks,
 } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
+import { AnimatedPage, FadeIn, GrowIn } from '../components/animations';
 
 const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
@@ -41,13 +42,18 @@ const ExplorePage: React.FC = () => {
   const [verifiedOnly, setVerifiedOnly] = useState(true);
 
   return (
+    <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      <FadeIn delay={100}>
       <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>
         Find your next mentor session.
       </Typography>
+      </FadeIn>
+      <FadeIn delay={200}>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
         Explore by topic, rating, or availability.
       </Typography>
+      </FadeIn>
 
       <Grid container spacing={3}>
         {/* Main Content */}
@@ -75,12 +81,13 @@ const ExplorePage: React.FC = () => {
                     minWidth: 220,
                     border: `1px solid ${theme.palette.divider}`,
                     cursor: 'pointer',
-                    '&:hover': { borderColor: theme.palette.primary.main },
+                    transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                    '&:hover': { borderColor: theme.palette.primary.main, transform: 'translateY(-4px)', boxShadow: `0 8px 24px ${theme.palette.primary.main}15` },
                   }}
                   onClick={() => navigate(`/mentor/${m.id}`)}
                 >
                   <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                    <Avatar src={m.avatar} sx={{ width: 56, height: 56, mx: 'auto', mb: 1 }} />
+                    <Avatar src={m.avatar} sx={{ width: 56, height: 56, mx: 'auto', mb: 1, transition: 'transform 0.3s ease', '&:hover': { transform: 'scale(1.08)' } }} />
                     <Typography variant="caption" color="text.secondary">
                       {(m.followers / 1000).toFixed(0)}k Followers
                     </Typography>
@@ -313,7 +320,10 @@ const ExplorePage: React.FC = () => {
                   gap: 1,
                   py: 0.5,
                   cursor: 'pointer',
-                  '&:hover': { color: 'primary.main' },
+                  transition: 'all 0.2s ease',
+                  borderRadius: 1,
+                  px: 1,
+                  '&:hover': { color: 'primary.main', bgcolor: 'primary.main', backgroundColor: theme.palette.primary.main + '08', pl: 1.5 },
                 }}
                 onClick={() => navigate(`/search?q=${encodeURIComponent(topic)}`)}
               >
@@ -325,6 +335,7 @@ const ExplorePage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </AnimatedPage>
   );
 };
 

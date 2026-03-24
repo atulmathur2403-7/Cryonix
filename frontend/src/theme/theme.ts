@@ -7,13 +7,30 @@ const commonComponents: ThemeOptions['components'] = {
         textTransform: 'none',
         borderRadius: 8,
         fontWeight: 600,
+        transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+        '&:hover': {
+          transform: 'translateY(-1px)',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        },
+        '&:active': {
+          transform: 'translateY(0)',
+        },
       },
     },
   },
   MuiCard: {
     styleOverrides: {
       root: {
-        borderRadius: 12,
+        borderRadius: 16,
+        transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+    },
+  },
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+        borderRadius: 16,
+        transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
       },
     },
   },
@@ -21,6 +38,82 @@ const commonComponents: ThemeOptions['components'] = {
     styleOverrides: {
       root: {
         borderRadius: 20,
+        transition: 'all 0.2s ease',
+      },
+      clickable: {
+        '&:hover': {
+          transform: 'scale(1.04)',
+        },
+      },
+    },
+  },
+  MuiIconButton: {
+    styleOverrides: {
+      root: {
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          transform: 'scale(1.1)',
+        },
+      },
+    },
+  },
+  MuiListItemButton: {
+    styleOverrides: {
+      root: {
+        transition: 'all 0.2s ease',
+      },
+    },
+  },
+  MuiDialog: {
+    styleOverrides: {
+      paper: {
+        borderRadius: 20,
+      },
+    },
+  },
+  MuiTextField: {
+    styleOverrides: {
+      root: {
+        '& .MuiOutlinedInput-root': {
+          transition: 'all 0.2s ease',
+          '&.Mui-focused': {
+            boxShadow: '0 0 0 3px rgba(26, 63, 196, 0.12)',
+          },
+        },
+      },
+    },
+  },
+  MuiTab: {
+    styleOverrides: {
+      root: {
+        transition: 'all 0.2s ease',
+        '&:hover': {
+          opacity: 1,
+        },
+      },
+    },
+  },
+  MuiAvatar: {
+    styleOverrides: {
+      root: {
+        transition: 'all 0.3s ease',
+      },
+    },
+  },
+  MuiTableRow: {
+    styleOverrides: {
+      root: {
+        transition: 'background-color 0.2s ease',
+      },
+    },
+  },
+  MuiFab: {
+    styleOverrides: {
+      root: {
+        transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+        '&:hover': {
+          transform: 'scale(1.08)',
+        },
       },
     },
   },

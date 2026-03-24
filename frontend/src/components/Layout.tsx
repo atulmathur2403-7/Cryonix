@@ -16,6 +16,7 @@ import {
   useTheme,
   useMediaQuery,
   Tooltip,
+  Fade,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -31,7 +32,6 @@ import {
   DarkMode,
   LightMode,
   VideoLibrary,
-  Logout,
 } from '@mui/icons-material';
 import { useThemeContext } from '../theme/ThemeContext';
 
@@ -68,6 +68,8 @@ const Layout: React.FC = () => {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            '&:hover': { transform: 'scale(1.05)', letterSpacing: '0.5px' },
           }}
           onClick={() => {
             navigate('/');
@@ -78,32 +80,36 @@ const Layout: React.FC = () => {
         </Typography>
       </Box>
       <List sx={{ px: 1 }}>
-        {menuItems.map((item) => (
-          <ListItemButton
-            key={item.text}
-            onClick={() => {
-              navigate(item.path);
-              setMobileOpen(false);
-            }}
-            selected={location.pathname === item.path}
-            sx={{
-              borderRadius: 2,
-              mb: 0.5,
-              '&.Mui-selected': {
-                bgcolor: theme.palette.primary.main + '15',
-                color: theme.palette.primary.main,
-                '& .MuiListItemIcon-root': {
+        {menuItems.map((item, index) => (
+          <Fade in timeout={300 + index * 60} key={item.text}>
+            <ListItemButton
+              onClick={() => {
+                navigate(item.path);
+                setMobileOpen(false);
+              }}
+              selected={location.pathname === item.path}
+              sx={{
+                borderRadius: 2,
+                mb: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: theme.palette.primary.main + '15',
                   color: theme.palette.primary.main,
+                  '& .MuiListItemIcon-root': {
+                    color: theme.palette.primary.main,
+                  },
+                  borderLeft: `3px solid ${theme.palette.primary.main}`,
                 },
-              },
-              '&:hover': {
-                bgcolor: theme.palette.primary.main + '10',
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItemButton>
+                '&:hover': {
+                  bgcolor: theme.palette.primary.main + '10',
+                  paddingLeft: '20px',
+                },
+                transition: 'all 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </Fade>
         ))}
       </List>
     </Box>
@@ -180,6 +186,11 @@ const Layout: React.FC = () => {
             p: { xs: 2, md: 3 },
             bgcolor: 'background.default',
             overflow: 'auto',
+            animation: 'fadeInMain 0.4s ease-out',
+            '@keyframes fadeInMain': {
+              from: { opacity: 0 },
+              to: { opacity: 1 },
+            },
           }}
         >
           <Outlet />

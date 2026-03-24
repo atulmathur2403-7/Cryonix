@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatedPage } from '../components/animations';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -42,6 +43,7 @@ const AuthPage: React.FC = () => {
   };
 
   return (
+    <AnimatedPage>
     <Box
       sx={{
         maxWidth: 1000,
@@ -226,6 +228,7 @@ const AuthPage: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </AnimatedPage>
   );
 };
 
