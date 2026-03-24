@@ -30,6 +30,7 @@ function App() {
       <Routes>
         {/* Auth page without layout */}
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/login" element={<AuthPage />} />
         {/* Video call without sidebar layout */}
         <Route path="/call/:sessionId" element={<VideoCall />} />
 
