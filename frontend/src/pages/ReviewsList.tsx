@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatedPage, glassSx } from '../components/animations';
+import { AnimatedPage, glassSx, FadeIn, RevealOnScroll, gradientTextSx } from '../components/animations';
 import { useParams } from 'react-router-dom';
 import {
   Box,
@@ -11,7 +11,10 @@ import {
   useTheme,
   Chip,
   Skeleton,
+  Button,
+  IconButton,
 } from '@mui/material';
+import { ThumbUp, Verified } from '@mui/icons-material';
 import { sampleReviews, sampleMentors } from '../data/mockData';
 import { ReviewCardSkeleton } from '../components/Skeletons';
 
@@ -38,8 +41,11 @@ const ReviewsList: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         Reviews for {mentor.name}
+      </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        See what learners have to say about their experience
       </Typography>
 
       {/* Rating Summary */}
@@ -61,7 +67,7 @@ const ReviewsList: React.FC = () => {
         }}
       >
         <Box sx={{ textAlign: 'center', minWidth: 120 }}>
-          <Typography variant="h2" fontWeight={700} color="primary">
+          <Typography variant="h2" fontWeight={700} sx={{ ...gradientTextSx(theme.palette.primary.main, '#7C5CFC') }}>
             {avgRating.toFixed(1)}
           </Typography>
           <Rating value={avgRating} precision={0.1} readOnly size="large" />
@@ -117,15 +123,20 @@ const ReviewsList: React.FC = () => {
           elevation={0}
           sx={{
             p: 3,
-            border: `1px solid ${theme.palette.divider}`,
-            borderRadius: 2,
+            borderRadius: 4,
+            ...glassSx(theme.palette.mode === 'dark'),
             mb: 2,
+            transition: 'all 0.3s ease',
+            '&:hover': { borderColor: theme.palette.primary.main + '30', transform: 'translateY(-2px)' },
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
-            <Avatar sx={{ width: 40, height: 40 }}>{review.learnerName[0]}</Avatar>
+            <Avatar sx={{ width: 44, height: 44, bgcolor: theme.palette.primary.main + '20', color: theme.palette.primary.main, fontWeight: 600 }}>{review.learnerName[0]}</Avatar>
             <Box sx={{ flex: 1 }}>
-              <Typography fontWeight={600}>{review.learnerName}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography fontWeight={600}>{review.learnerName}</Typography>
+                <Verified sx={{ fontSize: 14, color: '#007AFF' }} />
+              </Box>
               <Typography variant="caption" color="text.secondary">
                 {new Date(review.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -136,7 +147,12 @@ const ReviewsList: React.FC = () => {
             </Box>
             <Rating value={review.rating} precision={0.5} readOnly size="small" />
           </Box>
-          <Typography variant="body2">{review.text}</Typography>
+          <Typography variant="body2" sx={{ mb: 2, lineHeight: 1.7 }}>{review.text}</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Button size="small" startIcon={<ThumbUp sx={{ fontSize: 14 }} />} sx={{ textTransform: 'none', fontSize: '0.75rem', color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
+              Helpful ({Math.floor(Math.random() * 20) + 1})
+            </Button>
+          </Box>
         </Paper>
       ))
       )}

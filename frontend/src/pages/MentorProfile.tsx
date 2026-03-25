@@ -21,9 +21,13 @@ import {
   Link as LinkIcon,
   Share,
   PlayArrow,
+  Speed,
+  EmojiEvents,
+  TrendingUp,
+  AccessTime,
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, ProgressRing, AnimatedCounter, glowBorderSx } from '../components/animations';
 import { ProfileHeaderSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
 const MentorProfile: React.FC = () => {
@@ -159,6 +163,32 @@ const MentorProfile: React.FC = () => {
               <Button size="small" startIcon={<Share />} color="primary">
                 Share Profile
               </Button>
+            </Box>
+
+            {/* Skill Proficiency Bars */}
+            <Divider sx={{ my: 2.5 }} />
+            <Typography variant="body1" fontWeight={600} sx={{ mb: 2 }}>Skills</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {[
+                { skill: 'Career Coaching', level: 95 },
+                { skill: 'Resume Review', level: 88 },
+                { skill: 'Interview Prep', level: 92 },
+                { skill: 'System Design', level: 80 },
+              ].map((s) => (
+                <Box key={s.skill}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                    <Typography variant="caption" fontWeight={600}>{s.skill}</Typography>
+                    <Typography variant="caption" color="text.secondary">{s.level}%</Typography>
+                  </Box>
+                  <Box sx={{ height: 6, borderRadius: 3, bgcolor: theme.palette.action.hover, overflow: 'hidden' }}>
+                    <Box sx={{
+                      height: '100%', borderRadius: 3, width: `${s.level}%`,
+                      background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main || '#7C5CFC'})`,
+                      transition: 'width 1.5s cubic-bezier(0.22, 1, 0.36, 1)',
+                    }} />
+                  </Box>
+                </Box>
+              ))}
             </Box>
           </Paper>
           )}
@@ -313,7 +343,88 @@ const MentorProfile: React.FC = () => {
               50% off on Subscription
             </Typography>
           </Paper>
-        </Grid>
+          {/* Response Time & Badges */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              mt: 3,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+              <Speed sx={{ color: theme.palette.success.main }} />
+              <Box>
+                <Typography variant="body2" fontWeight={600}>Avg. Response Time</Typography>
+                <Typography variant="caption" color="text.secondary">Under 5 minutes</Typography>
+              </Box>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ letterSpacing: '0.05em', mb: 1.5, display: 'block' }}>ACHIEVEMENTS</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {[
+                { icon: <EmojiEvents sx={{ fontSize: 16 }} />, label: 'Top Mentor', color: '#FFD700' },
+                { icon: <TrendingUp sx={{ fontSize: 16 }} />, label: 'Rising Star', color: '#34C759' },
+                { icon: <AccessTime sx={{ fontSize: 16 }} />, label: '1000+ Hours', color: '#007AFF' },
+              ].map((badge) => (
+                <Chip
+                  key={badge.label}
+                  icon={badge.icon}
+                  label={badge.label}
+                  size="small"
+                  sx={{
+                    bgcolor: badge.color + '15',
+                    color: badge.color,
+                    fontWeight: 600,
+                    border: `1px solid ${badge.color}30`,
+                    '& .MuiChip-icon': { color: badge.color },
+                  }}
+                />
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Availability Slots */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              mt: 3,
+            }}
+          >
+            <Typography variant="body2" fontWeight={600} sx={{ mb: 2 }}>Next Available Slots</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {[
+                { day: 'Today', time: '4:00 PM - 5:00 PM' },
+                { day: 'Tomorrow', time: '10:00 AM - 11:00 AM' },
+                { day: 'Wed, Jan 15', time: '2:00 PM - 3:00 PM' },
+              ].map((slot) => (
+                <Box
+                  key={slot.day + slot.time}
+                  sx={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    p: 1.5, borderRadius: 2, border: `1px solid ${theme.palette.divider}`,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      borderColor: theme.palette.primary.main + '60',
+                      bgcolor: theme.palette.primary.main + '06',
+                    },
+                  }}
+                  onClick={() => navigate(`/book/${mentor.id}`)}
+                >
+                  <Box>
+                    <Typography variant="caption" fontWeight={600}>{slot.day}</Typography>
+                    <Typography variant="caption" color="text.secondary" display="block">{slot.time}</Typography>
+                  </Box>
+                  <Chip label="Book" size="small" color="primary" clickable sx={{ fontWeight: 600 }} />
+                </Box>
+              ))}
+            </Box>
+          </Paper>        </Grid>
       </Grid>
     </Box>
     </AnimatedPage>

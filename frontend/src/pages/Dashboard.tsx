@@ -15,8 +15,14 @@ import {
   FormControlLabel,
   useTheme,
 } from '@mui/material';
+import {
+  School,
+  Timer,
+  EmojiEvents,
+  LocalFireDepartment,
+} from '@mui/icons-material';
 import { sampleSessions } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, AnimatedCounter, ProgressRing } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
 
 const Dashboard: React.FC = () => {
@@ -72,6 +78,146 @@ const Dashboard: React.FC = () => {
           </Typography>
         </Box>
       </Box>
+      </FadeIn>
+
+      {/* Quick Stats Cards */}
+      <FadeIn delay={150}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2.5, mb: 5 }}>
+        {[
+          { icon: <School sx={{ fontSize: 28 }} />, value: 24, label: 'Sessions', color: '#007AFF', suffix: '' },
+          { icon: <Timer sx={{ fontSize: 28 }} />, value: 36, label: 'Hours Learned', color: '#34C759', suffix: 'h' },
+          { icon: <EmojiEvents sx={{ fontSize: 28 }} />, value: 4.8, label: 'Avg Rating', color: '#FF9500', suffix: '', decimals: 1 },
+          { icon: <LocalFireDepartment sx={{ fontSize: 28 }} />, value: 7, label: 'Day Streak', color: '#FF3B30', suffix: '' },
+        ].map((stat) => (
+          <Paper
+            key={stat.label}
+            elevation={0}
+            sx={{
+              p: 2.5,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+              '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 12px 32px ${stat.color}15` },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{
+                width: 48, height: 48, borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                bgcolor: stat.color + '15', color: stat.color,
+              }}>
+                {stat.icon}
+              </Box>
+              <Box>
+                <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: '-0.03em', lineHeight: 1 }}>
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} decimals={(stat as any).decimals || 0} />
+                </Typography>
+                <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
+      </FadeIn>
+
+      {/* Learning Progress */}
+      <FadeIn delay={175}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
+          mb: 4,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 3,
+          flexWrap: 'wrap',
+        }}
+      >
+        <ProgressRing value={68} size={72} strokeWidth={6} color={theme.palette.primary.main}>
+          <Typography variant="body2" fontWeight={700}>68%</Typography>
+        </ProgressRing>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
+          <Typography variant="body1" fontWeight={600}>Weekly Learning Goal</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            You've completed 3.5 of 5 hours this week. Keep going!
+          </Typography>
+          <Box sx={{ height: 6, borderRadius: 3, bgcolor: theme.palette.action.hover, overflow: 'hidden' }}>
+            <Box sx={{ height: '100%', borderRadius: 3, width: '68%', background: `linear-gradient(90deg, ${theme.palette.primary.main}, #7C5CFC)`, transition: 'width 1.5s cubic-bezier(0.22, 1, 0.36, 1)' }} />
+          </Box>
+        </Box>
+      </Paper>
+      </FadeIn>
+
+      {/* Quick Stats Cards */}
+      <FadeIn delay={150}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 2.5, mb: 5 }}>
+        {[
+          { icon: <School sx={{ fontSize: 28 }} />, value: 24, label: 'Sessions', color: '#007AFF', suffix: '' },
+          { icon: <Timer sx={{ fontSize: 28 }} />, value: 36, label: 'Hours Learned', color: '#34C759', suffix: 'h' },
+          { icon: <EmojiEvents sx={{ fontSize: 28 }} />, value: 4.8, label: 'Avg Rating', color: '#FF9500', suffix: '', decimals: 1 },
+          { icon: <LocalFireDepartment sx={{ fontSize: 28 }} />, value: 7, label: 'Day Streak', color: '#FF3B30', suffix: '' },
+        ].map((stat) => (
+          <Paper
+            key={stat.label}
+            elevation={0}
+            sx={{
+              p: 2.5,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+              '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 12px 32px ${stat.color}15` },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{
+                width: 48, height: 48, borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                bgcolor: stat.color + '15', color: stat.color,
+              }}>
+                {stat.icon}
+              </Box>
+              <Box>
+                <Typography variant="h5" fontWeight={800} sx={{ letterSpacing: '-0.03em', lineHeight: 1 }}>
+                  <AnimatedCounter value={stat.value} suffix={stat.suffix} decimals={(stat as any).decimals || 0} />
+                </Typography>
+                <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+              </Box>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
+      </FadeIn>
+
+      {/* Learning Progress */}
+      <FadeIn delay={175}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: 4,
+          ...glassSx(theme.palette.mode === 'dark'),
+          mb: 4,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 3,
+          flexWrap: 'wrap',
+        }}
+      >
+        <ProgressRing value={68} size={72} strokeWidth={6} color={theme.palette.primary.main}>
+          <Typography variant="body2" fontWeight={700}>68%</Typography>
+        </ProgressRing>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
+          <Typography variant="body1" fontWeight={600}>Weekly Learning Goal</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            You've completed 3.5 of 5 hours this week. Keep going!
+          </Typography>
+          <Box sx={{ height: 6, borderRadius: 3, bgcolor: theme.palette.action.hover, overflow: 'hidden' }}>
+            <Box sx={{ height: '100%', borderRadius: 3, width: '68%', background: `linear-gradient(90deg, ${theme.palette.primary.main}, #7C5CFC)`, transition: 'width 1.5s cubic-bezier(0.22, 1, 0.36, 1)' }} />
+          </Box>
+        </Box>
+      </Paper>
       </FadeIn>
 
       {/* Upcoming Sessions */}

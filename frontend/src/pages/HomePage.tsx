@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Search, LocalFireDepartment } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, gradientTextSx } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, gradientTextSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
 import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';
 
 const HomePage: React.FC = () => {
@@ -41,6 +41,7 @@ const HomePage: React.FC = () => {
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       {/* Hero Section */}
       <Box sx={{ textAlign: 'center', py: { xs: 6, md: 12 }, position: 'relative' }}>
+        <FloatingOrbs />
         <FadeIn delay={100}>
         <Typography
           variant="h2"
@@ -258,6 +259,39 @@ const HomePage: React.FC = () => {
       </Box>
       </RevealOnScroll>
 
+      {/* Social Proof Stats */}
+      <RevealOnScroll delay={50}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+          gap: 3,
+          mb: 8,
+          py: 4,
+          px: 3,
+          borderRadius: 5,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}08, ${theme.palette.secondary.main}06)`,
+          border: `1px solid ${theme.palette.divider}`,
+        }}
+      >
+        {[
+          { value: 15000, suffix: '+', label: 'Active Learners' },
+          { value: 2500, suffix: '+', label: 'Expert Mentors' },
+          { value: 98, suffix: '%', label: 'Satisfaction Rate' },
+          { value: 50000, suffix: '+', label: 'Sessions Completed' },
+        ].map((stat) => (
+          <Box key={stat.label} sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" fontWeight={800} color="primary" sx={{ letterSpacing: '-0.03em' }}>
+              <AnimatedCounter value={stat.value} suffix={stat.suffix} />
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {stat.label}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+      </RevealOnScroll>
+
       {/* Value Propositions */}
       <RevealOnScroll delay={100}>
       <Box
@@ -301,6 +335,44 @@ const HomePage: React.FC = () => {
           </Paper>
           </Grow>
         ))}
+      </Box>
+      </RevealOnScroll>
+
+      {/* Testimonials Marquee */}
+      <RevealOnScroll delay={150}>
+      <Box sx={{ mb: 8 }}>
+        <Typography variant="h5" fontWeight={700} sx={{ mb: 3, letterSpacing: '-0.02em', textAlign: 'center' }}>
+          What Learners Say
+        </Typography>
+        <Marquee speed={40}>
+          {[
+            { text: '"Mentr changed my career trajectory completely!"', author: 'Sarah K.' },
+            { text: '"Got my dream job after just 3 sessions."', author: 'Alex M.' },
+            { text: '"The mentors here are world-class professionals."', author: 'Priya S.' },
+            { text: '"Best investment I made in my personal growth."', author: 'David L.' },
+            { text: '"Instant access to experts — simply amazing."', author: 'Emma R.' },
+            { text: '"The refund guarantee gave me confidence to try."', author: 'James T.' },
+          ].map((t) => (
+            <Paper
+              key={t.author}
+              elevation={0}
+              sx={{
+                p: 3,
+                minWidth: 280,
+                borderRadius: 4,
+                ...glassSx(theme.palette.mode === 'dark'),
+                flexShrink: 0,
+              }}
+            >
+              <Typography variant="body2" sx={{ fontStyle: 'italic', mb: 1, lineHeight: 1.6 }}>
+                {t.text}
+              </Typography>
+              <Typography variant="caption" fontWeight={600} color="primary">
+                — {t.author}
+              </Typography>
+            </Paper>
+          ))}
+        </Marquee>
       </Box>
       </RevealOnScroll>
 

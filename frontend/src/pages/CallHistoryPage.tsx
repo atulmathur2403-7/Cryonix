@@ -13,9 +13,9 @@ import {
   Button,
   useTheme,
 } from '@mui/material';
-import { Download } from '@mui/icons-material';
+import { Download, PhoneInTalk, Payments, AccessTime } from '@mui/icons-material';
 import { sampleCallHistory } from '../data/mockData';
-import { AnimatedPage, glassSx } from '../components/animations';
+import { AnimatedPage, glassSx, FadeIn, AnimatedCounter } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
 
 const CallHistoryPage: React.FC = () => {
@@ -34,6 +34,39 @@ const CallHistoryPage: React.FC = () => {
       <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Call History
       </Typography>
+
+      {/* Summary Stats */}
+      <FadeIn delay={100}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(3, 1fr)' }, gap: 2, mb: 4 }}>
+        {[
+          { icon: <PhoneInTalk sx={{ fontSize: 24 }} />, value: sampleCallHistory.length, label: 'Total Calls', color: '#007AFF' },
+          { icon: <Payments sx={{ fontSize: 24 }} />, value: sampleCallHistory.reduce((s, r) => s + r.payment, 0), label: 'Total Spent', color: '#34C759', prefix: '$' },
+          { icon: <AccessTime sx={{ fontSize: 24 }} />, value: sampleCallHistory.length * 30, label: 'Minutes', color: '#FF9500', suffix: ' min' },
+        ].map((stat) => (
+          <Paper
+            key={stat.label}
+            elevation={0}
+            sx={{
+              p: 2.5, borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              display: 'flex', alignItems: 'center', gap: 2,
+              transition: 'all 0.3s ease',
+              '&:hover': { transform: 'translateY(-3px)', boxShadow: `0 8px 24px ${stat.color}12` },
+            }}
+          >
+            <Box sx={{ width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: stat.color + '15', color: stat.color }}>
+              {stat.icon}
+            </Box>
+            <Box>
+              <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1 }}>
+                <AnimatedCounter value={stat.value} prefix={stat.prefix || ''} suffix={stat.suffix || ''} />
+              </Typography>
+              <Typography variant="caption" color="text.secondary">{stat.label}</Typography>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
+      </FadeIn>
 
       {loading ? (
         <Box sx={{ mb: 3 }}><TableSkeleton rows={5} columns={8} /></Box>

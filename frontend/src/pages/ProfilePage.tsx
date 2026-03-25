@@ -17,9 +17,11 @@ import {
   Bookmark,
   CalendarMonth,
   CheckCircle,
+  Verified,
+  EmojiEvents,
 } from '@mui/icons-material';
 import { currentUser } from '../data/mockData';
-import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx, ProgressRing, gradientTextSx } from '../components/animations';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +40,28 @@ const ProfilePage: React.FC = () => {
       <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         My Profile
       </Typography>
+
+      {/* Profile Completion Banner */}
+      <FadeIn delay={100}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3, borderRadius: 4, mb: 3,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main}10, ${theme.palette.secondary.main || '#7C5CFC'}08)`,
+          border: `1px solid ${theme.palette.primary.main}20`,
+          display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap',
+        }}
+      >
+        <ProgressRing value={75} size={64} strokeWidth={5} color={theme.palette.primary.main}>
+          <Typography variant="body2" fontWeight={700}>75%</Typography>
+        </ProgressRing>
+        <Box sx={{ flex: 1, minWidth: 200 }}>
+          <Typography variant="body1" fontWeight={600}>Profile 75% Complete</Typography>
+          <Typography variant="body2" color="text.secondary">Add a profile photo and verify your email to complete your profile</Typography>
+        </Box>
+        <Chip icon={<EmojiEvents />} label="Member since 2024" size="small" variant="outlined" sx={{ fontWeight: 600 }} />
+      </Paper>
+      </FadeIn>
 
       <Grid container spacing={3}>
         {/* Profile Info */}
@@ -59,13 +83,16 @@ const ProfilePage: React.FC = () => {
                   bgcolor: theme.palette.primary.main + '20',
                   color: theme.palette.primary.main,
                   fontSize: 32,
+                  border: `3px solid ${theme.palette.primary.main}30`,
+                  transition: 'all 0.3s ease',
+                  '&:hover': { transform: 'scale(1.08)', borderColor: theme.palette.primary.main },
                 }}
               >
                 {currentUser.fullName.charAt(0)}
               </Avatar>
               <Box>
                 <Typography variant="h6" fontWeight={600}>
-                  {currentUser.fullName}
+                  {currentUser.fullName} <Verified sx={{ fontSize: 16, color: 'primary.main', verticalAlign: 'middle', ml: 0.5 }} />
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {currentUser.email}

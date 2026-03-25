@@ -30,9 +30,17 @@ import {
   Call,
   PlayArrow,
   LibraryBooks,
+  AutoAwesome,
+  School,
+  Code,
+  Palette,
+  TrendingUp,
+  Psychology,
+  Biotech,
+  Campaign,
 } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
-import { AnimatedPage, FadeIn, GrowIn, RevealOnScroll, glassSx } from '../components/animations';
+import { AnimatedPage, FadeIn, GrowIn, RevealOnScroll, glassSx, glowBorderSx, Marquee } from '../components/animations';
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const ExplorePage: React.FC = () => {
@@ -60,6 +68,43 @@ const ExplorePage: React.FC = () => {
       <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: '1.1rem' }}>
         Explore by topic, rating, or availability.
       </Typography>
+      </FadeIn>
+
+      {/* Category Icon Grid */}
+      <FadeIn delay={300}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(4, 1fr)', md: 'repeat(8, 1fr)' }, gap: 2, mb: 5 }}>
+        {[
+          { icon: <School />, label: 'Education', color: '#007AFF' },
+          { icon: <Code />, label: 'Tech', color: '#34C759' },
+          { icon: <Palette />, label: 'Design', color: '#FF9500' },
+          { icon: <TrendingUp />, label: 'Business', color: '#FF3B30' },
+          { icon: <Psychology />, label: 'Wellness', color: '#AF52DE' },
+          { icon: <Biotech />, label: 'Science', color: '#30B0C7' },
+          { icon: <Campaign />, label: 'Marketing', color: '#FF2D55' },
+          { icon: <AutoAwesome />, label: 'AI / ML', color: '#5856D6' },
+        ].map((cat) => (
+          <Box
+            key={cat.label}
+            onClick={() => navigate(`/search?q=${encodeURIComponent(cat.label)}`)}
+            sx={{
+              textAlign: 'center', cursor: 'pointer', p: 1.5, borderRadius: 3,
+              transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+              '&:hover': { transform: 'translateY(-4px)', bgcolor: cat.color + '10' },
+            }}
+          >
+            <Box sx={{
+              width: 48, height: 48, borderRadius: '50%', mx: 'auto', mb: 1,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              bgcolor: cat.color + '15', color: cat.color,
+              transition: 'all 0.3s ease',
+              '&:hover': { transform: 'scale(1.1)', boxShadow: `0 4px 20px ${cat.color}30` },
+            }}>
+              {cat.icon}
+            </Box>
+            <Typography variant="caption" fontWeight={600} noWrap>{cat.label}</Typography>
+          </Box>
+        ))}
+      </Box>
       </FadeIn>
 
       <Grid container spacing={3}>
@@ -189,6 +234,60 @@ const ExplorePage: React.FC = () => {
             </Box>
             )}
           </Box>
+
+          {/* Recommended for You */}
+          <RevealOnScroll>
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <AutoAwesome sx={{ color: '#AF52DE', fontSize: 20 }} />
+              <Typography variant="h6" fontWeight={600}>
+                Recommended for You
+              </Typography>
+              <Box sx={{
+                ml: 1, px: 1.5, py: 0.25, borderRadius: 2,
+                background: 'linear-gradient(135deg, #AF52DE, #5856D6)',
+                display: 'inline-flex',
+              }}>
+                <Typography variant="caption" sx={{ color: '#fff', fontWeight: 700, fontSize: '0.65rem' }}>AI</Typography>
+              </Box>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
+              {sampleMentors.slice(0, 4).map((m) => (
+                <Card
+                  key={'rec-' + m.id}
+                  elevation={0}
+                  sx={{
+                    minWidth: 260, borderRadius: 4,
+                    ...glassSx(theme.palette.mode === 'dark'),
+                    ...glowBorderSx('#AF52DE'),
+                    cursor: 'pointer',
+                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+                    '&:hover': { transform: 'translateY(-6px) scale(1.02)', boxShadow: '0 16px 40px rgba(175,82,222,0.12)' },
+                  }}
+                  onClick={() => navigate(`/mentor/${m.id}`)}
+                >
+                  <CardContent sx={{ p: 2.5 }}>
+                    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 1.5 }}>
+                      <Avatar src={m.avatar} sx={{ width: 48, height: 48, border: '2px solid #AF52DE30' }} />
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="body2" fontWeight={600} noWrap>{m.name}</Typography>
+                        <Typography variant="caption" color="text.secondary" noWrap>{m.specialty}</Typography>
+                      </Box>
+                      <Rating value={m.rating} precision={0.5} size="small" readOnly />
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {m.about}
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1.5 }}>
+                      <Typography variant="body2" fontWeight={600}>${m.callPrice}/30 min</Typography>
+                      <Chip label="98% Match" size="small" sx={{ bgcolor: '#AF52DE15', color: '#AF52DE', fontWeight: 600 }} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          </Box>
+          </RevealOnScroll>
 
           {/* What Mentors are Saying */}
           <Box sx={{ mb: 4 }}>

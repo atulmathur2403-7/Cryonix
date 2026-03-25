@@ -14,9 +14,9 @@ import {
   Grid,
   useTheme,
 } from '@mui/material';
-import { Call, PlayArrow, People } from '@mui/icons-material';
+import { Call, PlayArrow, People, FilterList, Verified } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
-import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx, RevealOnScroll, glowBorderSx } from '../components/animations';
 import { MentorCardGridSkeleton, VideoCardGridSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const SearchResults: React.FC = () => {
@@ -38,12 +38,29 @@ const SearchResults: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: 800, letterSpacing: '-0.03em' }}>
+      <Typography variant="h4" sx={{ mb: 1, fontWeight: 800, letterSpacing: '-0.03em' }}>
         Here are the experts on{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>
           "{query}"
         </Box>
       </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <Chip
+          label={`${sampleMentors.length} experts found`}
+          size="small"
+          color="primary"
+          variant="outlined"
+          sx={{ fontWeight: 600 }}
+        />
+        <Chip
+          icon={<FilterList sx={{ fontSize: '16px !important' }} />}
+          label="Filters"
+          size="small"
+          variant="outlined"
+          clickable
+          sx={{ fontWeight: 600 }}
+        />
+      </Box>
 
       <Tabs
         value={activeTab}
@@ -71,13 +88,14 @@ const SearchResults: React.FC = () => {
                 <Card
                   elevation={0}
                   sx={{
-                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 4,
+                    ...glassSx(theme.palette.mode === 'dark'),
                     cursor: 'pointer',
-                    transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
-                      borderColor: theme.palette.primary.main,
+                      borderColor: theme.palette.primary.main + '40',
                       transform: 'translateY(-6px)',
-                      boxShadow: `0 12px 32px ${theme.palette.primary.main}15`,
+                      boxShadow: `0 16px 40px ${theme.palette.primary.main}15`,
                     },
                   }}
                   onClick={() => navigate(`/mentor/${mentor.id}`)}
@@ -107,7 +125,7 @@ const SearchResults: React.FC = () => {
                       Followers
                     </Typography>
                     <Typography variant="h6" fontWeight={600}>
-                      {mentor.name}
+                      {mentor.name} {mentor.isVerified && <Verified sx={{ fontSize: 16, color: 'primary.main', verticalAlign: 'middle', ml: 0.5 }} />}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                       {mentor.specialty}

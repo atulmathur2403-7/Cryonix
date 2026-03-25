@@ -26,9 +26,11 @@ import {
   MoreVert,
   ArrowBack,
   Settings,
+  DoneAll,
+  SearchOutlined,
 } from '@mui/icons-material';
 import { sampleConversations } from '../data/mockData';
-import { AnimatedPage } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { ConversationSkeleton, MessageBubbleSkeleton } from '../components/Skeletons';
 
 const MessagesPage: React.FC = () => {
@@ -88,6 +90,18 @@ const MessagesPage: React.FC = () => {
               </Typography>
             </Box>
             <Settings fontSize="small" sx={{ cursor: 'pointer', color: 'text.secondary' }} />
+          </Box>
+
+          <Box sx={{ px: 2, py: 1, borderBottom: `1px solid ${theme.palette.divider}` }}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search conversations..."
+              InputProps={{
+                startAdornment: <SearchOutlined sx={{ mr: 1, fontSize: 18, color: 'text.secondary' }} />,
+                sx: { borderRadius: 3, fontSize: '0.85rem' },
+              }}
+            />
           </Box>
 
           {/* Message Requests */}
@@ -185,8 +199,22 @@ const MessagesPage: React.FC = () => {
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <Avatar src={selectedConv.participantAvatar} sx={{ width: 36, height: 36 }} />
-                  <Typography fontWeight={600}>{selectedConv.participantName}</Typography>
+                  <Box sx={{ position: 'relative' }}>
+                    <Avatar src={selectedConv.participantAvatar} sx={{ width: 36, height: 36 }} />
+                    {selectedConv.isOnline && (
+                      <Box sx={{
+                        position: 'absolute', bottom: 0, right: 0,
+                        width: 10, height: 10, bgcolor: '#4CAF50', borderRadius: '50%',
+                        border: `2px solid ${theme.palette.background.paper}`,
+                      }} />
+                    )}
+                  </Box>
+                  <Box>
+                    <Typography fontWeight={600} sx={{ lineHeight: 1.2 }}>{selectedConv.participantName}</Typography>
+                    <Typography variant="caption" sx={{ color: selectedConv.isOnline ? '#4CAF50' : 'text.secondary' }}>
+                      {selectedConv.isOnline ? 'Online' : 'Last seen 2h ago'}
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box>
                   <IconButton size="small">
@@ -206,7 +234,8 @@ const MessagesPage: React.FC = () => {
                 {loading ? (
                   Array.from({ length: 4 }).map((_, i) => <MessageBubbleSkeleton key={i} sent={i % 2 === 1} />)
                 ) : (
-                chatMessages.map((msg) => (
+                <>
+                {chatMessages.map((msg) => (
                   <Box
                     key={msg.id}
                     sx={{
@@ -220,34 +249,56 @@ const MessagesPage: React.FC = () => {
                         p: 1.5,
                         px: 2,
                         maxWidth: '70%',
-                        borderRadius: 2,
+                        borderRadius: msg.type === 'sent' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                         bgcolor:
                           msg.type === 'sent'
                             ? theme.palette.primary.main
-                            : theme.palette.background.paper,
+                            : theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : theme.palette.background.paper,
                         color: msg.type === 'sent' ? 'white' : 'text.primary',
                         border: msg.type === 'received' ? `1px solid ${theme.palette.divider}` : 'none',
+                        transition: 'all 0.2s ease',
+                        '&:hover': { transform: 'scale(1.01)' },
                       }}
                     >
                       <Typography variant="body2">{msg.content}</Typography>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          display: 'block',
-                          textAlign: 'right',
-                          mt: 0.5,
-                          opacity: 0.7,
-                        }}
-                      >
-                        {msg.time}
-                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 0.5, mt: 0.5 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{ opacity: 0.7 }}
+                        >
+                          {msg.time}
+                        </Typography>
+                        {msg.type === 'sent' && (
+                          <DoneAll sx={{ fontSize: 14, opacity: 0.7, color: msg.type === 'sent' ? '#fff' : 'primary.main' }} />
+                        )}
+                      </Box>
                     </Paper>
                   </Box>
-                ))
-                )}
-              </Box>
+                ))}
 
-              {/* Chat Input */}
+                {/* Typing indicator */}
+                <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                  <Box sx={{ display: 'flex', gap: 0.5, p: 1.5, px: 2, borderRadius: '16px 16px 16px 4px', bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : theme.palette.background.paper, border: `1px solid ${theme.palette.divider}` }}>
+                    {[0, 1, 2].map((i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          width: 7, height: 7, borderRadius: '50%', bgcolor: 'text.secondary',
+                          animation: 'typingDot 1.4s ease-in-out infinite',
+                          animationDelay: `${i * 0.2}s`,
+                          '@keyframes typingDot': {
+                            '0%, 60%, 100%': { opacity: 0.3, transform: 'scale(0.8)' },
+                            '30%': { opacity: 1, transform: 'scale(1)' },
+                          },
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+                </>
+                )}
+
+              </Box>
               <Box
                 sx={{
                   p: 1.5,

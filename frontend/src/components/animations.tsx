@@ -257,3 +257,209 @@ export const GrowIn: React.FC<GrowInProps> = ({ children, delay = 0 }) => {
     </Grow>
   );
 };
+
+// ─── Animated counter (counts from 0 to target) ────
+interface AnimatedCounterProps {
+  value: number;
+  duration?: number;
+  suffix?: string;
+  prefix?: string;
+  decimals?: number;
+}
+
+export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
+  value,
+  duration = 2000,
+  suffix = '',
+  prefix = '',
+  decimals = 0,
+}) => {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting && !started) { setStarted(true); observer.unobserve(el); } },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [started]);
+
+  useEffect(() => {
+    if (!started) return;
+    const startTime = Date.now();
+    const tick = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(eased * value);
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [started, value, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}{decimals > 0 ? count.toFixed(decimals) : Math.round(count)}{suffix}
+    </span>
+  );
+};
+
+// ─── Floating gradient orbs (decorative background) ────
+interface FloatingOrbsProps {
+  count?: number;
+  colors?: string[];
+}
+
+export const FloatingOrbs: React.FC<FloatingOrbsProps> = ({
+  count = 3,
+  colors = ['#1a3fc4', '#7C5CFC', '#34C759'],
+}) => (
+  <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+    {Array.from({ length: count }).map((_, i) => (
+      <Box
+        key={i}
+        sx={{
+          position: 'absolute',
+          width: { xs: 200, md: 300 + i * 80 },
+          height: { xs: 200, md: 300 + i * 80 },
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${colors[i % colors.length]}20, transparent 70%)`,
+          top: `${15 + i * 25}%`,
+          left: `${10 + i * 30}%`,
+          animation: `orbFloat${i} ${8 + i * 4}s ease-in-out infinite`,
+          [`@keyframes orbFloat${i}`]: {
+            '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+            '33%': { transform: `translate(${30 - i * 20}px, ${-20 + i * 15}px) scale(1.05)` },
+            '66%': { transform: `translate(${-20 + i * 10}px, ${15 - i * 10}px) scale(0.95)` },
+          },
+        }}
+      />
+    ))}
+  </Box>
+);
+
+// ─── Progress ring (circular progress) ────
+interface ProgressRingProps {
+  value: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  children?: React.ReactNode;
+}
+
+export const ProgressRing: React.FC<ProgressRingProps> = ({
+  value,
+  size = 80,
+  strokeWidth = 6,
+  color = '#1a3fc4',
+  children,
+}) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (value / 100) * circumference;
+
+  return (
+    <Box sx={{ position: 'relative', width: size, height: size, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="currentColor" strokeWidth={strokeWidth} opacity={0.1} />
+        <circle
+          cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color} strokeWidth={strokeWidth}
+          strokeDasharray={circumference} strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1)' }}
+        />
+      </svg>
+      {children && (
+        <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {children}
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+// ─── Marquee — auto-scrolling horizontal content ────
+interface MarqueeProps {
+  children: React.ReactNode;
+  speed?: number;
+  pauseOnHover?: boolean;
+}
+
+export const Marquee: React.FC<MarqueeProps> = ({ children, speed = 30, pauseOnHover = true }) => (
+  <Box sx={{
+    overflow: 'hidden', width: '100%', position: 'relative',
+    '&:hover .marquee-track': pauseOnHover ? { animationPlayState: 'paused' } : {},
+  }}>
+    <Box
+      className="marquee-track"
+      sx={{
+        display: 'flex', gap: 3, width: 'max-content',
+        animation: `marquee ${speed}s linear infinite`,
+        '@keyframes marquee': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
+      }}
+    >
+      {children}
+      {children}
+    </Box>
+  </Box>
+);
+
+// ─── Glow border effect ────
+export const glowBorderSx = (color: string = '#1a3fc4') => ({
+  position: 'relative' as const,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    inset: -1,
+    borderRadius: 'inherit',
+    padding: '1px',
+    background: `linear-gradient(135deg, ${color}40, transparent 50%, ${color}20)`,
+    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+    WebkitMaskComposite: 'xor',
+    maskComposite: 'exclude',
+    pointerEvents: 'none',
+  },
+});
+
+// ─── Typewriter text effect ────
+interface TypewriterProps {
+  text: string;
+  speed?: number;
+  delay?: number;
+}
+
+export const Typewriter: React.FC<TypewriterProps> = ({ text, speed = 50, delay = 0 }) => {
+  const [displayed, setDisplayed] = useState('');
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [started, text, speed]);
+
+  return (
+    <span>
+      {displayed}
+      <span style={{ opacity: started && displayed.length < text.length ? 1 : 0, animation: 'blink 1s step-end infinite' }}>|</span>
+    </span>
+  );
+};
