@@ -10,7 +10,7 @@ import {
   Button,
   useTheme,
 } from '@mui/material';
-import { Upload } from '@mui/icons-material';
+import { Upload, ArrowBack } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
 
 const WriteReview: React.FC = () => {
@@ -28,6 +28,7 @@ const WriteReview: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto' }}>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Share Review for{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>

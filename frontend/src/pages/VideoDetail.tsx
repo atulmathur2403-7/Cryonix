@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatedPage, glassSx } from '../components/animations';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -19,12 +19,14 @@ import {
   Share,
   BookmarkBorder,
   Send,
+  ArrowBack,
 } from '@mui/icons-material';
 import { sampleVideos, sampleMentors } from '../data/mockData';
 import { VideoPlayerSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
 const VideoDetail: React.FC = () => {
   const { videoId } = useParams<{ videoId: string }>();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const video = sampleVideos.find((v) => v.id === videoId) || sampleVideos[0];
@@ -41,6 +43,8 @@ const VideoDetail: React.FC = () => {
 
   return (
     <AnimatedPage>
+    <Box>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 1, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
     <Box sx={{ display: 'flex', gap: 3, flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
       {/* Main Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -250,6 +254,7 @@ const VideoDetail: React.FC = () => {
         ))
         )}
       </Box>
+    </Box>
     </Box>
     </AnimatedPage>
   );

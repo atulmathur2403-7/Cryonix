@@ -18,7 +18,7 @@ import {
   InputLabel,
   useTheme,
 } from '@mui/material';
-import { Videocam } from '@mui/icons-material';
+import { Videocam, ArrowBack } from '@mui/icons-material';
 import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 
 const PaymentPage: React.FC = () => {
@@ -45,6 +45,7 @@ const PaymentPage: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         You are just one step away from your live call with{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>

@@ -20,12 +20,15 @@ import {
   Verified,
   EmojiEvents,
 } from '@mui/icons-material';
-import { currentUser } from '../data/mockData';
+import { currentUser as defaultUser } from '../data/mockData';
+import { useUser } from '../context/UserContext';
 import { AnimatedPage, FadeIn, glassSx, ProgressRing, gradientTextSx } from '../components/animations';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { user } = useUser();
+  const currentUser = { ...defaultUser, ...user };
 
   const quickActions = [
     { icon: <Edit />, label: 'Edit Profile', path: '/profile' },

@@ -12,7 +12,8 @@ import {
   Fade,
   Grow,
 } from '@mui/material';
-import { Visibility, VisibilityOff, Google, Facebook, Apple, ArrowForward } from '@mui/icons-material';
+import { Visibility, VisibilityOff, Google, Facebook, Apple, ArrowForward, ArrowBack } from '@mui/icons-material';
+import { useUser } from '../context/UserContext';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,11 +24,20 @@ const AuthPage: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [signUpData, setSignUpData] = useState({ fullName: '', username: '', password: '', email: '', phone: '' });
   const [signInData, setSignInData] = useState({ username: '', password: '' });
+  const { login, signup } = useUser();
 
   useEffect(() => { setMounted(true); }, []);
 
-  const handleSignUp = (e: React.FormEvent) => { e.preventDefault(); navigate('/dashboard'); };
-  const handleSignIn = (e: React.FormEvent) => { e.preventDefault(); navigate('/dashboard'); };
+  const handleSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    signup(signUpData);
+    navigate('/dashboard');
+  };
+  const handleSignIn = (e: React.FormEvent) => {
+    e.preventDefault();
+    login(signInData.username, signInData.password);
+    navigate('/dashboard');
+  };
 
   return (
     <Box
@@ -61,6 +71,23 @@ const AuthPage: React.FC = () => {
 
       <Fade in={mounted} timeout={800}>
         <Box sx={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 480, mx: 'auto', px: 3 }}>
+          {/* Back to Home */}
+          <Fade in={mounted} timeout={400}>
+            <Button
+              startIcon={<ArrowBack />}
+              onClick={() => navigate('/')}
+              sx={{
+                mb: 3,
+                color: 'text.secondary',
+                fontWeight: 600,
+                borderRadius: 3,
+                px: 2,
+                '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+              }}
+            >
+              Back to Home
+            </Button>
+          </Fade>
           {/* Logo */}
           <Grow in={mounted} timeout={600}>
             <Box sx={{ textAlign: 'center', mb: 5 }}>

@@ -25,6 +25,7 @@ import {
   EmojiEvents,
   TrendingUp,
   AccessTime,
+  ArrowBack,
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, ProgressRing, AnimatedCounter, glowBorderSx } from '../components/animations';
@@ -54,6 +55,7 @@ const MentorProfile: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Grid container spacing={3}>
         {/* Main Profile Section */}
         <Grid size={{ xs: 12, md: 8 }}>

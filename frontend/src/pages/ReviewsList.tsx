@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatedPage, glassSx, FadeIn, RevealOnScroll, gradientTextSx } from '../components/animations';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -14,12 +14,13 @@ import {
   Button,
   IconButton,
 } from '@mui/material';
-import { ThumbUp, Verified } from '@mui/icons-material';
+import { ThumbUp, Verified, ArrowBack } from '@mui/icons-material';
 import { sampleReviews, sampleMentors } from '../data/mockData';
 import { ReviewCardSkeleton } from '../components/Skeletons';
 
 const ReviewsList: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
@@ -41,6 +42,7 @@ const ReviewsList: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         Reviews for {mentor.name}
       </Typography>

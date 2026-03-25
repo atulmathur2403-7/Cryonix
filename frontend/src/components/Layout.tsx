@@ -18,6 +18,8 @@ import {
   Tooltip,
   Fade,
   Divider,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -39,6 +41,7 @@ import {
   Logout,
 } from '@mui/icons-material';
 import { useThemeContext } from '../theme/ThemeContext';
+import { useUser } from '../context/UserContext';
 
 const drawerWidth = 260;
 const collapsedWidth = 88;
@@ -58,7 +61,9 @@ const menuItems = [
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { mode, toggleTheme } = useThemeContext();
+  const { user, isLoggedIn, logout } = useUser();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
@@ -270,12 +275,70 @@ const Layout: React.FC = () => {
               </Badge>
             </IconButton>
 
-            <IconButton onClick={() => navigate('/profile')}>
+            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
               <Avatar
-                src="https://i.pravatar.cc/150?img=68"
-                sx={{ width: 32, height: 32 }}
-              />
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: theme.palette.primary.main,
+                  fontSize: 14,
+                  fontWeight: 700,
+                }}
+              >
+                {user.fullName.charAt(0).toUpperCase()}
+              </Avatar>
             </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={() => setAnchorEl(null)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    mt: 1,
+                    minWidth: 200,
+                    borderRadius: 3,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                    border: `1px solid ${theme.palette.divider}`,
+                  },
+                },
+              }}
+            >
+              <Box sx={{ px: 2, py: 1.5, borderBottom: `1px solid ${theme.palette.divider}` }}>
+                <Typography variant="body2" fontWeight={700}>{user.fullName}</Typography>
+                <Typography variant="caption" color="text.secondary">{user.email}</Typography>
+              </Box>
+              <MenuItem
+                onClick={() => { setAnchorEl(null); navigate('/profile'); }}
+                sx={{ py: 1.2, fontSize: '0.9rem' }}
+              >
+                <Person sx={{ mr: 1.5, fontSize: 20 }} /> My Profile
+              </MenuItem>
+              <MenuItem
+                onClick={() => { setAnchorEl(null); navigate('/dashboard'); }}
+                sx={{ py: 1.2, fontSize: '0.9rem' }}
+              >
+                <Dashboard sx={{ mr: 1.5, fontSize: 20 }} /> Dashboard
+              </MenuItem>
+              <Divider />
+              {isLoggedIn ? (
+                <MenuItem
+                  onClick={() => { setAnchorEl(null); logout(); navigate('/'); }}
+                  sx={{ py: 1.2, fontSize: '0.9rem', color: 'error.main' }}
+                >
+                  <Logout sx={{ mr: 1.5, fontSize: 20 }} /> Sign Out
+                </MenuItem>
+              ) : (
+                <MenuItem
+                  onClick={() => { setAnchorEl(null); navigate('/auth'); }}
+                  sx={{ py: 1.2, fontSize: '0.9rem', color: 'primary.main' }}
+                >
+                  <Login sx={{ mr: 1.5, fontSize: 20 }} /> Sign In
+                </MenuItem>
+              )}
+            </Menu>
           </Toolbar>
         </AppBar>
 

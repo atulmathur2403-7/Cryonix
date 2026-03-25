@@ -13,7 +13,7 @@ import {
   DialogActions,
   useTheme,
 } from '@mui/material';
-import { Sensors, CalendarMonth } from '@mui/icons-material';
+import { Sensors, CalendarMonth, ArrowBack } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
 import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
 
@@ -45,6 +45,7 @@ const CallBooking: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 700, mx: 'auto' }}>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" sx={{ mb: 1, fontWeight: 800, letterSpacing: '-0.03em' }}>
         <Box component="span" sx={{ color: 'primary.main' }}>
           Call

@@ -14,7 +14,7 @@ import {
   Grid,
   useTheme,
 } from '@mui/material';
-import { Call, PlayArrow, People, FilterList, Verified } from '@mui/icons-material';
+import { Call, PlayArrow, People, FilterList, Verified, ArrowBack } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
 import { AnimatedPage, FadeIn, glassSx, RevealOnScroll, glowBorderSx } from '../components/animations';
 import { MentorCardGridSkeleton, VideoCardGridSkeleton, ChipSkeleton } from '../components/Skeletons';
@@ -38,6 +38,7 @@ const SearchResults: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" sx={{ mb: 1, fontWeight: 800, letterSpacing: '-0.03em' }}>
         Here are the experts on{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './context/UserContext';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import SearchResults from './pages/SearchResults';
@@ -26,6 +27,7 @@ import BecomeMentorPage from './pages/BecomeMentorPage';
 
 function App() {
   return (
+    <UserProvider>
     <BrowserRouter>
       <Routes>
         {/* Auth page without layout */}
@@ -59,6 +61,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </UserProvider>
   );
 }
 
