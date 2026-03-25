@@ -92,7 +92,7 @@ const HomePage: React.FC = () => {
                   px: 1,
                   fontSize: '0.9rem',
                   cursor: 'pointer',
-                  border: `1px solid ${theme.palette.primary.main}40`,
+                  border: `1px solid ${theme.palette.divider}`,
                   '&:hover': {
                     bgcolor: theme.palette.primary.main + '15',
                     borderColor: theme.palette.primary.main,
@@ -201,7 +201,7 @@ const HomePage: React.FC = () => {
                 ...glassSx(theme.palette.mode === 'dark'),
                 transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
                 '&:hover': {
-                  borderColor: theme.palette.primary.main + '40',
+                  borderColor: theme.palette.primary.main + '60',
                   transform: 'translateY(-8px) scale(1.02)',
                   boxShadow: `0 20px 48px ${theme.palette.primary.main}15`,
                 },
@@ -319,7 +319,7 @@ const HomePage: React.FC = () => {
               '&:hover': {
                 transform: 'translateY(-6px) scale(1.02)',
                 boxShadow: '0 16px 48px rgba(0,0,0,0.08)',
-                borderColor: theme.palette.primary.main + '30',
+                borderColor: theme.palette.primary.main + '50',
               },
             }}
           >

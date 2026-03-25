@@ -51,7 +51,7 @@ const ProfilePage: React.FC = () => {
         sx={{
           p: 3, borderRadius: 4, mb: 3,
           background: `linear-gradient(135deg, ${theme.palette.primary.main}10, ${theme.palette.secondary.main || '#7C5CFC'}08)`,
-          border: `1px solid ${theme.palette.primary.main}20`,
+          border: `1px solid ${theme.palette.divider}`,
           display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap',
         }}
       >

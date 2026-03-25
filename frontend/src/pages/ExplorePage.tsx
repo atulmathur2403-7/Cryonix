@@ -140,7 +140,7 @@ const ExplorePage: React.FC = () => {
                     ...glassSx(theme.palette.mode === 'dark'),
                     cursor: 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-                    '&:hover': { borderColor: theme.palette.primary.main + '40', transform: 'translateY(-6px) scale(1.02)', boxShadow: `0 16px 40px ${theme.palette.primary.main}12` },
+                    '&:hover': { borderColor: theme.palette.primary.main + '60', transform: 'translateY(-6px) scale(1.02)', boxShadow: `0 16px 40px ${theme.palette.primary.main}12` },
                   }}
                   onClick={() => navigate(`/mentor/${m.id}`)}
                 >
@@ -200,7 +200,7 @@ const ExplorePage: React.FC = () => {
                     ...glassSx(theme.palette.mode === 'dark'),
                     cursor: 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-                    '&:hover': { borderColor: theme.palette.primary.main + '40', transform: 'translateY(-6px)', boxShadow: `0 12px 32px ${theme.palette.primary.main}12` },
+                    '&:hover': { borderColor: theme.palette.primary.main + '60', transform: 'translateY(-6px)', boxShadow: `0 12px 32px ${theme.palette.primary.main}12` },
                   }}
                   onClick={() => navigate(`/mentor/${m.id}`)}
                 >
@@ -268,7 +268,7 @@ const ExplorePage: React.FC = () => {
                 >
                   <CardContent sx={{ p: 2.5 }}>
                     <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 1.5 }}>
-                      <Avatar src={m.avatar} sx={{ width: 48, height: 48, border: '2px solid #AF52DE30' }} />
+                      <Avatar src={m.avatar} sx={{ width: 48, height: 48, border: `2px solid ${theme.palette.secondary.main}30` }} />
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography variant="body2" fontWeight={600} noWrap>{m.name}</Typography>
                         <Typography variant="caption" color="text.secondary" noWrap>{m.specialty}</Typography>

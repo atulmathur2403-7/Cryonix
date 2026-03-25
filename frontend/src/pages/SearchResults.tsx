@@ -94,7 +94,7 @@ const SearchResults: React.FC = () => {
                     cursor: 'pointer',
                     transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
                     '&:hover': {
-                      borderColor: theme.palette.primary.main + '40',
+                      borderColor: theme.palette.primary.main + '60',
                       transform: 'translateY(-6px)',
                       boxShadow: `0 16px 40px ${theme.palette.primary.main}15`,
                     },

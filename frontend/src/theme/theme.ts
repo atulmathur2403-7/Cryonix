@@ -59,6 +59,7 @@ const commonComponents: ThemeOptions['components'] = {
       root: {
         borderRadius: 20,
         transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+        border: '1px solid rgba(0,0,0,0.06)',
       },
     },
   },
@@ -306,6 +307,15 @@ export const darkTheme = createTheme({
           backdropFilter: 'saturate(180%) blur(20px)',
           WebkitBackdropFilter: 'saturate(180%) blur(20px)',
           borderRight: '1px solid rgba(255,255,255,0.08)',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 20,
+          transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
+          border: '1px solid rgba(255,255,255,0.08)',
         },
       },
     },

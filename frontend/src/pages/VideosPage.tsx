@@ -102,7 +102,7 @@ const VideosPage: React.FC = () => {
                   minWidth: 240, borderRadius: 3, overflow: 'hidden', cursor: 'pointer', flexShrink: 0,
                   ...glassSx(theme.palette.mode === 'dark'),
                   transition: 'all 0.3s ease',
-                  '&:hover': { borderColor: theme.palette.primary.main + '40' },
+                  '&:hover': { borderColor: theme.palette.primary.main + '60' },
                 }}
               >
                 <Box sx={{ height: 100, bgcolor: '#111', position: 'relative', backgroundImage: `url(${v.thumbnailUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>

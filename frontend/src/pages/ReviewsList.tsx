@@ -14,7 +14,7 @@ import {
   Button,
   IconButton,
 } from '@mui/material';
-import { ThumbUp, Verified, ArrowBack } from '@mui/icons-material';
+import { ThumbUp, Verified, ArrowBack, RateReview } from '@mui/icons-material';
 import { sampleReviews, sampleMentors } from '../data/mockData';
 import { ReviewCardSkeleton } from '../components/Skeletons';
 
@@ -43,12 +43,24 @@ const ReviewsList: React.FC = () => {
     <AnimatedPage>
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
       <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
-      <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
-        Reviews for {mentor.name}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-        See what learners have to say about their experience
-      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+        <Box>
+          <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
+            Reviews for {mentor.name}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            See what learners have to say about their experience
+          </Typography>
+        </Box>
+        <Button
+          variant="contained"
+          startIcon={<RateReview />}
+          onClick={() => navigate(`/review/${mentor.id}`)}
+          sx={{ borderRadius: 3, fontWeight: 700, px: 3, py: 1.2, whiteSpace: 'nowrap' }}
+        >
+          Write a Review
+        </Button>
+      </Box>
 
       {/* Rating Summary */}
       {loading ? (
@@ -129,7 +141,7 @@ const ReviewsList: React.FC = () => {
             ...glassSx(theme.palette.mode === 'dark'),
             mb: 2,
             transition: 'all 0.3s ease',
-            '&:hover': { borderColor: theme.palette.primary.main + '30', transform: 'translateY(-2px)' },
+            '&:hover': { borderColor: theme.palette.primary.main + '40', transform: 'translateY(-2px)' },
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>

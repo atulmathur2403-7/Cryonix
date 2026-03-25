@@ -330,7 +330,7 @@ const MentorProfile: React.FC = () => {
             elevation={0}
             sx={{
               p: 3,
-              border: `1px solid ${theme.palette.primary.main}20`,
+              border: `1px solid ${theme.palette.divider}`,
               borderRadius: 4,
               background: `linear-gradient(135deg, ${theme.palette.primary.main}08, ${theme.palette.secondary.main}06)`,
             }}
@@ -379,7 +379,7 @@ const MentorProfile: React.FC = () => {
                     bgcolor: badge.color + '15',
                     color: badge.color,
                     fontWeight: 600,
-                    border: `1px solid ${badge.color}30`,
+                    border: `1px solid ${badge.color}40`,
                     '& .MuiChip-icon': { color: badge.color },
                   }}
                 />

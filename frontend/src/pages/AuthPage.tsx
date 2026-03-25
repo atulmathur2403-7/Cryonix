@@ -119,7 +119,7 @@ const AuthPage: React.FC = () => {
                 background: isDark ? 'rgba(28,28,30,0.6)' : 'rgba(255,255,255,0.72)',
                 backdropFilter: 'saturate(180%) blur(24px)',
                 WebkitBackdropFilter: 'saturate(180%) blur(24px)',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
                 boxShadow: isDark
                   ? '0 24px 80px rgba(0,0,0,0.5)'
                   : '0 24px 80px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1)',

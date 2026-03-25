@@ -60,7 +60,7 @@ const MessagesPage: React.FC = () => {
         sx={{
           p: 1.5,
           mb: 2,
-          border: `1px solid ${theme.palette.primary.main}15`,
+          border: `1px solid ${theme.palette.divider}`,
           background: `linear-gradient(135deg, ${theme.palette.primary.main}06, ${theme.palette.secondary.main}04)`,
           borderRadius: 3,
         }}

@@ -149,7 +149,7 @@ export const glassSx = (isDark: boolean = false) => ({
   background: isDark ? 'rgba(28,28,30,0.6)' : 'rgba(255,255,255,0.6)',
   backdropFilter: 'saturate(180%) blur(20px)',
   WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-  border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`,
+  border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
 });
 
 // ─── Scale-on-hover for buttons/icons ────
