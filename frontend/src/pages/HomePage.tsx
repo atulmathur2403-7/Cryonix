@@ -17,6 +17,7 @@ import {
 import { Search, LocalFireDepartment } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, gradientTextSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
+import GradientText from '../components/GradientText';
 import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';
 
 const HomePage: React.FC = () => {
@@ -54,21 +55,15 @@ const HomePage: React.FC = () => {
           }}
         >
           Talk with Experts in{' '}
-          <Box
-            component="span"
-            sx={{
-              ...gradientTextSx(theme.palette.primary.main, theme.palette.secondary.main),
-              backgroundSize: '200% 200%',
-              animation: 'gradientShift 4s ease infinite',
-              '@keyframes gradientShift': {
-                '0%': { backgroundPosition: '0% 50%' },
-                '50%': { backgroundPosition: '100% 50%' },
-                '100%': { backgroundPosition: '0% 50%' },
-              },
-            }}
+          <GradientText
+            className="inline"
+            colors={['#1a3fc4', '#7C5CFC', '#c084fc', '#FF9FFC']}
+            animationSpeed={5}
+            pauseOnHover
+            style={{ fontSize: 'inherit', fontWeight: 'inherit', letterSpacing: 'inherit', lineHeight: 'inherit' }}
           >
             Seconds.
-          </Box>
+          </GradientText>
         </Typography>
         </FadeIn>
         <FadeIn delay={200}>
@@ -157,9 +152,13 @@ const HomePage: React.FC = () => {
       <RevealOnScroll>
       <Box sx={{ mb: 8 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <Typography variant="h5" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+          <GradientText
+            colors={['#1a3fc4', '#7C5CFC', '#c084fc']}
+            animationSpeed={9}
+            style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}
+          >
             Trending Mentors
-          </Typography>
+          </GradientText>
           <LocalFireDepartment sx={{
             color: '#E8854A',
             animation: 'flicker 1.5s ease-in-out infinite',
@@ -341,9 +340,15 @@ const HomePage: React.FC = () => {
       {/* Testimonials Marquee */}
       <RevealOnScroll delay={150}>
       <Box sx={{ mb: 8 }}>
-        <Typography variant="h5" fontWeight={700} sx={{ mb: 3, letterSpacing: '-0.02em', textAlign: 'center' }}>
-          What Learners Say
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <GradientText
+            colors={['#1a3fc4', '#7C5CFC', '#c084fc']}
+            animationSpeed={9}
+            style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}
+          >
+            What Learners Say
+          </GradientText>
+        </Box>
         <Marquee speed={40}>
           {[
             { text: '"Mentr changed my career trajectory completely!"', author: 'Sarah K.' },
