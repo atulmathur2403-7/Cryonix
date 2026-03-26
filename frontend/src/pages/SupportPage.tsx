@@ -48,7 +48,7 @@ const SupportPage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1300, mx: 'auto' }}>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 2, letterSpacing: '-0.03em' }}>
         Get Support
       </Typography>

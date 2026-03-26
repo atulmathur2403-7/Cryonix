@@ -669,7 +669,8 @@ const Layout: React.FC = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, md: 4 },
+          px: { xs: 2, sm: 3, md: 5, lg: 6 },
+          py: { xs: 2, md: 3 },
           bgcolor: 'background.default',
           overflow: 'auto',
           animation: 'fadeInMain 0.5s ease-out',

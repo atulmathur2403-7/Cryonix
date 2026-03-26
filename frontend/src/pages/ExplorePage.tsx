@@ -63,7 +63,7 @@ const ExplorePage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       <FadeIn delay={100}>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         Find your next mentor session.

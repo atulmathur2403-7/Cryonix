@@ -51,7 +51,7 @@ const BecomeMentorPage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 700, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 860, mx: 'auto' }}>
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <School sx={{ fontSize: 56, color: 'primary.main', mb: 1 }} />
         <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>

@@ -44,7 +44,7 @@ const PaymentPage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1300, mx: 'auto' }}>
       <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         You are just one step away from your live call with{' '}

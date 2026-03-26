@@ -53,7 +53,7 @@ const VideoCall: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       {/* Call Info Bar */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="body1">

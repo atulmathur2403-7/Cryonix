@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       {/* Hero Section */}
       <Box sx={{ textAlign: 'center', py: { xs: 6, md: 12 }, position: 'relative' }}>
         <FloatingOrbs />

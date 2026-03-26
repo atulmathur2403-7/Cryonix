@@ -39,7 +39,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1060, mx: 'auto' }}>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         My Profile
       </Typography>

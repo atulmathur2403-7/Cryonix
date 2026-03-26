@@ -20,7 +20,7 @@ const BookingConfirmation: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 900, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1060, mx: 'auto' }}>
       <Button startIcon={<ArrowBack />} onClick={() => navigate('/dashboard')} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back to Dashboard</Button>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Booking Confirmed Successfully!

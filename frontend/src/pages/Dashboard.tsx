@@ -41,7 +41,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1100, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1300, mx: 'auto' }}>
       {/* Header */}
       <FadeIn delay={100}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', mb: 5 }}>

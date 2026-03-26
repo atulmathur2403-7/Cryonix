@@ -37,7 +37,7 @@ const SearchResults: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 2, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
       <Typography variant="h4" sx={{ mb: 1, fontWeight: 800, letterSpacing: '-0.03em' }}>
         Here are the experts on{' '}

@@ -52,7 +52,7 @@ const MessagesPage: React.FC = () => {
 
   return (
     <AnimatedPage>
-    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       {/* Info Banner */}
       <Paper
         elevation={0}
