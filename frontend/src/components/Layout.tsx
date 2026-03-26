@@ -151,24 +151,31 @@ const Layout: React.FC = () => {
   const location = useLocation();
 
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
   const isDark = mode === 'dark';
 
-  const openDropdown = useCallback((key: string) => {
+  const cancelAllTimers = useCallback(() => {
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
-    if (activeDropdown !== key) {
-      setActiveDropdown(key);
+    if (cleanupTimerRef.current) {
+      clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = null;
     }
+  }, []);
+
+  const openDropdown = useCallback((key: string) => {
+    cancelAllTimers();
+    setActiveDropdown(key);
     setDropdownVisible(true);
-  }, [activeDropdown]);
+  }, [cancelAllTimers]);
 
   const closeDropdown = useCallback(() => {
     setDropdownVisible(false);
-    setTimeout(() => setActiveDropdown(null), 450);
+    cleanupTimerRef.current = setTimeout(() => setActiveDropdown(null), 450);
   }, []);
 
   const scheduleClose = useCallback(() => {
@@ -178,15 +185,13 @@ const Layout: React.FC = () => {
   }, [closeDropdown]);
 
   const cancelClose = useCallback(() => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-  }, []);
+    cancelAllTimers();
+  }, [cancelAllTimers]);
 
   useEffect(() => {
     return () => {
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      if (cleanupTimerRef.current) clearTimeout(cleanupTimerRef.current);
     };
   }, []);
 
@@ -512,7 +517,7 @@ const Layout: React.FC = () => {
         <>
           {/* Backdrop overlay with blur */}
           <Box
-            onClick={() => { setDropdownVisible(false); setTimeout(() => setActiveDropdown(null), 400); }}
+            onClick={closeDropdown}
             sx={{
               position: 'fixed',
               top: NAV_HEIGHT,
