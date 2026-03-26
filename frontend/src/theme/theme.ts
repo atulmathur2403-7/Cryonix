@@ -45,7 +45,7 @@ const commonComponents: ThemeOptions['components'] = {
   MuiCard: {
     styleOverrides: {
       root: {
-        borderRadius: 20,
+        borderRadius: 14,
         transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -57,7 +57,7 @@ const commonComponents: ThemeOptions['components'] = {
   MuiPaper: {
     styleOverrides: {
       root: {
-        borderRadius: 20,
+        borderRadius: 14,
         transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
         border: '1px solid rgba(0,0,0,0.06)',
       },
@@ -66,7 +66,7 @@ const commonComponents: ThemeOptions['components'] = {
   MuiChip: {
     styleOverrides: {
       root: {
-        borderRadius: 24,
+        borderRadius: 16,
         fontWeight: 500,
         letterSpacing: '-0.01em',
         transition: 'all 0.25s ease',
@@ -98,7 +98,7 @@ const commonComponents: ThemeOptions['components'] = {
   MuiDialog: {
     styleOverrides: {
       paper: {
-        borderRadius: 24,
+        borderRadius: 16,
       },
     },
   },
@@ -106,7 +106,7 @@ const commonComponents: ThemeOptions['components'] = {
     styleOverrides: {
       root: {
         '& .MuiOutlinedInput-root': {
-          borderRadius: 14,
+          borderRadius: 10,
           transition: 'all 0.25s ease',
           '&.Mui-focused': {
             boxShadow: '0 0 0 4px rgba(26, 63, 196, 0.1)',
@@ -209,7 +209,7 @@ export const lightTheme = createTheme({
     body2: { letterSpacing: '-0.01em', lineHeight: 1.5 },
     button: { letterSpacing: '-0.01em' },
   },
-  shape: { borderRadius: 16 },
+  shape: { borderRadius: 4 },
   components: {
     ...commonComponents,
     MuiAppBar: {
@@ -285,7 +285,7 @@ export const darkTheme = createTheme({
     body2: { letterSpacing: '-0.01em', lineHeight: 1.5 },
     button: { letterSpacing: '-0.01em' },
   },
-  shape: { borderRadius: 16 },
+  shape: { borderRadius: 4 },
   components: {
     ...commonComponents,
     MuiAppBar: {
@@ -313,7 +313,7 @@ export const darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 20,
+          borderRadius: 14,
           transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
           border: '1px solid rgba(255,255,255,0.08)',
         },
