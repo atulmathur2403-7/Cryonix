@@ -95,6 +95,11 @@ const navItems: NavItem[] = [
   },
   { text: 'Messages', icon: <Chat />, path: '/messages' },
   {
+    text: 'Shorts',
+    icon: <PlayCircleOutline />,
+    path: '/shorts',
+  },
+  {
     text: 'Videos',
     icon: <VideoLibrary />,
     path: '/videos',
@@ -133,6 +138,7 @@ const mobileMenuItems = [
   { text: 'Messages', icon: <Chat />, path: '/messages' },
   { text: 'Call History', icon: <History />, path: '/call-history' },
   { text: 'Videos', icon: <VideoLibrary />, path: '/videos' },
+  { text: 'Shorts', icon: <PlayCircleOutline />, path: '/shorts' },
   { text: 'My Profile', icon: <Person />, path: '/profile' },
   { text: 'Get Support', icon: <HelpOutline />, path: '/support' },
   { text: 'Become a Mentor', icon: <School />, path: '/become-mentor' },

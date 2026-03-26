@@ -24,6 +24,7 @@ import VideoDetail from './pages/VideoDetail';
 import ReviewsList from './pages/ReviewsList';
 import VideosPage from './pages/VideosPage';
 import BecomeMentorPage from './pages/BecomeMentorPage';
+import ShortsPage from './pages/ShortsPage';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           <Route path="review/:mentorId" element={<WriteReview />} />
           <Route path="video/:videoId" element={<VideoDetail />} />
           <Route path="videos" element={<VideosPage />} />
+          <Route path="shorts" element={<ShortsPage />} />
           <Route path="become-mentor" element={<BecomeMentorPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="support" element={<SupportPage />} />
