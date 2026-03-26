@@ -43,21 +43,25 @@
     calc((var(--pointer-from-left) * 10px) - 3px)
     calc((var(--pointer-from-top) * 20px) - 6px)
     20px -5px;
-  transition: transform 1s ease;
+  transition: transform 1s ease, box-shadow 0.4s ease, border-color 0.4s ease;
   transform: translateZ(0) rotateX(0deg) rotateY(0deg);
   background: rgba(0, 0, 0, 0.9);
   backface-visibility: hidden;
   overflow: hidden;
+  border: 1.5px solid transparent;
 }
 
 .pc-card:hover,
 .pc-card.active {
   transition: none;
   transform: translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x));
-  box-shadow: rgba(0, 0, 0, 0.6)
-    calc((var(--pointer-from-left) * 8px) - 2px)
-    calc((var(--pointer-from-top) * 16px) - 4px)
-    20px -4px;
+  border-color: var(--behind-glow-color);
+  box-shadow:
+    rgba(0, 0, 0, 0.6)
+      calc((var(--pointer-from-left) * 8px) - 2px)
+      calc((var(--pointer-from-top) * 16px) - 4px)
+      20px -4px,
+    0 0 18px var(--behind-glow-color);
 }
 
 .pc-card-shell.entering .pc-card {
