@@ -122,11 +122,14 @@ export interface Video {
   description: string;
   thumbnailUrl: string;
   videoUrl: string;
+  youtubeId: string;
+  duration: string;
   likes: number;
   viewCount: number;
   isLive: boolean;
   liveViewerCount: number;
   createdAt: string;
+  category: string;
 }
 
 export interface Comment {

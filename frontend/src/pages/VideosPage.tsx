@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -9,66 +9,93 @@ import {
   IconButton,
   useTheme,
 } from '@mui/material';
-import { PlayArrow, ThumbUp, Visibility } from '@mui/icons-material';
+import { PlayArrow, ThumbUp, Visibility, AccessTime } from '@mui/icons-material';
 import { sampleVideos } from '../data/mockData';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
 import { VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
-import { FiberManualRecord } from '@mui/icons-material';
+
+const formatViews = (count: number) => {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${Math.round(count / 1_000)}K`;
+  return count.toString();
+};
 
 const VideosPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(sampleVideos.map((v) => v.category)))],
+    [],
+  );
+
+  const filteredVideos = useMemo(
+    () =>
+      activeCategory === 'All'
+        ? sampleVideos
+        : sampleVideos.filter((v) => v.category === activeCategory),
+    [activeCategory],
+  );
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(t);
   }, []);
 
+  const featured = filteredVideos[0];
+
   return (
     <AnimatedPage>
-    <Box>
+    <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
         Videos
       </Typography>
 
       {/* Featured Hero Video */}
-      {!loading && sampleVideos.length > 0 && (
+      {!loading && featured && (
         <FadeIn delay={100}>
         <Paper
           elevation={0}
-          onClick={() => navigate(`/video/${sampleVideos[0].id}`)}
+          onClick={() => navigate(`/video/${featured.id}`)}
           sx={{
             borderRadius: 5,
             overflow: 'hidden',
             mb: 4,
             cursor: 'pointer',
-            height: { xs: 200, md: 320 },
-            backgroundImage: `url(${sampleVideos[0].thumbnailUrl})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            height: { xs: 220, md: 360 },
             ...glowBorderSx(theme.palette.primary.main),
             transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-            '&:hover': { transform: 'scale(1.01)', boxShadow: `0 20px 60px ${theme.palette.primary.main}20` },
+            '&:hover': { transform: 'scale(1.005)', boxShadow: `0 20px 60px ${theme.palette.primary.main}20` },
             '&:hover .play-btn': { transform: 'scale(1.15)' },
           }}
         >
-          <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.85))', display: 'flex', alignItems: 'flex-end', p: { xs: 2.5, md: 4 } }}>
+          <Box
+            component="img"
+            src={`https://img.youtube.com/vi/${featured.youtubeId}/maxresdefault.jpg`}
+            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+              e.currentTarget.src = `https://img.youtube.com/vi/${featured.youtubeId}/hqdefault.jpg`;
+            }}
+            sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+          <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.88))', display: 'flex', alignItems: 'flex-end', p: { xs: 2.5, md: 4 } }}>
             <Box sx={{ flex: 1 }}>
-              {sampleVideos[0].isLive && (
-                <Chip
-                  icon={<FiberManualRecord sx={{ fontSize: '10px !important' }} />}
-                  label="LIVE NOW"
-                  size="small"
-                  color="error"
-                  sx={{ mb: 1.5, fontWeight: 700, animation: 'pulse 2s ease-in-out infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.7 } } }}
-                />
-              )}
+              <Chip
+                label={featured.category}
+                size="small"
+                sx={{
+                  mb: 1.5,
+                  fontWeight: 700,
+                  bgcolor: featured.category === 'Sports' ? '#34c759' : theme.palette.primary.main,
+                  color: '#fff',
+                }}
+              />
               <Typography variant="h5" fontWeight={700} sx={{ color: '#fff', mb: 0.5 }}>
-                {sampleVideos[0].title}
+                {featured.title}
               </Typography>
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                {sampleVideos[0].mentorName} • {sampleVideos[0].viewCount.toLocaleString()} views
+                {featured.mentorName} &bull; {formatViews(featured.viewCount)} views &bull; {featured.duration}
               </Typography>
             </Box>
             <IconButton
@@ -87,51 +114,29 @@ const VideosPage: React.FC = () => {
         </FadeIn>
       )}
 
-      {/* Continue Watching */}
-      {!loading && (
-        <RevealOnScroll>
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, letterSpacing: '-0.01em' }}>Continue Watching</Typography>
-          <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
-            {sampleVideos.slice(0, 4).map((v, i) => (
-              <Paper
-                key={'cw-' + v.id}
-                elevation={0}
-                onClick={() => navigate(`/video/${v.id}`)}
-                sx={{
-                  minWidth: 240, borderRadius: 3, overflow: 'hidden', cursor: 'pointer', flexShrink: 0,
-                  ...glassSx(theme.palette.mode === 'dark'),
-                  transition: 'all 0.3s ease',
-                  '&:hover': { borderColor: theme.palette.primary.main + '60' },
-                }}
-              >
-                <Box sx={{ height: 100, bgcolor: '#111', position: 'relative', backgroundImage: `url(${v.thumbnailUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                  <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, bgcolor: theme.palette.action.hover }}>
-                    <Box sx={{ height: '100%', width: `${30 + i * 20}%`, bgcolor: theme.palette.primary.main, borderRadius: 2 }} />
-                  </Box>
-                </Box>
-                <Box sx={{ p: 1.5 }}>
-                  <Typography variant="caption" fontWeight={600} noWrap>{v.title}</Typography>
-                  <Typography variant="caption" color="text.secondary" display="block" noWrap>{v.mentorName}</Typography>
-                </Box>
-              </Paper>
-            ))}
-          </Box>
-        </Box>
-        </RevealOnScroll>
-      )}
-
       {/* Categories */}
       <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
-        {loading ? <ChipSkeleton count={6} /> : ['All', 'UX Design', 'Product Management', 'Data Science', 'React', 'Startups'].map((cat, i) => (
-          <Chip
-            key={cat}
-            label={cat}
-            color={i === 0 ? 'primary' : 'default'}
-            variant={i === 0 ? 'filled' : 'outlined'}
-            clickable
-          />
-        ))}
+        {loading ? (
+          <ChipSkeleton count={6} />
+        ) : (
+          categories.map((cat) => (
+            <Chip
+              key={cat}
+              label={cat}
+              color={activeCategory === cat ? 'primary' : 'default'}
+              variant={activeCategory === cat ? 'filled' : 'outlined'}
+              clickable
+              onClick={() => setActiveCategory(cat)}
+              sx={{
+                fontWeight: 600,
+                transition: 'all 0.25s ease',
+                ...(activeCategory === cat && {
+                  boxShadow: `0 4px 12px ${theme.palette.primary.main}40`,
+                }),
+              }}
+            />
+          ))
+        )}
       </Box>
 
       {/* Video Grid */}
@@ -153,7 +158,7 @@ const VideosPage: React.FC = () => {
           gap: 3,
         }}
       >
-        {sampleVideos.map((video) => (
+        {filteredVideos.map((video) => (
           <Paper
             key={video.id}
             elevation={0}
@@ -165,50 +170,82 @@ const VideosPage: React.FC = () => {
               transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
               '&:hover': {
                 transform: 'translateY(-6px) scale(1.02)',
-                boxShadow: '0 16px 48px rgba(0,0,0,0.1)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.12)',
               },
+              '&:hover .thumb-overlay': { opacity: 1 },
             }}
             onClick={() => navigate(`/video/${video.id}`)}
           >
             {/* Thumbnail */}
-            <Box
-              sx={{
-                width: '100%',
-                aspectRatio: '16/9',
-                bgcolor: '#111',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative',
-              }}
-            >
-              <IconButton
+            <Box sx={{ position: 'relative', width: '100%', aspectRatio: '16/9', bgcolor: '#111', overflow: 'hidden' }}>
+              <Box
+                component="img"
+                src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  e.currentTarget.src = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
+                }}
+                sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+              {/* Hover play overlay */}
+              <Box
+                className="thumb-overlay"
                 sx={{
-                  bgcolor: 'rgba(255,255,255,0.9)',
-                  '&:hover': { bgcolor: '#fff' },
+                  position: 'absolute',
+                  inset: 0,
+                  bgcolor: 'rgba(0,0,0,0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: 0,
+                  transition: 'opacity 0.3s ease',
                 }}
               >
-                <PlayArrow color="primary" />
-              </IconButton>
-              {video.isLive && (
-                <Chip
-                  label={`LIVE • ${video.liveViewerCount} watching`}
-                  size="small"
-                  color="error"
-                  sx={{
-                    position: 'absolute',
-                    top: 8,
-                    left: 8,
-                    fontWeight: 600,
-                  }}
-                />
-              )}
+                <IconButton sx={{ bgcolor: 'rgba(255,255,255,0.95)', '&:hover': { bgcolor: '#fff' } }}>
+                  <PlayArrow color="primary" sx={{ fontSize: 32 }} />
+                </IconButton>
+              </Box>
+              {/* Duration badge */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 8,
+                  right: 8,
+                  bgcolor: 'rgba(0,0,0,0.8)',
+                  color: '#fff',
+                  px: 1,
+                  py: 0.25,
+                  borderRadius: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                }}
+              >
+                <AccessTime sx={{ fontSize: 12 }} />
+                <Typography variant="caption" fontWeight={600} sx={{ fontSize: '0.7rem' }}>
+                  {video.duration}
+                </Typography>
+              </Box>
+              {/* Category badge */}
+              <Chip
+                label={video.category}
+                size="small"
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  fontWeight: 700,
+                  fontSize: '0.65rem',
+                  height: 22,
+                  bgcolor: video.category === 'Sports' ? '#34c759' : theme.palette.primary.main,
+                  color: '#fff',
+                }}
+              />
             </Box>
 
             {/* Info */}
             <Box sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', gap: 1.5, mb: 1 }}>
-                <Avatar sx={{ width: 36, height: 36 }}>{video.mentorName[0]}</Avatar>
+                <Avatar src={video.mentorAvatar} sx={{ width: 36, height: 36 }}>{video.mentorName[0]}</Avatar>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography
                     variant="body2"
@@ -216,7 +253,11 @@ const VideosPage: React.FC = () => {
                     sx={{
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      lineHeight: 1.3,
+                      minHeight: '2.6em',
                     }}
                   >
                     {video.title}
@@ -230,13 +271,13 @@ const VideosPage: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <Visibility sx={{ fontSize: 14, color: 'text.secondary' }} />
                   <Typography variant="caption" color="text.secondary">
-                    {video.viewCount.toLocaleString()}
+                    {formatViews(video.viewCount)}
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <ThumbUp sx={{ fontSize: 14, color: 'text.secondary' }} />
                   <Typography variant="caption" color="text.secondary">
-                    {video.likes.toLocaleString()}
+                    {formatViews(video.likes)}
                   </Typography>
                 </Box>
               </Box>
