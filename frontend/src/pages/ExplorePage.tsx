@@ -43,13 +43,13 @@ import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
+import ProfileCard from '../components/ProfileCard/ProfileCard';
 
 const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [priceRange, setPriceRange] = useState<number[]>([0, 100]);
   const [loading, setLoading] = useState(true);
-  const trendingGridRef = useRef<HTMLDivElement>(null);
   const onlineGridRef = useRef<HTMLDivElement>(null);
   const categoryGridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
@@ -143,8 +143,14 @@ const ExplorePage: React.FC = () => {
                 <LocalFireDepartment sx={{ color: '#E8854A' }} />
               </Box>
               <Box>
-                <IconButton size="small"><ArrowBack fontSize="small" /></IconButton>
-                <IconButton size="small"><ArrowForward fontSize="small" /></IconButton>
+                <IconButton size="small" onClick={() => {
+                  const el = document.getElementById('trending-scroll');
+                  if (el) el.scrollBy({ left: -280, behavior: 'smooth' });
+                }}><ArrowBack fontSize="small" /></IconButton>
+                <IconButton size="small" onClick={() => {
+                  const el = document.getElementById('trending-scroll');
+                  if (el) el.scrollBy({ left: 280, behavior: 'smooth' });
+                }}><ArrowForward fontSize="small" /></IconButton>
               </Box>
             </Box>
             {loading ? (
@@ -152,55 +158,70 @@ const ExplorePage: React.FC = () => {
                 {Array.from({ length: 5 }).map((_, i) => <MentorCardSkeleton key={i} />)}
               </Box>
             ) : (
-              <div className="mentor-bento-section">
-                <GlobalSpotlight gridRef={trendingGridRef} disableAnimations={isMobile} glowColor="124, 92, 252" />
-                <div className="mentor-bento-grid" ref={trendingGridRef}>
-                  {sampleMentors.slice(0, 6).map((m, idx) => (
-                    <ParticleCard
+              <Box
+                id="trending-scroll"
+                sx={{
+                  display: 'flex',
+                  gap: 2.5,
+                  overflowX: 'auto',
+                  pb: 2,
+                  scrollSnapType: 'x mandatory',
+                  '&::-webkit-scrollbar': { height: 6 },
+                  '&::-webkit-scrollbar-thumb': { bgcolor: theme.palette.divider, borderRadius: 3 },
+                }}
+              >
+                {sampleMentors.slice(0, 8).map((m) => {
+                  const glowColors = [
+                    'rgba(124, 92, 252, 0.67)',
+                    'rgba(52, 199, 89, 0.67)',
+                    'rgba(255, 149, 0, 0.67)',
+                    'rgba(255, 59, 48, 0.67)',
+                    'rgba(175, 82, 222, 0.67)',
+                    'rgba(0, 122, 255, 0.67)',
+                    'rgba(88, 86, 214, 0.67)',
+                    'rgba(255, 45, 85, 0.67)',
+                  ];
+                  const gradients = [
+                    'linear-gradient(145deg, #3a1c71cc 0%, #7C5CFCaa 100%)',
+                    'linear-gradient(145deg, #1a3a2acc 0%, #34C759aa 100%)',
+                    'linear-gradient(145deg, #4a2c0acc 0%, #FF9500aa 100%)',
+                    'linear-gradient(145deg, #4a0a0acc 0%, #FF3B30aa 100%)',
+                    'linear-gradient(145deg, #2a1a3fcc 0%, #AF52DEaa 100%)',
+                    'linear-gradient(145deg, #0a1a3fcc 0%, #007AFFaa 100%)',
+                    'linear-gradient(145deg, #1a1a3fcc 0%, #5856D6aa 100%)',
+                    'linear-gradient(145deg, #3a0a1acc 0%, #FF2D55aa 100%)',
+                  ];
+                  const idx = sampleMentors.indexOf(m);
+                  return (
+                    <Box
                       key={m.id}
-                      className="mentor-bento-card mentor-bento-card--border-glow"
-                      style={{
-                        background: theme.palette.mode === 'dark'
-                          ? 'rgba(255,255,255,0.04)'
-                          : 'rgba(255,255,255,0.85)',
-                        border: `1px solid ${theme.palette.divider}`,
-                        backdropFilter: 'blur(12px)',
-                        WebkitBackdropFilter: 'blur(12px)',
+                      sx={{
+                        flexShrink: 0,
+                        scrollSnapAlign: 'start',
+                        cursor: 'pointer',
+                        width: 260,
                       }}
-                      glowColor="124, 92, 252"
-                      enableMagnetism
-                      clickEffect
-                      disableAnimations={isMobile}
                       onClick={() => navigate(`/mentor/${m.id}`)}
                     >
-                      {m.isLive && <div className="mentor-bento-live">LIVE</div>}
-                      <Box sx={{ position: 'relative', display: 'inline-block', mb: 1 }}>
-                        <Avatar src={m.avatar} sx={{ width: idx === 2 ? 72 : 56, height: idx === 2 ? 72 : 56, mx: 'auto', border: `2px solid ${theme.palette.primary.main}40` }} />
-                        {m.isOnline && (
-                          <div className="mentor-bento-online" style={{ borderColor: theme.palette.background.paper }} />
-                        )}
-                      </Box>
-                      <Typography variant="caption" color="text.secondary">
-                        {(m.followers / 1000).toFixed(0)}k Followers
-                      </Typography>
-                      <Typography variant="body2" fontWeight={700} noWrap sx={{ mb: 0.25 }}>{m.name}</Typography>
-                      <Typography variant="caption" color="text.secondary" display="block" noWrap sx={{ mb: 0.5 }}>{m.specialty}</Typography>
-                      <Rating value={m.rating} precision={0.5} size="small" readOnly sx={{ mb: 0.5 }} />
-                      <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>${m.callPrice}/30 min</Typography>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        startIcon={<Call />}
-                        fullWidth
-                        sx={{ borderRadius: 3, fontWeight: 600 }}
-                        onClick={(e) => { e.stopPropagation(); navigate(`/book/${m.id}`); }}
-                      >
-                        Call
-                      </Button>
-                    </ParticleCard>
-                  ))}
-                </div>
-              </div>
+                      <ProfileCard
+                        avatarUrl={m.avatar}
+                        name={m.name}
+                        title={m.specialty}
+                        handle={m.username || m.name.toLowerCase().replace(/\s+/g, '')}
+                        status={m.isOnline ? 'Online' : 'Offline'}
+                        showUserInfo
+                        contactText="Book Call"
+                        behindGlowColor={glowColors[idx % glowColors.length]}
+                        innerGradient={gradients[idx % gradients.length]}
+                        className="pc-small"
+                        onContactClick={() => {
+                          navigate(`/book/${m.id}`);
+                        }}
+                      />
+                    </Box>
+                  );
+                })}
+              </Box>
             )}
           </Box>
 
