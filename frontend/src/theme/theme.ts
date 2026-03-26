@@ -59,7 +59,7 @@ const commonComponents: ThemeOptions['components'] = {
       root: {
         borderRadius: 14,
         transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-        border: '1px solid rgba(0,0,0,0.06)',
+        border: '1px solid rgba(0,0,0,0.12)',
       },
     },
   },
@@ -195,7 +195,7 @@ export const lightTheme = createTheme({
     info: {
       main: '#007AFF',
     },
-    divider: 'rgba(0,0,0,0.06)',
+    divider: 'rgba(0,0,0,0.12)',
   },
   typography: {
     fontFamily: '"SF Pro Display", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -220,7 +220,7 @@ export const lightTheme = createTheme({
           WebkitBackdropFilter: 'saturate(180%) blur(20px)',
           color: '#1d1d1f',
           boxShadow: 'none',
-          borderBottom: '1px solid rgba(0,0,0,0.06)',
+          borderBottom: '1px solid rgba(0,0,0,0.12)',
         },
       },
     },
@@ -230,7 +230,7 @@ export const lightTheme = createTheme({
           backgroundColor: 'rgba(255,255,255,0.8)',
           backdropFilter: 'saturate(180%) blur(20px)',
           WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-          borderRight: '1px solid rgba(0,0,0,0.06)',
+          borderRight: '1px solid rgba(0,0,0,0.12)',
         },
       },
     },
@@ -271,7 +271,7 @@ export const darkTheme = createTheme({
     info: {
       main: '#0A84FF',
     },
-    divider: 'rgba(255,255,255,0.08)',
+    divider: 'rgba(255,255,255,0.15)',
   },
   typography: {
     fontFamily: '"SF Pro Display", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -296,7 +296,7 @@ export const darkTheme = createTheme({
           WebkitBackdropFilter: 'saturate(180%) blur(20px)',
           color: '#f5f5f7',
           boxShadow: 'none',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          borderBottom: '1px solid rgba(255,255,255,0.15)',
         },
       },
     },
@@ -306,7 +306,7 @@ export const darkTheme = createTheme({
           backgroundColor: 'rgba(28,28,30,0.8)',
           backdropFilter: 'saturate(180%) blur(20px)',
           WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-          borderRight: '1px solid rgba(255,255,255,0.08)',
+          borderRight: '1px solid rgba(255,255,255,0.15)',
         },
       },
     },
@@ -315,7 +315,7 @@ export const darkTheme = createTheme({
         root: {
           borderRadius: 14,
           transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: '1px solid rgba(255,255,255,0.15)',
         },
       },
     },
