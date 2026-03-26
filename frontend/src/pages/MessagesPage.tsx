@@ -13,7 +13,6 @@ import {
   ListItemText,
   useTheme,
   Chip,
-  Skeleton,
 } from '@mui/material';
 import {
   Send,
@@ -30,7 +29,7 @@ import {
   SearchOutlined,
 } from '@mui/icons-material';
 import { sampleConversations } from '../data/mockData';
-import { AnimatedPage, glassSx } from '../components/animations';
+import { AnimatedPage } from '../components/animations';
 import { ConversationSkeleton, MessageBubbleSkeleton } from '../components/Skeletons';
 
 const MessagesPage: React.FC = () => {

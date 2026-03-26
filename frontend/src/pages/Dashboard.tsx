@@ -22,7 +22,7 @@ import {
   LocalFireDepartment,
 } from '@mui/icons-material';
 import { sampleSessions } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, AnimatedCounter, ProgressRing } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx, AnimatedCounter, ProgressRing } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
 
 const Dashboard: React.FC = () => {

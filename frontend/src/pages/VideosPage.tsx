@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { PlayArrow, ThumbUp, Visibility } from '@mui/icons-material';
 import { sampleVideos } from '../data/mockData';
-import { AnimatedPage, FadeIn, GrowIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
 import { VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 import { FiberManualRecord } from '@mui/icons-material';
 

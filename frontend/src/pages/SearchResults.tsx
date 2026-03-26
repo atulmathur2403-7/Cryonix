@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import { Call, PlayArrow, People, FilterList, Verified, ArrowBack } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
-import { AnimatedPage, FadeIn, glassSx, RevealOnScroll, glowBorderSx } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { MentorCardGridSkeleton, VideoCardGridSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const SearchResults: React.FC = () => {

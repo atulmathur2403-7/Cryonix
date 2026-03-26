@@ -40,7 +40,7 @@ import {
   Campaign,
 } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
-import { AnimatedPage, FadeIn, GrowIn, RevealOnScroll, glassSx, glowBorderSx, Marquee } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
 

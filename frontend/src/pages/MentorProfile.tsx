@@ -28,7 +28,7 @@ import {
   ArrowBack,
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, ProgressRing, AnimatedCounter, glowBorderSx } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { ProfileHeaderSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
 const MentorProfile: React.FC = () => {

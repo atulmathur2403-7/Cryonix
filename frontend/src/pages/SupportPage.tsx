@@ -28,7 +28,7 @@ import {
   HelpOutline,
 } from '@mui/icons-material';
 import { sampleFaqs } from '../data/mockData';
-import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const SupportPage: React.FC = () => {
   const theme = useTheme();

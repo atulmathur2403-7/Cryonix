@@ -9,14 +9,12 @@ import {
   Avatar,
   Button,
   Paper,
-  Fade,
   Grow,
-  Skeleton,
   useTheme,
 } from '@mui/material';
 import { Search, LocalFireDepartment } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, gradientTextSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
+import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
 import GradientText from '../components/GradientText';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
 import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';

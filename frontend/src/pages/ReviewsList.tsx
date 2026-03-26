@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AnimatedPage, glassSx, FadeIn, RevealOnScroll, gradientTextSx } from '../components/animations';
+import { AnimatedPage, glassSx, gradientTextSx } from '../components/animations';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -12,7 +12,6 @@ import {
   Chip,
   Skeleton,
   Button,
-  IconButton,
 } from '@mui/material';
 import { ThumbUp, Verified, ArrowBack, RateReview } from '@mui/icons-material';
 import { sampleReviews, sampleMentors } from '../data/mockData';

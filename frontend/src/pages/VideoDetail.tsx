@@ -22,7 +22,7 @@ import {
   ArrowBack,
 } from '@mui/icons-material';
 import { sampleVideos, sampleMentors } from '../data/mockData';
-import { VideoPlayerSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
+import { VideoPlayerSkeleton } from '../components/Skeletons';
 
 const VideoDetail: React.FC = () => {
   const { videoId } = useParams<{ videoId: string }>();

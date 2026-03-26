@@ -9,7 +9,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { School, CheckCircle } from '@mui/icons-material';
-import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const BecomeMentorPage: React.FC = () => {
   const theme = useTheme();

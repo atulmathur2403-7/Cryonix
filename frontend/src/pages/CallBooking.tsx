@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Sensors, CalendarMonth, ArrowBack } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
-import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const CallBooking: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();

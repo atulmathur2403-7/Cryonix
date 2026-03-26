@@ -19,7 +19,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Videocam, ArrowBack } from '@mui/icons-material';
-import { AnimatedPage, FadeIn, glassSx } from '../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate();

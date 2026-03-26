@@ -22,7 +22,7 @@ import {
 } from '@mui/icons-material';
 import { currentUser as defaultUser } from '../data/mockData';
 import { useUser } from '../context/UserContext';
-import { AnimatedPage, FadeIn, glassSx, ProgressRing, gradientTextSx } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx, ProgressRing } from '../components/animations';
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
