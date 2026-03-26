@@ -18,6 +18,7 @@ import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, AnimatedCounter, Floatin
 import GradientText from '../components/GradientText';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
 import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';
+import DarkVeil from '../components/DarkVeil';
 
 const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,7 +44,26 @@ const HomePage: React.FC = () => {
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
       {/* Hero Section */}
       <Box sx={{ textAlign: 'center', py: { xs: 6, md: 12 }, position: 'relative' }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: '-10%',
+            width: '120%',
+            height: '100%',
+            zIndex: 0,
+            opacity: theme.palette.mode === 'dark' ? 0.5 : 0.18,
+            maskImage: 'radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%)',
+          }}
+        >
+          <DarkVeil
+            speed={0.5}
+            hueShift={200}
+          />
+        </Box>
         <FloatingOrbs />
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
         <FadeIn delay={100}>
         <Typography
           variant="h2"
@@ -147,6 +167,7 @@ const HomePage: React.FC = () => {
           </Box>
         </Typography>
         </FadeIn>
+        </Box>
       </Box>
 
       {/* Trending Mentors Section */}
