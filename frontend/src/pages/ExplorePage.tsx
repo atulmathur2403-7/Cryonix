@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -42,12 +42,17 @@ import {
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
 import { AnimatedPage, FadeIn, GrowIn, RevealOnScroll, glassSx, glowBorderSx, Marquee } from '../components/animations';
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
+import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
 
 const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [priceRange, setPriceRange] = useState<number[]>([0, 100]);
   const [loading, setLoading] = useState(true);
+  const trendingGridRef = useRef<HTMLDivElement>(null);
+  const onlineGridRef = useRef<HTMLDivElement>(null);
+  const categoryGridRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMobileDetection();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1200);
@@ -72,39 +77,57 @@ const ExplorePage: React.FC = () => {
 
       {/* Category Icon Grid */}
       <FadeIn delay={300}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(4, 1fr)', md: 'repeat(8, 1fr)' }, gap: 2, mb: 5 }}>
-        {[
-          { icon: <School />, label: 'Education', color: '#007AFF' },
-          { icon: <Code />, label: 'Tech', color: '#34C759' },
-          { icon: <Palette />, label: 'Design', color: '#FF9500' },
-          { icon: <TrendingUp />, label: 'Business', color: '#FF3B30' },
-          { icon: <Psychology />, label: 'Wellness', color: '#AF52DE' },
-          { icon: <Biotech />, label: 'Science', color: '#30B0C7' },
-          { icon: <Campaign />, label: 'Marketing', color: '#FF2D55' },
-          { icon: <AutoAwesome />, label: 'AI / ML', color: '#5856D6' },
-        ].map((cat) => (
-          <Box
-            key={cat.label}
-            onClick={() => navigate(`/search?q=${encodeURIComponent(cat.label)}`)}
-            sx={{
-              textAlign: 'center', cursor: 'pointer', p: 1.5, borderRadius: 3,
-              transition: 'all 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-              '&:hover': { transform: 'translateY(-4px)', bgcolor: cat.color + '10' },
-            }}
-          >
-            <Box sx={{
-              width: 48, height: 48, borderRadius: '50%', mx: 'auto', mb: 1,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              bgcolor: cat.color + '15', color: cat.color,
-              transition: 'all 0.3s ease',
-              '&:hover': { transform: 'scale(1.1)', boxShadow: `0 4px 20px ${cat.color}30` },
-            }}>
-              {cat.icon}
-            </Box>
-            <Typography variant="caption" fontWeight={600} noWrap>{cat.label}</Typography>
-          </Box>
-        ))}
-      </Box>
+      <div className="mentor-bento-section">
+        <GlobalSpotlight gridRef={categoryGridRef} disableAnimations={isMobile} glowColor="88, 86, 214" spotlightRadius={280} />
+        <div
+          ref={categoryGridRef}
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', marginBottom: '2rem' }}
+          className="mentor-bento-grid-cat"
+        >
+          {[
+            { icon: <School />, label: 'Education', color: '#007AFF', glow: '0, 122, 255' },
+            { icon: <Code />, label: 'Tech', color: '#34C759', glow: '52, 199, 89' },
+            { icon: <Palette />, label: 'Design', color: '#FF9500', glow: '255, 149, 0' },
+            { icon: <TrendingUp />, label: 'Business', color: '#FF3B30', glow: '255, 59, 48' },
+            { icon: <Psychology />, label: 'Wellness', color: '#AF52DE', glow: '175, 82, 222' },
+            { icon: <Biotech />, label: 'Science', color: '#30B0C7', glow: '48, 176, 199' },
+            { icon: <Campaign />, label: 'Marketing', color: '#FF2D55', glow: '255, 45, 85' },
+            { icon: <AutoAwesome />, label: 'AI / ML', color: '#5856D6', glow: '88, 86, 214' },
+          ].map((cat) => (
+            <ParticleCard
+              key={cat.label}
+              className="mentor-bento-card mentor-bento-card--border-glow"
+              style={{
+                minHeight: 90,
+                padding: '1rem 0.5rem',
+                textAlign: 'center' as const,
+                background: theme.palette.mode === 'dark'
+                  ? 'rgba(255,255,255,0.04)'
+                  : 'rgba(255,255,255,0.85)',
+                border: `1px solid ${theme.palette.divider}`,
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+              }}
+              glowColor={cat.glow}
+              enableMagnetism
+              clickEffect
+              particleCount={6}
+              disableAnimations={isMobile}
+              onClick={() => navigate(`/search?q=${encodeURIComponent(cat.label)}`)}
+            >
+              <Box sx={{
+                width: 44, height: 44, borderRadius: '50%', mx: 'auto', mb: 0.75,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                bgcolor: cat.color + '18', color: cat.color,
+                transition: 'all 0.3s ease',
+              }}>
+                {cat.icon}
+              </Box>
+              <Typography variant="caption" fontWeight={600} noWrap display="block">{cat.label}</Typography>
+            </ParticleCard>
+          ))}
+        </div>
+      </div>
       </FadeIn>
 
       <Grid container spacing={3}>
@@ -129,44 +152,55 @@ const ExplorePage: React.FC = () => {
                 {Array.from({ length: 5 }).map((_, i) => <MentorCardSkeleton key={i} />)}
               </Box>
             ) : (
-            <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
-              {sampleMentors.map((m) => (
-                <Card
-                  key={m.id}
-                  elevation={0}
-                  sx={{
-                    minWidth: 220,
-                    borderRadius: 4,
-                    ...glassSx(theme.palette.mode === 'dark'),
-                    cursor: 'pointer',
-                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-                    '&:hover': { borderColor: theme.palette.primary.main + '60', transform: 'translateY(-6px) scale(1.02)', boxShadow: `0 16px 40px ${theme.palette.primary.main}12` },
-                  }}
-                  onClick={() => navigate(`/mentor/${m.id}`)}
-                >
-                  <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                    <Avatar src={m.avatar} sx={{ width: 56, height: 56, mx: 'auto', mb: 1, transition: 'transform 0.3s ease', '&:hover': { transform: 'scale(1.08)' } }} />
-                    <Typography variant="caption" color="text.secondary">
-                      {(m.followers / 1000).toFixed(0)}k Followers
-                    </Typography>
-                    <Typography variant="body2" fontWeight={600}>{m.name}</Typography>
-                    <Typography variant="caption" color="text.secondary" display="block">{m.specialty}</Typography>
-                    <Rating value={m.rating} precision={0.5} size="small" readOnly sx={{ my: 0.5 }} />
-                    <Typography variant="body2" fontWeight={600}>${m.callPrice}/30 min</Typography>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      startIcon={<Call />}
-                      fullWidth
-                      sx={{ mt: 1 }}
-                      onClick={(e) => { e.stopPropagation(); navigate(`/book/${m.id}`); }}
+              <div className="mentor-bento-section">
+                <GlobalSpotlight gridRef={trendingGridRef} disableAnimations={isMobile} glowColor="124, 92, 252" />
+                <div className="mentor-bento-grid" ref={trendingGridRef}>
+                  {sampleMentors.slice(0, 6).map((m, idx) => (
+                    <ParticleCard
+                      key={m.id}
+                      className="mentor-bento-card mentor-bento-card--border-glow"
+                      style={{
+                        background: theme.palette.mode === 'dark'
+                          ? 'rgba(255,255,255,0.04)'
+                          : 'rgba(255,255,255,0.85)',
+                        border: `1px solid ${theme.palette.divider}`,
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                      }}
+                      glowColor="124, 92, 252"
+                      enableMagnetism
+                      clickEffect
+                      disableAnimations={isMobile}
+                      onClick={() => navigate(`/mentor/${m.id}`)}
                     >
-                      Call
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
+                      {m.isLive && <div className="mentor-bento-live">LIVE</div>}
+                      <Box sx={{ position: 'relative', display: 'inline-block', mb: 1 }}>
+                        <Avatar src={m.avatar} sx={{ width: idx === 2 ? 72 : 56, height: idx === 2 ? 72 : 56, mx: 'auto', border: `2px solid ${theme.palette.primary.main}40` }} />
+                        {m.isOnline && (
+                          <div className="mentor-bento-online" style={{ borderColor: theme.palette.background.paper }} />
+                        )}
+                      </Box>
+                      <Typography variant="caption" color="text.secondary">
+                        {(m.followers / 1000).toFixed(0)}k Followers
+                      </Typography>
+                      <Typography variant="body2" fontWeight={700} noWrap sx={{ mb: 0.25 }}>{m.name}</Typography>
+                      <Typography variant="caption" color="text.secondary" display="block" noWrap sx={{ mb: 0.5 }}>{m.specialty}</Typography>
+                      <Rating value={m.rating} precision={0.5} size="small" readOnly sx={{ mb: 0.5 }} />
+                      <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>${m.callPrice}/30 min</Typography>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        startIcon={<Call />}
+                        fullWidth
+                        sx={{ borderRadius: 3, fontWeight: 600 }}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/book/${m.id}`); }}
+                      >
+                        Call
+                      </Button>
+                    </ParticleCard>
+                  ))}
+                </div>
+              </div>
             )}
           </Box>
 
@@ -189,49 +223,49 @@ const ExplorePage: React.FC = () => {
                 {Array.from({ length: 4 }).map((_, i) => <MentorCardSkeleton key={i} />)}
               </Box>
             ) : (
-            <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
-              {sampleMentors.filter((m) => m.isOnline).map((m) => (
-                <Card
-                  key={m.id}
-                  elevation={0}
-                  sx={{
-                    minWidth: 220,
-                    borderRadius: 4,
-                    ...glassSx(theme.palette.mode === 'dark'),
-                    cursor: 'pointer',
-                    transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-                    '&:hover': { borderColor: theme.palette.primary.main + '60', transform: 'translateY(-6px)', boxShadow: `0 12px 32px ${theme.palette.primary.main}12` },
-                  }}
-                  onClick={() => navigate(`/mentor/${m.id}`)}
-                >
-                  <CardContent sx={{ textAlign: 'center', p: 2 }}>
-                    <Box sx={{ position: 'relative', display: 'inline-block' }}>
-                      <Avatar src={m.avatar} sx={{ width: 56, height: 56, mb: 1 }} />
-                      <Box
-                        sx={{
-                          position: 'absolute', bottom: 8, right: 0,
-                          width: 12, height: 12, bgcolor: '#4CAF50', borderRadius: '50%',
-                          border: `2px solid ${theme.palette.background.paper}`,
-                        }}
-                      />
-                    </Box>
-                    <Typography variant="body2" fontWeight={600}>{m.name}</Typography>
-                    <Typography variant="caption" color="text.secondary" display="block">{m.specialty}</Typography>
-                    <Typography variant="body2" fontWeight={600}>${m.callPrice}/30 min</Typography>
-                    <Button
-                      size="small"
-                      variant="contained"
-                      startIcon={<Call />}
-                      fullWidth
-                      sx={{ mt: 1 }}
-                      onClick={(e) => { e.stopPropagation(); navigate(`/book/${m.id}`); }}
+              <div className="mentor-bento-section">
+                <GlobalSpotlight gridRef={onlineGridRef} disableAnimations={isMobile} glowColor="76, 175, 80" />
+                <div className="mentor-bento-grid" ref={onlineGridRef}>
+                  {sampleMentors.filter((m) => m.isOnline).map((m, idx) => (
+                    <ParticleCard
+                      key={m.id}
+                      className="mentor-bento-card mentor-bento-card--border-glow"
+                      style={{
+                        background: theme.palette.mode === 'dark'
+                          ? 'rgba(255,255,255,0.04)'
+                          : 'rgba(255,255,255,0.85)',
+                        border: `1px solid ${theme.palette.divider}`,
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                      }}
+                      glowColor="76, 175, 80"
+                      enableMagnetism
+                      clickEffect
+                      disableAnimations={isMobile}
+                      onClick={() => navigate(`/mentor/${m.id}`)}
                     >
-                      Call
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
+                      {m.isLive && <div className="mentor-bento-live">LIVE</div>}
+                      <Box sx={{ position: 'relative', display: 'inline-block', mb: 1 }}>
+                        <Avatar src={m.avatar} sx={{ width: idx === 2 ? 72 : 56, height: idx === 2 ? 72 : 56, mx: 'auto', border: `2px solid #4CAF5050` }} />
+                        <div className="mentor-bento-online" style={{ borderColor: theme.palette.background.paper }} />
+                      </Box>
+                      <Typography variant="body2" fontWeight={700} noWrap sx={{ mb: 0.25 }}>{m.name}</Typography>
+                      <Typography variant="caption" color="text.secondary" display="block" noWrap sx={{ mb: 0.5 }}>{m.specialty}</Typography>
+                      <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>${m.callPrice}/30 min</Typography>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        startIcon={<Call />}
+                        fullWidth
+                        sx={{ borderRadius: 3, fontWeight: 600 }}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/book/${m.id}`); }}
+                      >
+                        Call
+                      </Button>
+                    </ParticleCard>
+                  ))}
+                </div>
+              </div>
             )}
           </Box>
 

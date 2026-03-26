@@ -1,0 +1,164 @@
+.mentor-bento-grid {
+  display: grid;
+  gap: 0.75em;
+  padding: 0.25em;
+  width: 100%;
+  position: relative;
+}
+
+@media (max-width: 599px) {
+  .mentor-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 600px) {
+  .mentor-bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mentor-bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .mentor-bento-card:nth-child(3) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+
+.mentor-bento-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 180px;
+  width: 100%;
+  padding: 1.5em 1em;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 200px;
+}
+
+.mentor-bento-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Border glow effect — color driven by JS-set CSS var --glow-color (r,g,b string) */
+.mentor-bento-card--border-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 4px;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--bento-card-glow, 124, 92, 252), calc(var(--glow-intensity) * 0.9)) 0%,
+    rgba(var(--bento-card-glow, 124, 92, 252), calc(var(--glow-intensity) * 0.4)) 30%,
+    transparent 60%
+  );
+  border-radius: inherit;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.mentor-bento-card--border-glow:hover {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(var(--bento-card-glow, 124, 92, 252), 0.2);
+}
+
+/* Particle container */
+.mentor-particle-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.mentor-particle-container:hover {
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    0 0 28px rgba(var(--bento-card-glow, 124, 92, 252), 0.15);
+}
+
+/* Bento section for spotlight scoping */
+.mentor-bento-section {
+  position: relative;
+  user-select: none;
+}
+
+/* 8-column category grid override */
+@media (min-width: 600px) {
+  .mentor-bento-grid-cat {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mentor-bento-grid-cat {
+    grid-template-columns: repeat(8, 1fr) !important;
+  }
+  /* No span overrides for category grid */
+  .mentor-bento-grid-cat .mentor-bento-card:nth-child(3) {
+    grid-column: unset !important;
+    grid-row: unset !important;
+  }
+  .mentor-bento-grid-cat .mentor-bento-card:nth-child(4) {
+    grid-column: unset !important;
+    grid-row: unset !important;
+  }
+  .mentor-bento-grid-cat .mentor-bento-card:nth-child(6) {
+    grid-column: unset !important;
+    grid-row: unset !important;
+  }
+}
+
+
+.mentor-bento-online {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 13px;
+  height: 13px;
+  background: #4CAF50;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  animation: bentoPulse 2s ease-in-out infinite;
+}
+
+@keyframes bentoPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); }
+  50%       { box-shadow: 0 0 0 5px rgba(76,175,80,0); }
+}
+
+/* Live badge */
+.mentor-bento-live {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(220, 38, 38, 0.85);
+  color: #fff;
+  letter-spacing: 0.05em;
+  z-index: 3;
+}

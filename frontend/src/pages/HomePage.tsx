@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -18,6 +18,7 @@ import { Search, LocalFireDepartment } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, gradientTextSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
 import GradientText from '../components/GradientText';
+import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
 import { ChipSkeleton, HomeMentorCardSkeleton } from '../components/Skeletons';
 
 const HomePage: React.FC = () => {
@@ -25,6 +26,8 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
+  const gridRef = useRef<HTMLDivElement>(null);
+  const isMobile = useMobileDetection();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1200);
@@ -169,92 +172,85 @@ const HomePage: React.FC = () => {
           }} />
         </Box>
 
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 3,
-            overflowX: 'auto',
-            pb: 2,
-            '&::-webkit-scrollbar': { height: 6 },
-            '&::-webkit-scrollbar-thumb': {
-              bgcolor: theme.palette.primary.main + '40',
-              borderRadius: 3,
-            },
-          }}
-        >
-          {loading ? (
-            Array.from({ length: 5 }).map((_, i) => (
+        {loading ? (
+          <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', pb: 2 }}>
+            {Array.from({ length: 5 }).map((_, i) => (
               <Box key={i} sx={{ minWidth: 200 }}><HomeMentorCardSkeleton /></Box>
-            ))
-          ) : (
-          sampleMentors.map((mentor, idx) => (
-            <Grow in timeout={500 + idx * 120} key={mentor.id}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                minWidth: 210,
-                textAlign: 'center',
-                cursor: 'pointer',
-                borderRadius: 4,
-                ...glassSx(theme.palette.mode === 'dark'),
-                transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
-                '&:hover': {
-                  borderColor: theme.palette.primary.main + '60',
-                  transform: 'translateY(-8px) scale(1.02)',
-                  boxShadow: `0 20px 48px ${theme.palette.primary.main}15`,
-                },
-              }}
-              onClick={() => navigate(`/mentor/${mentor.id}`)}
-            >
-              <Box sx={{ position: 'relative', display: 'inline-block', mb: 1.5 }}>
-                <Avatar
-                  src={mentor.avatar}
-                  sx={{
-                    width: 72,
-                    height: 72,
-                    mx: 'auto',
-                    border: `3px solid transparent`,
-                    transition: 'border-color 0.3s ease',
-                    '.MuiPaper-root:hover &': {
-                      borderColor: theme.palette.primary.main,
-                    },
+            ))}
+          </Box>
+        ) : (
+          <div className="mentor-bento-section">
+            <GlobalSpotlight gridRef={gridRef} disableAnimations={isMobile} glowColor="124, 92, 252" />
+            <div className="mentor-bento-grid" ref={gridRef}>
+              {sampleMentors.slice(0, 6).map((mentor, idx) => (
+                <ParticleCard
+                  key={mentor.id}
+                  className="mentor-bento-card mentor-bento-card--border-glow"
+                  style={{
+                    background: theme.palette.mode === 'dark'
+                      ? 'rgba(255,255,255,0.04)'
+                      : 'rgba(255,255,255,0.85)',
+                    border: `1px solid ${theme.palette.divider}`,
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
                   }}
-                />
-                {mentor.isOnline && (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: 4,
-                      right: 4,
-                      width: 14,
-                      height: 14,
-                      bgcolor: '#4CAF50',
-                      borderRadius: '50%',
-                      border: `2px solid ${theme.palette.background.paper}`,
-                      animation: 'onlinePulse 2s ease-in-out infinite',
-                      '@keyframes onlinePulse': {
-                        '0%, 100%': { boxShadow: '0 0 0 0 rgba(76,175,80,0.4)' },
-                        '50%': { boxShadow: '0 0 0 6px rgba(76,175,80,0)' },
-                      },
-                    }}
-                  />
-                )}
-              </Box>
-              <Typography fontWeight={600} noWrap>
-                {mentor.name}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" noWrap>
-                {mentor.specialty}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {mentor.followers >= 1000 ? `${(mentor.followers / 1000).toFixed(0)}k` : mentor.followers} Followers
-              </Typography>
-            </Paper>
-            </Grow>
-          ))
-          )}
-        </Box>
+                  glowColor="124, 92, 252"
+                  enableMagnetism
+                  clickEffect
+                  disableAnimations={isMobile}
+                  onClick={() => navigate(`/mentor/${mentor.id}`)}
+                >
+                  {mentor.isLive && (
+                    <div className="mentor-bento-live">LIVE</div>
+                  )}
+                  <Box sx={{ position: 'relative', display: 'inline-block', mb: 1.5 }}>
+                    <Avatar
+                      src={mentor.avatar}
+                      sx={{
+                        width: idx === 2 ? 96 : 72,
+                        height: idx === 2 ? 96 : 72,
+                        mx: 'auto',
+                        border: `3px solid ${theme.palette.primary.main}40`,
+                        transition: 'border-color 0.3s ease',
+                      }}
+                    />
+                    {mentor.isOnline && (
+                      <div
+                        className="mentor-bento-online"
+                        style={{ borderColor: theme.palette.background.paper }}
+                      />
+                    )}
+                  </Box>
+                  <Typography
+                    fontWeight={700}
+                    noWrap
+                    sx={{ fontSize: idx === 2 ? '1.1rem' : '0.95rem', mb: 0.25 }}
+                  >
+                    {mentor.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    noWrap
+                    sx={{ fontSize: '0.8rem' }}
+                  >
+                    {mentor.specialty}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 0.5, display: 'block', fontSize: '0.75rem' }}
+                  >
+                    {mentor.followers >= 1000
+                      ? `${(mentor.followers / 1000).toFixed(0)}k`
+                      : mentor.followers}{' '}
+                    Followers
+                  </Typography>
+                </ParticleCard>
+              ))}
+            </div>
+          </div>
+        )}
       </Box>
       </RevealOnScroll>
 
