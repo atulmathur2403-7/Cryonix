@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { PlayArrow, ThumbUp, Visibility, AccessTime } from '@mui/icons-material';
 import { sampleVideos } from '../data/mockData';
-import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
+import { AnimatedPage, FadeIn, glassSx, glowBorderSx } from '../components/animations';
 import { VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 
 const formatViews = (count: number) => {
