@@ -48,7 +48,6 @@ import {
   Flag,
   EmojiEvents,
   CheckCircle,
-  ArrowForward,
   BookmarkBorder,
   Bookmark,
   Close,
@@ -60,6 +59,7 @@ import { useThemeContext } from '../theme/ThemeContext';
 import { useUser } from '../context/UserContext';
 import { useBookmarks } from '../context/BookmarkContext';
 import StaggeredDrawer from './StaggeredDrawer';
+import CardDropdown from './CardDropdown';
 
 const TOOLTIP_PROPS = {
   arrow: true,
@@ -174,6 +174,14 @@ const mobileMenuItems = [
   { text: 'Get Support', icon: <HelpOutline />, path: '/support' },
   { text: 'Become a Mentor', icon: <School />, path: '/become-mentor' },
 ];
+
+const CARD_COLORS: Record<string, string[]> = {
+  Explore: ['#6C63FF', '#FF6584', '#43E97B', '#F9A826'],
+  Dashboard: ['#4A90D9', '#F2994A', '#27AE60'],
+  Videos: ['#E94560', '#5C2D91', '#F7B731'],
+  Support: ['#0ABDE3', '#EE5A24', '#6C5CE7'],
+  'Become a Mentor': ['#10AC84', '#8854D0', '#FC5C65'],
+};
 
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -569,161 +577,21 @@ const Layout: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      {/* Apple-style Mega Dropdown */}
+      {/* Card Nav Dropdown */}
       {!isMobile && activeItem?.dropdown && (
-        <>
-          {/* Backdrop overlay with blur */}
-          <Box
-            onClick={closeDropdown}
-            sx={{
-              position: 'fixed',
-              top: NAV_HEIGHT,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              bgcolor: isDark ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.15)',
-              backdropFilter: dropdownVisible ? 'blur(12px)' : 'blur(0px)',
-              WebkitBackdropFilter: dropdownVisible ? 'blur(12px)' : 'blur(0px)',
-              zIndex: theme.zIndex.appBar - 1,
-              opacity: dropdownVisible ? 1 : 0,
-              transition: 'opacity 0.45s cubic-bezier(0.32, 0.72, 0, 1), backdrop-filter 0.5s cubic-bezier(0.32, 0.72, 0, 1), -webkit-backdrop-filter 0.5s cubic-bezier(0.32, 0.72, 0, 1)',
-              pointerEvents: dropdownVisible ? 'auto' : 'none',
-            }}
-          />
-
-          {/* Dropdown panel */}
-          <Box
-            onMouseEnter={cancelClose}
-            onMouseLeave={scheduleClose}
-            sx={{
-              position: 'fixed',
-              top: NAV_HEIGHT,
-              left: 0,
-              right: 0,
-              zIndex: theme.zIndex.appBar,
-              bgcolor: isDark ? 'rgba(22, 22, 23, 0.96)' : 'rgba(251, 251, 253, 0.96)',
-              backdropFilter: 'saturate(180%) blur(20px)',
-              WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-              borderBottom: `0.5px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}`,
-              overflow: 'hidden',
-              maxHeight: dropdownVisible ? '400px' : '0px',
-              opacity: dropdownVisible ? 1 : 0,
-              transform: dropdownVisible ? 'translateY(0)' : 'translateY(-4px)',
-              transition: 'max-height 0.48s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.38s cubic-bezier(0.32, 0.72, 0, 1), transform 0.48s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.4s ease',
-              boxShadow: dropdownVisible ? '0 16px 48px rgba(0,0,0,0.14)' : 'none',
-            }}
-          >
-            <Box
-              sx={{
-                maxWidth: 980,
-                mx: 'auto',
-                px: 4,
-                py: 4,
-                display: 'flex',
-                gap: 1,
-              }}
-            >
-              {/* Left: Section Label */}
-              <Box sx={{ minWidth: 160, pr: 4, borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}` }}>
-                <Typography
-                  sx={{
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)',
-                    mb: 2,
-                  }}
-                >
-                  {activeItem.text}
-                </Typography>
-                <Typography
-                  onClick={() => handleNavClick(activeItem.path)}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    color: theme.palette.primary.main,
-                    cursor: 'pointer',
-                    transition: 'gap 0.2s ease',
-                    '&:hover': { gap: 1 },
-                  }}
-                >
-                  View All <ArrowForward sx={{ fontSize: 14 }} />
-                </Typography>
-              </Box>
-
-              {/* Right: Dropdown items */}
-              <Box sx={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 1, pl: 3 }}>
-                {activeItem.dropdown.map((dropItem, index) => (
-                  <Box
-                    key={dropItem.label}
-                    onClick={() => handleNavClick(dropItem.path)}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 1.5,
-                      p: 1.5,
-                      borderRadius: 2,
-                      cursor: 'pointer',
-                      transition: 'opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1), transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.25s ease',
-                      opacity: dropdownVisible ? 1 : 0,
-                      transform: dropdownVisible ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.97)',
-                      transitionDelay: dropdownVisible ? `${index * 60 + 100}ms` : '0ms',
-                      '&:hover': {
-                        bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
-                        '& .dropdown-icon': {
-                          color: theme.palette.primary.main,
-                          transform: 'scale(1.15)',
-                        },
-                        '& .dropdown-label': {
-                          color: theme.palette.primary.main,
-                        },
-                      },
-                    }}
-                  >
-                    <Box
-                      className="dropdown-icon"
-                      sx={{
-                        color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)',
-                        transition: 'all 0.25s ease',
-                        mt: 0.2,
-                      }}
-                    >
-                      {dropItem.icon}
-                    </Box>
-                    <Box>
-                      <Typography
-                        className="dropdown-label"
-                        sx={{
-                          fontSize: '0.85rem',
-                          fontWeight: 600,
-                          color: isDark ? '#f5f5f7' : '#1d1d1f',
-                          transition: 'color 0.2s ease',
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {dropItem.label}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: '0.75rem',
-                          color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.45)',
-                          lineHeight: 1.4,
-                          mt: 0.3,
-                        }}
-                      >
-                        {dropItem.description}
-                      </Typography>
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          </Box>
-        </>
+        <CardDropdown
+          items={activeItem.dropdown}
+          sectionLabel={activeItem.text}
+          visible={dropdownVisible}
+          topOffset={NAV_HEIGHT}
+          isDark={isDark}
+          primaryColor={theme.palette.primary.main}
+          cardColors={CARD_COLORS[activeItem.text] || ['#6C63FF', '#FF6584', '#43E97B']}
+          onNavigate={handleNavClick}
+          onMouseEnter={cancelClose}
+          onMouseLeave={scheduleClose}
+          onBackdropClick={closeDropdown}
+        />
       )}
 
       {/* Bookmarks Drawer */}

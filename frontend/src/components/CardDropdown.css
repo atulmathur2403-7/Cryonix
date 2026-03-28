@@ -1,0 +1,134 @@
+.card-dropdown-backdrop {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1199;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+    backdrop-filter 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+    -webkit-backdrop-filter 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.card-dropdown-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.card-dropdown-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  overflow: hidden;
+  will-change: height, opacity;
+  pointer-events: none;
+}
+
+.card-dropdown-panel.active {
+  pointer-events: auto;
+}
+
+.card-dropdown-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 24px 20px;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Cards */
+.cd-card {
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  will-change: transform, opacity;
+  transition: box-shadow 0.25s ease;
+}
+
+.cd-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.cd-card-label {
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.cd-card-desc {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  line-height: 1.4;
+}
+
+.cd-card-links {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cd-card-link {
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: opacity 0.2s ease;
+  color: inherit;
+}
+
+.cd-card-link:hover {
+  opacity: 0.7;
+}
+
+.cd-card-link-icon {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.cd-card-link:hover .cd-card-link-icon {
+  transform: translateX(2px);
+}
+
+/* Section label */
+.cd-section-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 140px;
+  padding: 16px 16px 16px 8px;
+}
+
+.cd-section-title {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.35;
+}
+
+.cd-section-viewall {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: gap 0.2s ease;
+}
+
+.cd-section-viewall:hover {
+  gap: 8px;
+}
