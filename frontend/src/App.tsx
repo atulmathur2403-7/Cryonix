@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
+import { BookmarkProvider } from './context/BookmarkContext';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import SearchResults from './pages/SearchResults';
@@ -29,6 +30,7 @@ import ShortsPage from './pages/ShortsPage';
 function App() {
   return (
     <UserProvider>
+    <BookmarkProvider>
     <BrowserRouter>
       <Routes>
         {/* Auth page without layout */}
@@ -63,6 +65,7 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </BookmarkProvider>
     </UserProvider>
   );
 }

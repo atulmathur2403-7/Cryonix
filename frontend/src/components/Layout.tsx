@@ -49,9 +49,40 @@ import {
   EmojiEvents,
   CheckCircle,
   ArrowForward,
+  BookmarkBorder,
+  Bookmark,
+  Close,
+  PlayArrow,
+  Visibility,
+  Delete,
 } from '@mui/icons-material';
 import { useThemeContext } from '../theme/ThemeContext';
 import { useUser } from '../context/UserContext';
+import { useBookmarks } from '../context/BookmarkContext';
+import StaggeredDrawer from './StaggeredDrawer';
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const drawerWidth = 280;
 const NAV_HEIGHT = 48;
@@ -146,11 +177,13 @@ const mobileMenuItems = [
 
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [bookmarkDrawerOpen, setBookmarkDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const { mode, toggleTheme } = useThemeContext();
   const { user, isLoggedIn, logout } = useUser();
+  const { bookmarks, removeBookmark } = useBookmarks();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
@@ -422,7 +455,7 @@ const Layout: React.FC = () => {
 
           {/* Right: Actions */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Tooltip title={mode === 'light' ? 'Dark Mode' : 'Light Mode'}>
+            <Tooltip title={mode === 'light' ? 'Dark Mode' : 'Light Mode'} {...TOOLTIP_PROPS}>
               <IconButton
                 onClick={toggleTheme}
                 size="small"
@@ -432,35 +465,53 @@ const Layout: React.FC = () => {
               </IconButton>
             </Tooltip>
 
-            <IconButton
-              onClick={() => navigate('/messages')}
-              size="small"
-              sx={{ color: isDark ? '#f5f5f7' : '#1d1d1f' }}
-            >
-              <Badge badgeContent={7} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}>
-                <Chat sx={{ fontSize: 20 }} />
-              </Badge>
-            </IconButton>
-
-            <IconButton size="small" sx={{ color: isDark ? '#f5f5f7' : '#1d1d1f' }}>
-              <Badge badgeContent={10} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}>
-                <Notifications sx={{ fontSize: 20 }} />
-              </Badge>
-            </IconButton>
-
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28,
-                  bgcolor: theme.palette.primary.main,
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
+            <Tooltip title="Saved videos" {...TOOLTIP_PROPS}>
+              <IconButton
+                onClick={() => setBookmarkDrawerOpen(true)}
+                size="small"
+                sx={{ color: isDark ? '#f5f5f7' : '#1d1d1f' }}
               >
-                {user.fullName.charAt(0).toUpperCase()}
-              </Avatar>
-            </IconButton>
+                <Badge badgeContent={bookmarks.length} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}>
+                  {bookmarks.length > 0 ? <Bookmark sx={{ fontSize: 20 }} /> : <BookmarkBorder sx={{ fontSize: 20 }} />}
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Messages" {...TOOLTIP_PROPS}>
+              <IconButton
+                onClick={() => navigate('/messages')}
+                size="small"
+                sx={{ color: isDark ? '#f5f5f7' : '#1d1d1f' }}
+              >
+                <Badge badgeContent={7} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}>
+                  <Chat sx={{ fontSize: 20 }} />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Notifications" {...TOOLTIP_PROPS}>
+              <IconButton size="small" sx={{ color: isDark ? '#f5f5f7' : '#1d1d1f' }}>
+                <Badge badgeContent={10} color="error" sx={{ '& .MuiBadge-badge': { fontSize: 10, minWidth: 16, height: 16 } }}>
+                  <Notifications sx={{ fontSize: 20 }} />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Account" {...TOOLTIP_PROPS}>
+              <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small">
+                <Avatar
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    bgcolor: theme.palette.primary.main,
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                >
+                  {user.fullName.charAt(0).toUpperCase()}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
@@ -674,6 +725,166 @@ const Layout: React.FC = () => {
           </Box>
         </>
       )}
+
+      {/* Bookmarks Drawer */}
+      <StaggeredDrawer
+        open={bookmarkDrawerOpen}
+        onClose={() => setBookmarkDrawerOpen(false)}
+        colors={isDark ? ['rgba(60,40,120,0.9)', theme.palette.primary.main] : ['rgba(180,170,220,0.7)', theme.palette.primary.main]}
+        panelBg={isDark ? 'rgba(22,22,23,0.98)' : 'rgba(251,251,253,0.98)'}
+        header={
+          <Box
+            className="sd-panel-header"
+            sx={{
+              bgcolor: isDark ? 'rgba(22,22,23,0.98)' : 'rgba(251,251,253,0.98)',
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Bookmark sx={{ color: '#fff', fontSize: 22 }} />
+              <Typography variant="h6" fontWeight={700} sx={{ fontSize: '1.05rem', color: isDark ? '#fff' : '#1d1d1f' }}>
+                Saved Videos
+              </Typography>
+              {bookmarks.length > 0 && (
+                <Typography
+                  variant="caption"
+                  sx={{
+                    bgcolor: theme.palette.primary.main,
+                    color: '#fff',
+                    px: 1,
+                    py: 0.15,
+                    borderRadius: 5,
+                    fontWeight: 700,
+                    fontSize: '0.7rem',
+                  }}
+                >
+                  {bookmarks.length}
+                </Typography>
+              )}
+            </Box>
+            <Tooltip title="Close" {...TOOLTIP_PROPS}>
+              <IconButton onClick={() => setBookmarkDrawerOpen(false)} size="small" sx={{ color: isDark ? '#fff' : '#1d1d1f' }}>
+                <Close fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        }
+      >
+        {bookmarks.length === 0 ? (
+          <Box className="sd-empty" sx={{ textAlign: 'center', py: 8, px: 3 }}>
+            <BookmarkBorder sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+            <Typography variant="body1" fontWeight={600} color="text.secondary" sx={{ mb: 0.5 }}>
+              No saved videos yet
+            </Typography>
+            <Typography variant="body2" color="text.disabled">
+              Videos you save will appear here so you can watch them later.
+            </Typography>
+          </Box>
+        ) : (
+          bookmarks.map((video) => (
+            <Box
+              key={video.id}
+              className="sd-item"
+              sx={{
+                display: 'flex',
+                gap: 1.5,
+                p: 1,
+                mb: 0.5,
+                borderRadius: 2.5,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                  '& .bookmark-play': { opacity: 1 },
+                },
+              }}
+              onClick={() => {
+                setBookmarkDrawerOpen(false);
+                navigate(`/video/${video.id}`);
+              }}
+            >
+              <Box
+                sx={{
+                  width: 140,
+                  height: 78,
+                  borderRadius: 2,
+                  flexShrink: 0,
+                  overflow: 'hidden',
+                  position: 'relative',
+                  bgcolor: '#000',
+                }}
+              >
+                <Box
+                  component="img"
+                  src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+                <Box
+                  className="bookmark-play"
+                  sx={{
+                    position: 'absolute',
+                    inset: 0,
+                    bgcolor: 'rgba(0,0,0,0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0,
+                    transition: 'opacity 0.2s ease',
+                  }}
+                >
+                  <PlayArrow sx={{ color: '#fff', fontSize: 28 }} />
+                </Box>
+                <Box sx={{ position: 'absolute', bottom: 3, right: 3, bgcolor: 'rgba(0,0,0,0.8)', color: '#fff', px: 0.6, py: 0.1, borderRadius: 0.75 }}>
+                  <Typography variant="caption" sx={{ fontSize: '0.6rem', fontWeight: 600 }}>{video.duration}</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    lineHeight: 1.3,
+                    fontSize: '0.82rem',
+                    mb: 0.3,
+                  }}
+                >
+                  {video.title}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.72rem' }}>
+                  {video.mentorName}
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.2 }}>
+                  <Visibility sx={{ fontSize: 11, color: 'text.secondary' }} />
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                    {video.viewCount >= 1_000_000 ? `${(video.viewCount / 1_000_000).toFixed(1)}M` : video.viewCount >= 1_000 ? `${Math.round(video.viewCount / 1_000)}K` : video.viewCount}
+                  </Typography>
+                </Box>
+              </Box>
+              <Tooltip title="Remove from saved" {...TOOLTIP_PROPS}>
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeBookmark(video.id);
+                  }}
+                  sx={{
+                    alignSelf: 'center',
+                    opacity: 0.5,
+                    '&:hover': { opacity: 1, color: 'error.main' },
+                  }}
+                >
+                  <Delete sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          ))
+        )}
+      </StaggeredDrawer>
 
       {/* Main content */}
       <Box

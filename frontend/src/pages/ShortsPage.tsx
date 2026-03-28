@@ -11,6 +11,7 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
+  Tooltip,
 } from '@mui/material';
 import {
   ThumbUp,
@@ -40,6 +41,29 @@ function timeAgo(dateStr: string): string {
   if (days > 0) return `${days}d ago`;
   return 'Today';
 }
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const CARD_HEIGHT = 'calc(100vh - 100px)';
 const PLAYER_MAX_W = 400;
@@ -373,22 +397,24 @@ const ShortsPage: React.FC = () => {
                     </Box>
 
                     {/* Mute button */}
-                    <IconButton
-                      onClick={() => setIsMuted(!isMuted)}
-                      sx={{
-                        position: 'absolute',
-                        top: 12,
-                        right: 12,
-                        bgcolor: 'rgba(0,0,0,0.5)',
-                        color: '#fff',
-                        zIndex: 3,
-                        '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
-                        width: 36,
-                        height: 36,
-                      }}
-                    >
-                      {isMuted ? <VolumeOff fontSize="small" /> : <VolumeUp fontSize="small" />}
-                    </IconButton>
+                    <Tooltip title={isMuted ? 'Unmute' : 'Mute'} {...TOOLTIP_PROPS}>
+                      <IconButton
+                        onClick={() => setIsMuted(!isMuted)}
+                        sx={{
+                          position: 'absolute',
+                          top: 12,
+                          right: 12,
+                          bgcolor: 'rgba(0,0,0,0.5)',
+                          color: '#fff',
+                          zIndex: 3,
+                          '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' },
+                          width: 36,
+                          height: 36,
+                        }}
+                      >
+                        {isMuted ? <VolumeOff fontSize="small" /> : <VolumeUp fontSize="small" />}
+                      </IconButton>
+                    </Tooltip>
 
                     {/* Counter chip */}
                     <Box sx={{ position: 'absolute', top: 12, left: 12, zIndex: 3 }}>
@@ -422,20 +448,22 @@ const ShortsPage: React.FC = () => {
                       { icon: <Visibility />, count: formatCount(short.viewCount), label: 'Views' },
                     ].map((action) => (
                       <Box key={action.label} sx={{ textAlign: 'center' }}>
-                        <IconButton
-                          sx={{
-                            bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                            width: 44,
-                            height: 44,
-                            transition: 'all 0.2s ease',
-                            '&:hover': {
-                              bgcolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
-                              transform: 'scale(1.1)',
-                            },
-                          }}
-                        >
-                          {action.icon}
-                        </IconButton>
+                        <Tooltip title={action.label} {...TOOLTIP_PROPS}>
+                          <IconButton
+                            sx={{
+                              bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                              width: 44,
+                              height: 44,
+                              transition: 'all 0.2s ease',
+                              '&:hover': {
+                                bgcolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
+                                transform: 'scale(1.1)',
+                              },
+                            }}
+                          >
+                            {action.icon}
+                          </IconButton>
+                        </Tooltip>
                         <Typography
                           variant="caption"
                           display="block"
@@ -449,28 +477,36 @@ const ShortsPage: React.FC = () => {
 
                     {/* Up / Down nav */}
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', gap: 0.5, mt: 1 }}>
-                      <IconButton
-                        onClick={() => goTo('prev')}
-                        disabled={idx === 0 && activeIndex === 0}
-                        size="small"
-                        sx={{
-                          bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                          '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' },
-                        }}
-                      >
-                        <KeyboardArrowUp fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => goTo('next')}
-                        disabled={activeIndex >= shorts.length - 1}
-                        size="small"
-                        sx={{
-                          bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                          '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' },
-                        }}
-                      >
-                        <KeyboardArrowDown fontSize="small" />
-                      </IconButton>
+                      <Tooltip title="Previous short" {...TOOLTIP_PROPS}>
+                        <span>
+                          <IconButton
+                            onClick={() => goTo('prev')}
+                            disabled={idx === 0 && activeIndex === 0}
+                            size="small"
+                            sx={{
+                              bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                              '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' },
+                            }}
+                          >
+                            <KeyboardArrowUp fontSize="small" />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                      <Tooltip title="Next short" {...TOOLTIP_PROPS}>
+                        <span>
+                          <IconButton
+                            onClick={() => goTo('next')}
+                            disabled={activeIndex >= shorts.length - 1}
+                            size="small"
+                            sx={{
+                              bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                              '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)' },
+                            }}
+                          >
+                            <KeyboardArrowDown fontSize="small" />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
                     </Box>
                   </Box>
                 </Box>

@@ -23,12 +23,36 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Tooltip,
 } from '@mui/material';
 import { Download, PhoneInTalk, Payments, AccessTime, Close, Star } from '@mui/icons-material';
 import { sampleCallHistory } from '../data/mockData';
 import { CallHistory } from '../types';
 import { AnimatedPage, glassSx, FadeIn, AnimatedCounter } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const CallHistoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -183,7 +207,9 @@ const CallHistoryPage: React.FC = () => {
       >
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontWeight: 700 }}>
           Rate {reviewDialog.record?.mentorName}
-          <IconButton size="small" onClick={() => setReviewDialog({ open: false, record: null })}><Close /></IconButton>
+          <Tooltip title="Close" {...TOOLTIP_PROPS}>
+            <IconButton size="small" onClick={() => setReviewDialog({ open: false, record: null })}><Close /></IconButton>
+          </Tooltip>
         </DialogTitle>
         <DialogContent>
           {reviewDialog.record && (

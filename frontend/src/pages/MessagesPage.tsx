@@ -13,6 +13,7 @@ import {
   ListItemText,
   useTheme,
   Chip,
+  Tooltip,
 } from '@mui/material';
 import {
   Send,
@@ -31,6 +32,29 @@ import {
 import { sampleConversations } from '../data/mockData';
 import { AnimatedPage } from '../components/animations';
 import { ConversationSkeleton, MessageBubbleSkeleton } from '../components/Skeletons';
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const MessagesPage: React.FC = () => {
   const theme = useTheme();
@@ -216,15 +240,21 @@ const MessagesPage: React.FC = () => {
                   </Box>
                 </Box>
                 <Box>
-                  <IconButton size="small">
-                    <Videocam />
-                  </IconButton>
-                  <IconButton size="small">
-                    <Call />
-                  </IconButton>
-                  <IconButton size="small">
-                    <MoreVert />
-                  </IconButton>
+                  <Tooltip title="Video call" {...TOOLTIP_PROPS}>
+                    <IconButton size="small">
+                      <Videocam />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Voice call" {...TOOLTIP_PROPS}>
+                    <IconButton size="small">
+                      <Call />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="More options" {...TOOLTIP_PROPS}>
+                    <IconButton size="small">
+                      <MoreVert />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               </Box>
 
@@ -308,12 +338,16 @@ const MessagesPage: React.FC = () => {
                   gap: 1,
                 }}
               >
-                <IconButton size="small">
-                  <AttachFile />
-                </IconButton>
-                <IconButton size="small">
-                  <Image />
-                </IconButton>
+                <Tooltip title="Attach file" {...TOOLTIP_PROPS}>
+                  <IconButton size="small">
+                    <AttachFile />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Send image" {...TOOLTIP_PROPS}>
+                  <IconButton size="small">
+                    <Image />
+                  </IconButton>
+                </Tooltip>
                 <TextField
                   fullWidth
                   size="small"
@@ -322,15 +356,21 @@ const MessagesPage: React.FC = () => {
                   onChange={(e) => setMessage(e.target.value)}
                   sx={{ '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
                 />
-                <IconButton size="small">
-                  <EmojiEmotions />
-                </IconButton>
-                <IconButton size="small" color="primary">
-                  <Send />
-                </IconButton>
-                <IconButton size="small">
-                  <Mic />
-                </IconButton>
+                <Tooltip title="Emoji" {...TOOLTIP_PROPS}>
+                  <IconButton size="small">
+                    <EmojiEmotions />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Send message" {...TOOLTIP_PROPS}>
+                  <IconButton size="small" color="primary">
+                    <Send />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Voice message" {...TOOLTIP_PROPS}>
+                  <IconButton size="small">
+                    <Mic />
+                  </IconButton>
+                </Tooltip>
               </Box>
             </>
           ) : (
