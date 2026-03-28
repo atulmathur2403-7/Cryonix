@@ -8,6 +8,7 @@ import {
   Chip,
   IconButton,
   useTheme,
+  Tooltip,
 } from '@mui/material';
 import { PlayArrow, ThumbUp, Visibility, AccessTime } from '@mui/icons-material';
 import { sampleVideos } from '../data/mockData';
@@ -19,6 +20,29 @@ const formatViews = (count: number) => {
   if (count >= 1_000) return `${Math.round(count / 1_000)}K`;
   return count.toString();
 };
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const VideosPage: React.FC = () => {
   const theme = useTheme();
@@ -98,17 +122,19 @@ const VideosPage: React.FC = () => {
                 {featured.mentorName} &bull; {formatViews(featured.viewCount)} views &bull; {featured.duration}
               </Typography>
             </Box>
-            <IconButton
-              className="play-btn"
-              sx={{
-                width: 64, height: 64,
-                bgcolor: 'rgba(255,255,255,0.95)',
-                transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
-                '&:hover': { bgcolor: '#fff' },
-              }}
-            >
-              <PlayArrow color="primary" sx={{ fontSize: 32 }} />
-            </IconButton>
+            <Tooltip title="Play featured video" {...TOOLTIP_PROPS}>
+              <IconButton
+                className="play-btn"
+                sx={{
+                  width: 64, height: 64,
+                  bgcolor: 'rgba(255,255,255,0.95)',
+                  transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
+                  '&:hover': { bgcolor: '#fff' },
+                }}
+              >
+                <PlayArrow color="primary" sx={{ fontSize: 32 }} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Paper>
         </FadeIn>
@@ -200,9 +226,11 @@ const VideosPage: React.FC = () => {
                   transition: 'opacity 0.3s ease',
                 }}
               >
-                <IconButton sx={{ bgcolor: 'rgba(255,255,255,0.95)', '&:hover': { bgcolor: '#fff' } }}>
-                  <PlayArrow color="primary" sx={{ fontSize: 32 }} />
-                </IconButton>
+                <Tooltip title="Play video" {...TOOLTIP_PROPS}>
+                  <IconButton sx={{ bgcolor: 'rgba(255,255,255,0.95)', '&:hover': { bgcolor: '#fff' } }}>
+                    <PlayArrow color="primary" sx={{ fontSize: 32 }} />
+                  </IconButton>
+                </Tooltip>
               </Box>
               {/* Duration badge */}
               <Box

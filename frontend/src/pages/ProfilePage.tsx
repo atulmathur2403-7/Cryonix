@@ -9,6 +9,7 @@ import {
   Chip,
   IconButton,
   useTheme,
+  Tooltip,
 } from '@mui/material';
 import {
   Edit,
@@ -23,6 +24,29 @@ import {
 import { currentUser as defaultUser } from '../data/mockData';
 import { useUser } from '../context/UserContext';
 import { AnimatedPage, FadeIn, glassSx, ProgressRing } from '../components/animations';
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -161,15 +185,17 @@ const ProfilePage: React.FC = () => {
                     }}
                     onClick={() => navigate(action.path)}
                   >
-                    <IconButton
-                      sx={{
-                        bgcolor: theme.palette.primary.main + '15',
-                        color: theme.palette.primary.main,
-                        mb: 1,
-                      }}
-                    >
-                      {action.icon}
-                    </IconButton>
+                    <Tooltip title={action.label} {...TOOLTIP_PROPS}>
+                      <IconButton
+                        sx={{
+                          bgcolor: theme.palette.primary.main + '15',
+                          color: theme.palette.primary.main,
+                          mb: 1,
+                        }}
+                      >
+                        {action.icon}
+                      </IconButton>
+                    </Tooltip>
                     <Typography variant="caption" display="block">
                       {action.label}
                     </Typography>
