@@ -12,20 +12,47 @@ import {
   Chip,
   useTheme,
   Skeleton,
+  Tooltip,
 } from '@mui/material';
 import {
   ThumbUp,
   ThumbDown,
   Share,
   BookmarkBorder,
+  Bookmark,
   Send,
   ArrowBack,
   PlayArrow,
   AccessTime,
   Visibility,
+  WatchLater,
 } from '@mui/icons-material';
 import { sampleVideos, sampleMentors } from '../data/mockData';
 import { VideoPlayerSkeleton } from '../components/Skeletons';
+import { useBookmarks } from '../context/BookmarkContext';
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const formatViews = (count: number) => {
   if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
@@ -41,6 +68,8 @@ const VideoDetail: React.FC = () => {
   const video = sampleVideos.find((v) => v.id === videoId) || sampleVideos[0];
   const mentor = sampleMentors.find((m) => m.id === video.mentorId) || sampleMentors[0];
   const [comment, setComment] = useState('');
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const saved = isBookmarked(video.id);
 
   const relatedVideos = sampleVideos.filter((v) => v.id !== video.id).slice(0, 5);
 
@@ -53,7 +82,9 @@ const VideoDetail: React.FC = () => {
   return (
     <AnimatedPage>
     <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
-      <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 1, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
+      <Tooltip title="Go back" {...TOOLTIP_PROPS}>
+        <Button startIcon={<ArrowBack />} onClick={() => navigate(-1)} sx={{ mb: 1, color: 'text.secondary', fontWeight: 600, borderRadius: 3, '&:hover': { bgcolor: 'action.hover' } }}>Back</Button>
+      </Tooltip>
     <Box sx={{ display: 'flex', gap: 3, flexWrap: { xs: 'wrap', lg: 'nowrap' } }}>
       {/* Main Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -117,18 +148,26 @@ const VideoDetail: React.FC = () => {
 
         {/* Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3, mt: 1.5, flexWrap: 'wrap' }}>
-          <Button startIcon={<ThumbUp />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
-            {formatViews(video.likes)}
-          </Button>
-          <Button startIcon={<ThumbDown />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
-            Dislike
-          </Button>
-          <Button startIcon={<Share />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
-            Share
-          </Button>
-          <Button startIcon={<BookmarkBorder />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
-            Save
-          </Button>
+          <Tooltip title="Like this video" {...TOOLTIP_PROPS}>
+            <Button startIcon={<ThumbUp />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
+              {formatViews(video.likes)}
+            </Button>
+          </Tooltip>
+          <Tooltip title="Dislike this video" {...TOOLTIP_PROPS}>
+            <Button startIcon={<ThumbDown />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
+              Dislike
+            </Button>
+          </Tooltip>
+          <Tooltip title="Share this video" {...TOOLTIP_PROPS}>
+            <Button startIcon={<Share />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
+              Share
+            </Button>
+          </Tooltip>
+          <Tooltip title={saved ? 'Remove from saved' : 'Save for later'} {...TOOLTIP_PROPS}>
+            <Button startIcon={saved ? <Bookmark /> : <BookmarkBorder />} variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }} onClick={() => toggleBookmark(video)}>
+              {saved ? 'Saved' : 'Save'}
+            </Button>
+          </Tooltip>
         </Box>
 
         {/* Mentor Info */}
@@ -144,19 +183,31 @@ const VideoDetail: React.FC = () => {
             mb: 3,
           }}
         >
-          <Avatar src={video.mentorAvatar} sx={{ width: 48, height: 48 }}>{video.mentorName[0]}</Avatar>
+          <Tooltip title={`View ${video.mentorName}'s profile`} {...TOOLTIP_PROPS}>
+            <Avatar src={video.mentorAvatar} sx={{ width: 48, height: 48, cursor: 'pointer' }} onClick={() => navigate(`/mentor/${video.mentorId}`)}>{video.mentorName[0]}</Avatar>
+          </Tooltip>
           <Box sx={{ flex: 1 }}>
             <Typography fontWeight={600}>{video.mentorName}</Typography>
             <Typography variant="body2" color="text.secondary">
               {mentor.specialty || video.category}
             </Typography>
           </Box>
-          <Button variant="contained" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
-            Follow
-          </Button>
-          <Button variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }}>
-            Book a Call
-          </Button>
+          <Tooltip title={saved ? 'Remove from Watch Later' : 'Save video for later'} {...TOOLTIP_PROPS}>
+            <Button
+              variant={saved ? 'contained' : 'outlined'}
+              size="small"
+              startIcon={saved ? <Bookmark /> : <WatchLater />}
+              sx={{ borderRadius: 3, textTransform: 'none' }}
+              onClick={() => toggleBookmark(video)}
+            >
+              {saved ? 'Saved' : 'Save for Later'}
+            </Button>
+          </Tooltip>
+          <Tooltip title="Book a call with this mentor" {...TOOLTIP_PROPS}>
+            <Button variant="outlined" size="small" sx={{ borderRadius: 3, textTransform: 'none' }} onClick={() => navigate(`/book/${video.mentorId}`)}>
+              Book a Call
+            </Button>
+          </Tooltip>
         </Paper>
 
         {/* Description */}
@@ -192,9 +243,11 @@ const VideoDetail: React.FC = () => {
             onChange={(e) => setComment(e.target.value)}
             InputProps={{
               endAdornment: (
-                <IconButton size="small" color="primary">
-                  <Send fontSize="small" />
-                </IconButton>
+                <Tooltip title="Post comment" {...TOOLTIP_PROPS}>
+                  <IconButton size="small" color="primary">
+                    <Send fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               ),
             }}
           />

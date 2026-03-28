@@ -1,0 +1,102 @@
+.staggered-drawer-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1300;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.staggered-drawer-wrapper[data-open] {
+  pointer-events: auto;
+}
+
+/* Backdrop overlay */
+.sd-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.staggered-drawer-wrapper[data-open] .sd-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Staggered prelayers */
+.sd-prelayers {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.sd-prelayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  will-change: transform;
+}
+
+/* Main panel */
+.sd-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(420px, 100vw);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  pointer-events: auto;
+  overflow: hidden;
+  will-change: transform;
+}
+
+/* Panel header */
+.sd-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  flex-shrink: 0;
+}
+
+.sd-panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Panel body */
+.sd-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Staggered item entrance animation */
+.sd-item {
+  will-change: transform, opacity;
+}
+
+.sd-empty {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 600px) {
+  .sd-prelayers,
+  .sd-panel {
+    width: 100vw;
+  }
+}

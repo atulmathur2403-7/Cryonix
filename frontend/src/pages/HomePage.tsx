@@ -10,10 +10,12 @@ import {
   Button,
   Paper,
   Grow,
+  Skeleton,
   useTheme,
 } from '@mui/material';
-import { Search, LocalFireDepartment } from '@mui/icons-material';
+import { Search, LocalFireDepartment, PlayArrow, Visibility } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
+import { youtubeApi, YouTubeShort } from '../services/youtube';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
 import GradientText from '../components/GradientText';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
@@ -23,6 +25,8 @@ import DarkVeil from '../components/DarkVeil';
 const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [shorts, setShorts] = useState<YouTubeShort[]>([]);
+  const [shortsLoading, setShortsLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
   const gridRef = useRef<HTMLDivElement>(null);
@@ -31,6 +35,13 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 1200);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    youtubeApi.getTrendingShorts(8).then((data) => {
+      setShorts(data);
+      setShortsLoading(false);
+    });
   }, []);
 
   const handleSearch = () => {
@@ -269,6 +280,160 @@ const HomePage: React.FC = () => {
               ))}
             </div>
           </div>
+        )}
+      </Box>
+      </RevealOnScroll>
+
+      {/* Trending Shorts Section */}
+      <RevealOnScroll delay={25}>
+      <Box sx={{ mb: 8 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <GradientText
+              colors={['#ff0050', '#ff4081', '#ff6090']}
+              animationSpeed={6}
+              style={{ fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em' }}
+            >
+              Trending Shorts
+            </GradientText>
+            <PlayArrow sx={{
+              color: '#ff0050',
+              animation: 'pulse 2s ease-in-out infinite',
+              '@keyframes pulse': {
+                '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+                '50%': { opacity: 0.6, transform: 'scale(1.15)' },
+              },
+            }} />
+          </Box>
+          <Button
+            size="small"
+            onClick={() => navigate('/shorts')}
+            sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 3, fontSize: '0.85rem' }}
+          >
+            See All
+          </Button>
+        </Box>
+
+        {shortsLoading ? (
+          <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} variant="rounded" sx={{ minWidth: 160, height: 284, borderRadius: 3, flexShrink: 0 }} />
+            ))}
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              overflowX: 'auto',
+              pb: 2,
+              scrollSnapType: 'x mandatory',
+              '&::-webkit-scrollbar': { height: 4 },
+              '&::-webkit-scrollbar-thumb': { bgcolor: theme.palette.divider, borderRadius: 2 },
+            }}
+          >
+            {shorts.map((short) => (
+              <Box
+                key={short.id}
+                onClick={() => navigate(`/shorts?v=${short.id}`)}
+                sx={{
+                  minWidth: 160,
+                  cursor: 'pointer',
+                  scrollSnapAlign: 'start',
+                  flexShrink: 0,
+                  transition: 'transform 0.3s ease',
+                  '&:hover': { transform: 'scale(1.04)' },
+                  '&:hover .shorts-play-overlay': { opacity: 1 },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 160,
+                    height: 284,
+                    borderRadius: 3,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    bgcolor: '#000',
+                  }}
+                >
+                  <img
+                    src={short.thumbnail}
+                    alt={short.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  {/* Gradient overlay */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '50%',
+                      background: 'linear-gradient(transparent, rgba(0,0,0,0.75))',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  {/* Play overlay */}
+                  <Box
+                    className="shorts-play-overlay"
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      bgcolor: 'rgba(0,0,0,0.5)',
+                      borderRadius: '50%',
+                      width: 44,
+                      height: 44,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      opacity: 0,
+                      transition: 'opacity 0.25s ease',
+                    }}
+                  >
+                    <PlayArrow sx={{ color: '#fff', fontSize: 28 }} />
+                  </Box>
+                  {/* View count */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 8,
+                      left: 8,
+                      right: 8,
+                      color: '#fff',
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        lineHeight: 1.3,
+                        textShadow: '0 1px 3px rgba(0,0,0,0.8)',
+                        mb: 0.25,
+                      }}
+                    >
+                      {short.title}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Visibility sx={{ fontSize: 12, opacity: 0.8 }} />
+                      <Typography sx={{ fontSize: '0.6rem', opacity: 0.8 }}>
+                        {parseInt(short.viewCount) >= 1000000
+                          ? `${(parseInt(short.viewCount) / 1000000).toFixed(1)}M`
+                          : parseInt(short.viewCount) >= 1000
+                          ? `${(parseInt(short.viewCount) / 1000).toFixed(0)}K`
+                          : short.viewCount}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+            ))}
+          </Box>
         )}
       </Box>
       </RevealOnScroll>

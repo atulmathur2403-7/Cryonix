@@ -21,6 +21,7 @@ import {
   InputLabel,
   useTheme,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   LocalFireDepartment,
@@ -44,6 +45,29 @@ import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
 import ProfileCard from '../components/ProfileCard/ProfileCard';
+
+const TOOLTIP_PROPS = {
+  arrow: true,
+  enterDelay: 400,
+  leaveDelay: 100,
+  slotProps: {
+    tooltip: {
+      sx: {
+        bgcolor: 'rgba(30,30,30,0.95)',
+        color: '#fff',
+        fontSize: '0.75rem',
+        fontWeight: 500,
+        borderRadius: 1.5,
+        px: 1.5,
+        py: 0.6,
+        boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+      },
+    },
+    arrow: {
+      sx: { color: 'rgba(30,30,30,0.95)' },
+    },
+  },
+} as const;
 
 const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
@@ -143,14 +167,18 @@ const ExplorePage: React.FC = () => {
                 <LocalFireDepartment sx={{ color: '#E8854A' }} />
               </Box>
               <Box>
-                <IconButton size="small" onClick={() => {
-                  const el = document.getElementById('trending-scroll');
-                  if (el) el.scrollBy({ left: -280, behavior: 'smooth' });
-                }}><ArrowBack fontSize="small" /></IconButton>
-                <IconButton size="small" onClick={() => {
-                  const el = document.getElementById('trending-scroll');
-                  if (el) el.scrollBy({ left: 280, behavior: 'smooth' });
-                }}><ArrowForward fontSize="small" /></IconButton>
+                <Tooltip title="Scroll left" {...TOOLTIP_PROPS}>
+                  <IconButton size="small" onClick={() => {
+                    const el = document.getElementById('trending-scroll');
+                    if (el) el.scrollBy({ left: -280, behavior: 'smooth' });
+                  }}><ArrowBack fontSize="small" /></IconButton>
+                </Tooltip>
+                <Tooltip title="Scroll right" {...TOOLTIP_PROPS}>
+                  <IconButton size="small" onClick={() => {
+                    const el = document.getElementById('trending-scroll');
+                    if (el) el.scrollBy({ left: 280, behavior: 'smooth' });
+                  }}><ArrowForward fontSize="small" /></IconButton>
+                </Tooltip>
               </Box>
             </Box>
             {loading ? (
@@ -238,8 +266,12 @@ const ExplorePage: React.FC = () => {
                 <FiberManualRecord sx={{ color: '#4CAF50', fontSize: 14 }} />
               </Box>
               <Box>
-                <IconButton size="small"><ArrowBack fontSize="small" /></IconButton>
-                <IconButton size="small"><ArrowForward fontSize="small" /></IconButton>
+                <Tooltip title="Scroll left" {...TOOLTIP_PROPS}>
+                  <IconButton size="small"><ArrowBack fontSize="small" /></IconButton>
+                </Tooltip>
+                <Tooltip title="Scroll right" {...TOOLTIP_PROPS}>
+                  <IconButton size="small"><ArrowForward fontSize="small" /></IconButton>
+                </Tooltip>
               </Box>
             </Box>
             {loading ? (

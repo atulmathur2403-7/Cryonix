@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { UserProvider } from './context/UserContext';
+import { BookmarkProvider } from './context/BookmarkContext';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import SearchResults from './pages/SearchResults';
@@ -24,10 +25,12 @@ import VideoDetail from './pages/VideoDetail';
 import ReviewsList from './pages/ReviewsList';
 import VideosPage from './pages/VideosPage';
 import BecomeMentorPage from './pages/BecomeMentorPage';
+import ShortsPage from './pages/ShortsPage';
 
 function App() {
   return (
     <UserProvider>
+    <BookmarkProvider>
     <BrowserRouter>
       <Routes>
         {/* Auth page without layout */}
@@ -55,12 +58,14 @@ function App() {
           <Route path="review/:mentorId" element={<WriteReview />} />
           <Route path="video/:videoId" element={<VideoDetail />} />
           <Route path="videos" element={<VideosPage />} />
+          <Route path="shorts" element={<ShortsPage />} />
           <Route path="become-mentor" element={<BecomeMentorPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="support" element={<SupportPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
+    </BookmarkProvider>
     </UserProvider>
   );
 }
