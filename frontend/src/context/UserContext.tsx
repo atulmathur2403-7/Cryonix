@@ -6,6 +6,8 @@ import { authApi, userApi } from '../services/api';
 interface UserContextType {
   user: User;
   isLoggedIn: boolean;
+  isMentor: boolean;
+  isAdmin: boolean;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
@@ -18,6 +20,8 @@ interface UserContextType {
 const UserContext = createContext<UserContextType>({
   user: defaultUser,
   isLoggedIn: false,
+  isMentor: false,
+  isAdmin: false,
   loading: false,
   error: null,
   login: async () => {},
@@ -57,6 +61,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         email: profile.email || user.email,
         phone: profile.phoneNumber || user.phone,
         avatar: profile.profilePhotoUrl || user.avatar,
+        roles: profile.roles || user.roles || [],
+        isMentor: (profile.roles || []).includes('ROLE_MENTOR') || user.isMentor,
       };
       setUser(updatedUser);
       persistUser(updatedUser, true);
@@ -85,6 +91,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           email: profile.email || '',
           phone: profile.phoneNumber || '',
           avatar: profile.profilePhotoUrl || '',
+          roles: profile.roles || [],
+          isMentor: (profile.roles || []).includes('ROLE_MENTOR'),
         };
         setUser(loggedInUser);
         persistUser(loggedInUser, true);
@@ -155,8 +163,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
+  const isMentor = user.isMentor || (user.roles || []).includes('ROLE_MENTOR');
+  const isAdmin = (user.roles || []).includes('ROLE_ADMIN');
+
   return (
-    <UserContext.Provider value={{ user, isLoggedIn, loading, error, login, signup, logout, updateUser, fetchProfile }}>
+    <UserContext.Provider value={{ user, isLoggedIn, isMentor, isAdmin, loading, error, login, signup, logout, updateUser, fetchProfile }}>
       {children}
     </UserContext.Provider>
   );

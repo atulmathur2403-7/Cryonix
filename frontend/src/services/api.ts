@@ -197,4 +197,22 @@ export const metaApi = {
   getPronouns: () => api.get('/meta/pronouns'),
 };
 
+// Admin APIs (client-side aggregation from existing endpoints)
+export const adminApi = {
+  // Uses mentor search to list all mentors
+  getAllMentors: (page = 0, size = 20) =>
+    api.get('/mentors', { params: { page, size } }),
+  getMentorById: (mentorId: string) => api.get(`/mentors/${mentorId}`),
+  // Dashboard KPI reuse
+  getMentorSummary: (range = '30d') =>
+    api.get('/mentor/dashboard/summary', { params: { range } }),
+  getMentorTimeseries: (metric: string, range = '30d', interval = 'day') =>
+    api.get('/mentor/dashboard/timeseries', { params: { metric, range, interval } }),
+  // Session and booking overviews
+  getAllSessions: (page = 0, size = 20) =>
+    api.get('/mentor/dashboard/sessions', { params: { page, size } }),
+  getAllBookings: (page = 0, size = 20) =>
+    api.get('/mentor/dashboard/bookings', { params: { page, size } }),
+};
+
 export default api;
