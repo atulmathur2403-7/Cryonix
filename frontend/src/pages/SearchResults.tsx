@@ -16,6 +16,8 @@ import {
 } from '@mui/material';
 import { Call, PlayArrow, People, FilterList, Verified, ArrowBack } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, searchSuggestions } from '../data/mockData';
+import { Mentor } from '../types';
+import { mentorApi } from '../services/api';
 import { AnimatedPage, glassSx } from '../components/animations';
 import { MentorCardGridSkeleton, VideoCardGridSkeleton, ChipSkeleton } from '../components/Skeletons';
 
@@ -24,13 +26,44 @@ const SearchResults: React.FC = () => {
   const query = searchParams.get('q') || 'CSAT Coaching';
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [mentors, setMentors] = useState<Mentor[]>(sampleMentors);
+  const [totalResults, setTotalResults] = useState(sampleMentors.length);
   const navigate = useNavigate();
   const theme = useTheme();
 
   useEffect(() => {
     setLoading(true);
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
+    mentorApi.search({ q: query, page: 0, size: 20 })
+      .then((res) => {
+        const apiMentors = (res.data.content || []).map((m: any) => ({
+          id: String(m.mentorId),
+          name: m.name || '',
+          username: '',
+          specialty: m.expertiseSummary || '',
+          about: '',
+          avatar: m.profilePic || '',
+          isVerified: false,
+          isOnline: false,
+          isLive: false,
+          followers: m.bookingsCount || 0,
+          following: 0,
+          likes: 0,
+          rating: m.averageRating || 0,
+          totalMentees: m.bookingsCount || 0,
+          reviewCount: m.reviewCount || 0,
+          messagePrice: 0,
+          callPrice: Number(m.callPrice) || 0,
+          subscriptionPrice: 0,
+          youtubeLink: '',
+          location: '',
+        }));
+        if (apiMentors.length > 0) {
+          setMentors(apiMentors);
+          setTotalResults(res.data.totalElements || apiMentors.length);
+        }
+      })
+      .catch(() => { /* keep mock data */ })
+      .finally(() => setLoading(false));
   }, [query]);
 
   const tabLabels = ['Experts', 'Videos', 'Live'];
@@ -47,7 +80,7 @@ const SearchResults: React.FC = () => {
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <Chip
-          label={`${sampleMentors.length} experts found`}
+          label={`${totalResults} experts found`}
           size="small"
           color="primary"
           variant="outlined"
@@ -84,7 +117,7 @@ const SearchResults: React.FC = () => {
             <Box sx={{ mb: 4 }}><MentorCardGridSkeleton count={6} /></Box>
           ) : (
           <Grid container spacing={3} sx={{ mb: 4 }}>
-            {sampleMentors.map((mentor) => (
+            {mentors.map((mentor) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={mentor.id}>
                 <Card
                   elevation={0}

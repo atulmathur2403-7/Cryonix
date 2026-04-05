@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import { Search, LocalFireDepartment, PlayArrow, Visibility } from '@mui/icons-material';
 import { sampleMentors, categories } from '../data/mockData';
+import { Mentor } from '../types';
+import { mentorApi } from '../services/api';
 import { youtubeApi, YouTubeShort } from '../services/youtube';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, AnimatedCounter, FloatingOrbs, Marquee } from '../components/animations';
 import GradientText from '../components/GradientText';
@@ -25,6 +27,7 @@ import DarkVeil from '../components/DarkVeil';
 const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [mentors, setMentors] = useState<Mentor[]>([]);
   const [shorts, setShorts] = useState<YouTubeShort[]>([]);
   const [shortsLoading, setShortsLoading] = useState(true);
   const navigate = useNavigate();
@@ -33,8 +36,34 @@ const HomePage: React.FC = () => {
   const isMobile = useMobileDetection();
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(t);
+    mentorApi.getTrending(6)
+      .then((res) => {
+        const apiMentors = res.data.map((m: any) => ({
+          id: String(m.mentorId),
+          name: m.name || '',
+          username: '',
+          specialty: m.expertiseSummary || '',
+          about: '',
+          avatar: m.profilePic || '',
+          isVerified: false,
+          isOnline: false,
+          isLive: false,
+          followers: m.bookingsCount || 0,
+          following: 0,
+          likes: 0,
+          rating: m.averageRating || 0,
+          totalMentees: m.bookingsCount || 0,
+          reviewCount: m.reviewCount || 0,
+          messagePrice: 0,
+          callPrice: Number(m.callPrice) || 0,
+          subscriptionPrice: 0,
+          youtubeLink: '',
+          location: '',
+        }));
+        setMentors(apiMentors.length > 0 ? apiMentors : sampleMentors.slice(0, 6));
+      })
+      .catch(() => setMentors(sampleMentors.slice(0, 6)))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -212,7 +241,7 @@ const HomePage: React.FC = () => {
           <div className="mentor-bento-section">
             <GlobalSpotlight gridRef={gridRef} disableAnimations={isMobile} glowColor="124, 92, 252" />
             <div className="mentor-bento-grid" ref={gridRef}>
-              {sampleMentors.slice(0, 6).map((mentor, idx) => (
+              {mentors.map((mentor, idx) => (
                 <ParticleCard
                   key={mentor.id}
                   className="mentor-bento-card mentor-bento-card--border-glow"

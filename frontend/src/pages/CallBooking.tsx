@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -12,9 +12,13 @@ import {
   DialogContent,
   DialogActions,
   useTheme,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import { Sensors, CalendarMonth, ArrowBack } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
+import { Mentor } from '../types';
+import { mentorApi, bookingApi, talkNowApi } from '../services/api';
 import { AnimatedPage, glassSx } from '../components/animations';
 
 const CallBooking: React.FC = () => {
@@ -22,24 +26,84 @@ const CallBooking: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
-
+  const [mentor, setMentor] = useState<Mentor>(sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0]);
   const [selectedDate, setSelectedDate] = useState('2025-04-27');
   const [selectedTime, setSelectedTime] = useState('10:00');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authData, setAuthData] = useState({ name: '', email: '', password: '' });
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
-  const handleTalkNow = () => {
-    navigate(`/call/live/session-new`);
+  useEffect(() => {
+    if (!mentorId) return;
+    mentorApi.getById(mentorId)
+      .then((res) => {
+        const p = res.data;
+        setMentor({
+          id: String(p.mentorId),
+          name: p.name || '',
+          username: '',
+          specialty: p.expertise || '',
+          about: p.bio || '',
+          avatar: p.profilePic || '',
+          isVerified: false,
+          isOnline: false,
+          isLive: false,
+          followers: p.bookingsCount || 0,
+          following: 0,
+          likes: 0,
+          rating: p.averageRating || 0,
+          totalMentees: p.bookingsCount || 0,
+          reviewCount: p.reviewCount || 0,
+          messagePrice: Number(p.meetingPrice) || 0,
+          callPrice: Number(p.callPrice) || 0,
+          subscriptionPrice: Number(p.subscriptionPrice) || 0,
+          youtubeLink: p.socialLinks || '',
+          location: '',
+        });
+      })
+      .catch(() => {});
+  }, [mentorId]);
+
+  const handleTalkNow = async () => {
+    setBookingLoading(true);
+    setBookingError(null);
+    try {
+      const res = await talkNowApi.start({ mentorId: Number(mentorId), durationMinutes: 15 });
+      navigate(`/call/${res.data.session?.sessionId || 'live/session-new'}`);
+    } catch {
+      navigate(`/call/live/session-new`);
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   const handleBookCall = () => {
     setShowAuthModal(true);
   };
 
-  const handleAuthSubmit = () => {
+  const handleAuthSubmit = async () => {
     setShowAuthModal(false);
-    navigate('/payment/new');
+    setBookingLoading(true);
+    setBookingError(null);
+    try {
+      const startTime = new Date(`${selectedDate}T${selectedTime}:00`).toISOString();
+      const endTime = new Date(new Date(`${selectedDate}T${selectedTime}:00`).getTime() + 30 * 60000).toISOString();
+      const res = await bookingApi.create({
+        mentorId: Number(mentorId),
+        bookingType: 'BOOK_LATER',
+        bookingTime: startTime,
+        durationMinutes: 30,
+        startTime,
+        endTime,
+      });
+      navigate(`/payment/${res.data.bookingId}`);
+    } catch (err: any) {
+      setBookingError(err.response?.data?.message || 'Failed to create booking. Please try again.');
+      navigate('/payment/new');
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   return (

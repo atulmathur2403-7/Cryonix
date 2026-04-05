@@ -7,13 +7,18 @@ import {
   Button,
   Chip,
   useTheme,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import { School, CheckCircle } from '@mui/icons-material';
 import { AnimatedPage, glassSx } from '../components/animations';
+import { authApi } from '../services/api';
 
 const BecomeMentorPage: React.FC = () => {
   const theme = useTheme();
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -21,14 +26,30 @@ const BecomeMentorPage: React.FC = () => {
     experience: '',
     about: '',
     linkedIn: '',
+    password: '',
   });
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setError('');
+    setSubmitting(true);
+    try {
+      await authApi.signUp({
+        name: formData.fullName,
+        email: formData.email,
+        username: formData.email.split('@')[0],
+        password: formData.password,
+        role: 'MENTOR',
+      });
+      setSubmitted(true);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.response?.data?.error || 'Failed to submit. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -118,6 +139,13 @@ const BecomeMentorPage: React.FC = () => {
           />
           <TextField
             fullWidth
+            label="Password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange('password')}
+          />
+          <TextField
+            fullWidth
             multiline
             rows={4}
             label="Tell us about yourself"
@@ -125,14 +153,16 @@ const BecomeMentorPage: React.FC = () => {
             value={formData.about}
             onChange={handleChange('about')}
           />
+          {error && <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>}
           <Button
             variant="contained"
             size="large"
             fullWidth
             onClick={handleSubmit}
+            disabled={submitting || !formData.fullName || !formData.email || !formData.password}
             sx={{ py: 1.5, fontWeight: 600, mt: 1 }}
           >
-            Submit Application
+            {submitting ? <CircularProgress size={22} color="inherit" /> : 'Submit Application'}
           </Button>
         </Box>
       </Paper>

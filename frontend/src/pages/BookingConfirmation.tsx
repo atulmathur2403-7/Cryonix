@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -8,15 +8,71 @@ import {
   Button,
   TextField,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
 import { AnimatedPage, glassSx } from '../components/animations';
+import { bookingApi, mentorApi } from '../services/api';
 
 const BookingConfirmation: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const mentor = sampleMentors[0];
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const fallbackMentor = sampleMentors[0];
+  const [mentor, setMentor] = useState<{ name: string; avatar: string; followers: string }>({
+    name: fallbackMentor.name,
+    avatar: fallbackMentor.avatar,
+    followers: '55k Followers',
+  });
+  const [booking, setBooking] = useState<{ date: string; payment: string; status: string }>({
+    date: '27th April 2025',
+    payment: '$100 USD',
+    status: 'Confirmed',
+  });
+  const [cancelling, setCancelling] = useState(false);
+
+  useEffect(() => {
+    // Try to load booking details from learner bookings
+    bookingApi.getLearnerBookings()
+      .then((res) => {
+        const bookings = res.data.content || res.data;
+        const found = (Array.isArray(bookings) ? bookings : []).find(
+          (b: any) => String(b.bookingId || b.id) === sessionId
+        );
+        if (found) {
+          setBooking({
+            date: found.bookingTime ? new Date(found.bookingTime).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : '27th April 2025',
+            payment: found.totalAmount ? `$${Number(found.totalAmount)} USD` : '$100 USD',
+            status: found.status || 'Confirmed',
+          });
+          if (found.mentorId) {
+            mentorApi.getById(String(found.mentorId)).then((mRes) => {
+              const m = mRes.data;
+              setMentor({
+                name: m.name || m.fullName || fallbackMentor.name,
+                avatar: m.profilePic || m.profileImageUrl || fallbackMentor.avatar,
+                followers: m.bookingsCount ? `${m.bookingsCount} Sessions` : '55k Followers',
+              });
+            }).catch(() => {});
+          }
+        }
+      })
+      .catch(() => {});
+  }, [sessionId]);
+
+  const handleCancel = async () => {
+    if (!sessionId) return;
+    setCancelling(true);
+    try {
+      await bookingApi.cancel(sessionId, { refundDestination: 'ORIGINAL', reason: 'User cancelled' });
+      setBooking((prev) => ({ ...prev, status: 'Cancelled' }));
+    } catch {
+      // ignore
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   return (
     <AnimatedPage>
@@ -41,11 +97,11 @@ const BookingConfirmation: React.FC = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box>
                 <Typography variant="body2" color="text.secondary">Booking status:</Typography>
-                <Typography fontWeight={600} color="success.main">Confirmed</Typography>
+                <Typography fontWeight={600} color="success.main">{booking.status}</Typography>
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">Call Date:</Typography>
-                <Typography fontWeight={600} color="success.main">27th April 2025</Typography>
+                <Typography fontWeight={600} color="success.main">{booking.date}</Typography>
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">Mentor Name:</Typography>
@@ -53,7 +109,7 @@ const BookingConfirmation: React.FC = () => {
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">Total Payment done:</Typography>
-                <Typography fontWeight={600} color="success.main">$100 USD</Typography>
+                <Typography fontWeight={600} color="success.main">{booking.payment}</Typography>
               </Box>
             </Box>
           </Paper>
@@ -112,7 +168,7 @@ const BookingConfirmation: React.FC = () => {
               />
             </Box>
             <Typography variant="caption" color="text.secondary" display="block">
-              55k Followers
+              {mentor.followers}
             </Typography>
             <Typography variant="h6" fontWeight={600}>
               {mentor.name}
@@ -121,7 +177,9 @@ const BookingConfirmation: React.FC = () => {
 
           {/* Action Buttons */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Button variant="contained" fullWidth>Cancel Booking</Button>
+            <Button variant="contained" fullWidth onClick={handleCancel} disabled={cancelling}>
+              {cancelling ? <CircularProgress size={20} /> : 'Cancel Booking'}
+            </Button>
             <Button variant="contained" fullWidth>Change Date</Button>
             <Button variant="contained" fullWidth>View Past Bookings</Button>
             <Button variant="contained" fullWidth onClick={() => navigate('/dashboard')}>

@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import { ThumbUp, Verified, ArrowBack, RateReview } from '@mui/icons-material';
 import { sampleReviews, sampleMentors } from '../data/mockData';
+import { Mentor, Review } from '../types';
+import { mentorApi } from '../services/api';
 import { ReviewCardSkeleton } from '../components/Skeletons';
 
 const ReviewsList: React.FC = () => {
@@ -22,13 +24,36 @@ const ReviewsList: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
-  const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
-  const reviews = sampleReviews;
+  const [mentor, setMentor] = useState<Mentor>(sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0]);
+  const [reviews, setReviews] = useState<Review[]>(sampleReviews);
 
   useEffect(() => {
     setLoading(true);
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
+    if (!mentorId) { setLoading(false); return; }
+    Promise.all([
+      mentorApi.getById(mentorId).catch(() => null),
+      mentorApi.getReviews(mentorId, 0, 50).catch(() => null),
+    ]).then(([profileRes, reviewsRes]) => {
+      if (profileRes?.data) {
+        const p = profileRes.data;
+        setMentor({
+          id: String(p.mentorId), name: p.name || '', username: '', specialty: p.expertise || '',
+          about: p.bio || '', avatar: p.profilePic || '', isVerified: false, isOnline: false,
+          isLive: false, followers: p.bookingsCount || 0, following: 0, likes: 0,
+          rating: p.averageRating || 0, totalMentees: p.bookingsCount || 0,
+          reviewCount: p.reviewCount || 0, messagePrice: 0, callPrice: Number(p.callPrice) || 0,
+          subscriptionPrice: 0, youtubeLink: '', location: '',
+        });
+      }
+      if (reviewsRes?.data) {
+        const apiReviews = (reviewsRes.data.content || reviewsRes.data || []).map((r: any) => ({
+          id: String(r.id), learnerId: '', learnerName: r.learnerName || 'Anonymous',
+          learnerAvatar: '', mentorId: mentorId, sessionId: '',
+          rating: r.rating || 0, text: r.comment || '', attachments: [], createdAt: r.createdAt || '',
+        }));
+        if (apiReviews.length > 0) setReviews(apiReviews);
+      }
+    }).finally(() => setLoading(false));
   }, [mentorId]);
 
   const avgRating = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;

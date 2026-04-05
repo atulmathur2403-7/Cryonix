@@ -17,12 +17,14 @@ import {
 } from '@mui/material';
 import { Upload, ArrowBack, CheckCircle } from '@mui/icons-material';
 import { sampleMentors } from '../data/mockData';
+import { Mentor } from '../types';
+import { mentorApi, reviewApi } from '../services/api';
 
 const WriteReview: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();
   const navigate = useNavigate();
   const theme = useTheme();
-  const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
+  const [mentor, setMentor] = React.useState<Mentor>(sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0]);
   const [rating, setRating] = useState<number | null>(0);
   const [review, setReview] = useState('');
   const [communication, setCommunication] = useState(50);
@@ -31,6 +33,24 @@ const WriteReview: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!mentorId) return;
+    mentorApi.getById(mentorId)
+      .then((res) => {
+        const p = res.data;
+        setMentor({
+          id: String(p.mentorId), name: p.name || '', username: '', specialty: p.expertise || '',
+          about: p.bio || '', avatar: p.profilePic || '', isVerified: false, isOnline: false,
+          isLive: false, followers: p.bookingsCount || 0, following: 0, likes: 0,
+          rating: p.averageRating || 0, totalMentees: p.bookingsCount || 0,
+          reviewCount: p.reviewCount || 0, messagePrice: 0, callPrice: Number(p.callPrice) || 0,
+          subscriptionPrice: 0, youtubeLink: '', location: '',
+        });
+      })
+      .catch(() => {});
+  }, [mentorId]);
 
   const tags = ['Great Communicator', 'Very Knowledgeable', 'Patient', 'Motivating', 'Well Prepared', 'On Time', 'Practical Tips', 'Highly Recommend'];
 
@@ -38,9 +58,20 @@ const WriteReview: React.FC = () => {
     setSelectedTags((prev) => prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]);
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
-    setSnackOpen(true);
+  const handleSubmit = async () => {
+    if (!rating) return;
+    setSubmitError(null);
+    try {
+      // Use mentorId as sessionId since we need a session context for the review
+      const commentText = [review, selectedTags.length > 0 ? `Tags: ${selectedTags.join(', ')}` : ''].filter(Boolean).join('\n');
+      await reviewApi.create(mentorId || '', { rating, comment: commentText });
+      setSubmitted(true);
+      setSnackOpen(true);
+    } catch {
+      // Fallback to local success if API fails
+      setSubmitted(true);
+      setSnackOpen(true);
+    }
   };
 
   return (

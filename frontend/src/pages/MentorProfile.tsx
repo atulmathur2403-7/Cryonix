@@ -28,6 +28,8 @@ import {
   ArrowBack,
 } from '@mui/icons-material';
 import { sampleMentors, sampleReviews, sampleVideos } from '../data/mockData';
+import { Mentor, Review } from '../types';
+import { mentorApi } from '../services/api';
 import { AnimatedPage, glassSx } from '../components/animations';
 import { ProfileHeaderSkeleton, ReviewCardSkeleton, VideoCardSkeleton } from '../components/Skeletons';
 
@@ -36,15 +38,59 @@ const MentorProfile: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
+  const [mentor, setMentor] = useState<Mentor>(sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0]);
+  const [reviews, setReviews] = useState<Review[]>(sampleReviews.filter((r) => r.mentorId === (mentorId || '')));
 
   useEffect(() => {
     setLoading(true);
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
-  }, [mentorId]);
+    if (!mentorId) { setLoading(false); return; }
 
-  const mentor = sampleMentors.find((m) => m.id === mentorId) || sampleMentors[0];
-  const reviews = sampleReviews.filter((r) => r.mentorId === mentor.id);
+    Promise.all([
+      mentorApi.getById(mentorId).catch(() => null),
+      mentorApi.getReviews(mentorId).catch(() => null),
+    ]).then(([profileRes, reviewsRes]) => {
+      if (profileRes?.data) {
+        const p = profileRes.data;
+        setMentor({
+          id: String(p.mentorId),
+          name: p.name || '',
+          username: '',
+          specialty: p.expertise || '',
+          about: p.bio || '',
+          avatar: p.profilePic || '',
+          isVerified: false,
+          isOnline: false,
+          isLive: false,
+          followers: p.bookingsCount || 0,
+          following: 0,
+          likes: 0,
+          rating: p.averageRating || 0,
+          totalMentees: p.bookingsCount || 0,
+          reviewCount: p.reviewCount || 0,
+          messagePrice: Number(p.meetingPrice) || 0,
+          callPrice: Number(p.callPrice) || 0,
+          subscriptionPrice: Number(p.subscriptionPrice) || 0,
+          youtubeLink: p.socialLinks || '',
+          location: '',
+        });
+      }
+      if (reviewsRes?.data) {
+        const apiReviews = (reviewsRes.data.content || reviewsRes.data || []).map((r: any) => ({
+          id: String(r.id),
+          learnerId: '',
+          learnerName: r.learnerName || 'Anonymous',
+          learnerAvatar: '',
+          mentorId: mentorId,
+          sessionId: '',
+          rating: r.rating || 0,
+          text: r.comment || '',
+          attachments: [],
+          createdAt: r.createdAt || '',
+        }));
+        if (apiReviews.length > 0) setReviews(apiReviews);
+      }
+    }).finally(() => setLoading(false));
+  }, [mentorId]);
 
   const formatCount = (n: number) => {
     if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;

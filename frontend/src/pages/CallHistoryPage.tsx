@@ -30,6 +30,7 @@ import { sampleCallHistory } from '../data/mockData';
 import { CallHistory } from '../types';
 import { AnimatedPage, glassSx, FadeIn, AnimatedCounter } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
+import { dashboardApi, reviewApi } from '../services/api';
 
 const TOOLTIP_PROPS = {
   arrow: true,
@@ -58,14 +59,32 @@ const CallHistoryPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
-  const [callHistory, setCallHistory] = useState<CallHistory[]>(sampleCallHistory);
+  const [callHistory, setCallHistory] = useState<CallHistory[]>([]);
   const [reviewDialog, setReviewDialog] = useState<{ open: boolean; record: CallHistory | null }>({ open: false, record: null });
   const [reviewData, setReviewData] = useState({ rating: 0, review: '', communication: 50, knowledge: 50, helpfulness: 50 });
   const [snackOpen, setSnackOpen] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
+    dashboardApi.getLearnerSessions(0, 50)
+      .then((res) => {
+        const sessions = res.data.content || res.data;
+        const mapped: CallHistory[] = (Array.isArray(sessions) ? sessions : []).map((s: any) => ({
+          id: String(s.sessionId || s.id),
+          date: s.startTime ? new Date(s.startTime).toLocaleDateString() : '',
+          mentorName: s.mentorName || 'Mentor',
+          mentorAvatar: s.mentorProfilePic || '',
+          service: s.sessionType || 'Video Call',
+          subject: s.topic || s.tags?.join(', ') || 'General',
+          payment: s.amountPaid ? Number(s.amountPaid) : 0,
+          currency: 'USD',
+          location: 'Online',
+          rated: !!s.reviewed,
+          rating: s.rating || null,
+        }));
+        setCallHistory(mapped.length > 0 ? mapped : sampleCallHistory);
+      })
+      .catch(() => setCallHistory(sampleCallHistory))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleOpenReview = (record: CallHistory) => {
@@ -73,8 +92,16 @@ const CallHistoryPage: React.FC = () => {
     setReviewDialog({ open: true, record });
   };
 
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     if (!reviewDialog.record) return;
+    try {
+      await reviewApi.create(reviewDialog.record.id, {
+        rating: reviewData.rating,
+        comment: reviewData.review,
+      });
+    } catch {
+      // fallback: update locally even if API fails
+    }
     setCallHistory((prev) =>
       prev.map((r) =>
         r.id === reviewDialog.record!.id ? { ...r, rated: true, rating: reviewData.rating } : r

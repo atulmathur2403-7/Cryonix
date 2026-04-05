@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatedPage } from '../components/animations';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -19,14 +19,39 @@ import {
   Add,
   Send,
 } from '@mui/icons-material';
+import { sessionApi } from '../services/api';
 
 const VideoCall: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { sessionId } = useParams<{ sessionId: string }>();
   const [timeRemaining, setTimeRemaining] = useState(29 * 60 + 35);
   const [chatMessage, setChatMessage] = useState('');
   const [cameraOn, setCameraOn] = useState(true);
   const [micOn, setMicOn] = useState(true);
+  const [mentorName, setMentorName] = useState('Mentor');
+  const [dailyToken, setDailyToken] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    // Join session to get Daily.co token and room
+    sessionApi.joinSession(sessionId)
+      .then((res) => {
+        if (res.data.dailyAccessToken) setDailyToken(res.data.dailyAccessToken);
+        if (res.data.roomName) setRoomName(res.data.roomName);
+        if (res.data.mentorName) setMentorName(res.data.mentorName);
+      })
+      .catch(() => {});
+    // Also fetch session details for mentor name and duration
+    sessionApi.getById(sessionId)
+      .then((res) => {
+        const s = res.data;
+        if (s.mentorName) setMentorName(s.mentorName);
+        if (s.durationMinutes) setTimeRemaining(s.durationMinutes * 60);
+      })
+      .catch(() => {});
+  }, [sessionId]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -47,8 +72,11 @@ const VideoCall: React.FC = () => {
     return `${m} min ${s.toString().padStart(2, '0')} secs.`;
   };
 
-  const handleEndCall = () => {
-    navigate('/session/complete/session-1');
+  const handleEndCall = async () => {
+    if (sessionId) {
+      try { await sessionApi.endSession(sessionId); } catch {}
+    }
+    navigate(`/session-complete/${sessionId || 'session-1'}`);
   };
 
   return (
@@ -59,7 +87,7 @@ const VideoCall: React.FC = () => {
         <Typography variant="body1">
           Call Connected with:{' '}
           <Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>
-            Andrew Smith
+            {mentorName}
           </Box>
         </Typography>
         <Typography variant="body1" color="text.secondary">

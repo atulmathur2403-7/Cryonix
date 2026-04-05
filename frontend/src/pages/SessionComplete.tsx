@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatedPage, glassSx } from '../components/animations';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -20,6 +20,7 @@ import {
   Checkbox,
   FormControlLabel,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import {
   Download,
@@ -29,10 +30,12 @@ import {
   Report,
   ArrowBack,
 } from '@mui/icons-material';
+import { sessionApi, reviewApi, noteApi } from '../services/api';
 
 const SessionComplete: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { sessionId } = useParams<{ sessionId: string }>();
   const [rating, setRating] = useState<number | null>(0);
   const [review, setReview] = useState('');
   const [showReportModal, setShowReportModal] = useState(false);
@@ -41,6 +44,49 @@ const SessionComplete: React.FC = () => {
     description: '',
     requestRefund: false,
   });
+  const [sessionData, setSessionData] = useState({
+    mentorName: 'Mentor',
+    date: '',
+    sessionType: 'Live Video Call',
+    duration: '29 mins',
+  });
+  const [notes, setNotes] = useState('abc .......');
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    sessionApi.getById(sessionId)
+      .then((res) => {
+        const s = res.data;
+        setSessionData({
+          mentorName: s.mentorName || 'Mentor',
+          date: s.startTime ? new Date(s.startTime).toLocaleDateString() : '',
+          sessionType: s.sessionType || 'Live Video Call',
+          duration: s.durationMinutes ? `Total Duration: ${s.durationMinutes} mins.` : 'Total Duration: 29 mins.',
+        });
+      })
+      .catch(() => {});
+    noteApi.getAll(sessionId)
+      .then((res) => {
+        const allNotes = res.data;
+        if (Array.isArray(allNotes) && allNotes.length > 0) {
+          setNotes(allNotes.map((n: any) => n.content || n.text || '').join('\n'));
+        }
+      })
+      .catch(() => {});
+  }, [sessionId]);
+
+  const handleSubmitReview = async () => {
+    if (!sessionId || !rating) return;
+    setSubmittingReview(true);
+    try {
+      await reviewApi.create(sessionId, { rating, comment: review });
+    } catch {
+      // ignore
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   return (
     <AnimatedPage>
@@ -64,19 +110,19 @@ const SessionComplete: React.FC = () => {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               <Box>
                 <Typography variant="body2" color="text.secondary">Mentor name:</Typography>
-                <Typography fontWeight={600}>Ajay Shah</Typography>
+                <Typography fontWeight={600}>{sessionData.mentorName}</Typography>
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">Date & Time:</Typography>
-                <Typography fontWeight={600}>21/02/2025</Typography>
+                <Typography fontWeight={600}>{sessionData.date || '21/02/2025'}</Typography>
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">Session Type:</Typography>
-                <Typography fontWeight={600}>Live Video Call</Typography>
+                <Typography fontWeight={600}>{sessionData.sessionType}</Typography>
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">Call Duration:</Typography>
-                <Typography fontWeight={600}>Total Duration: 29 mins.</Typography>
+                <Typography fontWeight={600}>{sessionData.duration}</Typography>
               </Box>
             </Box>
           </Paper>
@@ -130,7 +176,7 @@ const SessionComplete: React.FC = () => {
               Notes Taken during Session:
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              abc .......
+              {notes}
             </Typography>
             <Button variant="outlined" startIcon={<Download />} size="small">
               Download Notes
@@ -165,8 +211,8 @@ const SessionComplete: React.FC = () => {
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
-        <Button variant="contained" startIcon={<MonetizationOn />}>
-          💰 Tip
+        <Button variant="contained" startIcon={submittingReview ? <CircularProgress size={16} color="inherit" /> : <MonetizationOn />} onClick={handleSubmitReview} disabled={submittingReview || !rating}>
+          Submit Review
         </Button>
         <Button variant="contained" startIcon={<Replay />}>
           Rebook Session
@@ -222,10 +268,10 @@ const SessionComplete: React.FC = () => {
 
           <Paper elevation={0} sx={{ p: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, mb: 2 }}>
             <Typography variant="body2" color="text.secondary">Session Details (Autofilled)</Typography>
-            <Typography variant="body2">Mentor: Ajay Shah</Typography>
-            <Typography variant="body2">Date: 21/02/2025</Typography>
-            <Typography variant="body2">Type: Live Video Call</Typography>
-            <Typography variant="body2">Duration: 29 mins</Typography>
+            <Typography variant="body2">Mentor: {sessionData.mentorName}</Typography>
+            <Typography variant="body2">Date: {sessionData.date || '21/02/2025'}</Typography>
+            <Typography variant="body2">Type: {sessionData.sessionType}</Typography>
+            <Typography variant="body2">Duration: {sessionData.duration}</Typography>
           </Paper>
 
           <Button variant="outlined" startIcon={<Upload />} size="small" sx={{ mb: 2 }}>

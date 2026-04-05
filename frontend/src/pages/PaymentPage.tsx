@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -17,13 +17,16 @@ import {
   FormControl,
   InputLabel,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import { Videocam, ArrowBack } from '@mui/icons-material';
 import { AnimatedPage, glassSx } from '../components/animations';
+import { bookingApi, mentorApi } from '../services/api';
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { sessionId } = useParams<{ sessionId: string }>();
   const [paymentTab, setPaymentTab] = useState(0);
   const [saveCard, setSaveCard] = useState(true);
   const [couponCode, setCouponCode] = useState('');
@@ -33,13 +36,48 @@ const PaymentPage: React.FC = () => {
     expDate: '',
     cvv: '',
   });
+  const [mentorName, setMentorName] = useState('Mentor');
+  const [totalAmount, setTotalAmount] = useState(20);
+  const [paying, setPaying] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch booking details to get mentor name and amount
+    bookingApi.getLearnerBookings()
+      .then((res) => {
+        const bookings = res.data.content || res.data;
+        const found = (Array.isArray(bookings) ? bookings : []).find(
+          (b: any) => String(b.bookingId || b.id) === sessionId
+        );
+        if (found) {
+          setTotalAmount(found.totalAmount ? Number(found.totalAmount) : 20);
+          if (found.clientSecret) setClientSecret(found.clientSecret);
+          if (found.mentorId) {
+            mentorApi.getById(String(found.mentorId)).then((mRes) => {
+              setMentorName(mRes.data.name || mRes.data.fullName || 'Mentor');
+            }).catch(() => {});
+          }
+        }
+      })
+      .catch(() => {});
+  }, [sessionId]);
 
   const paymentMethods = ['Credit card', 'Google Pay', 'Paypal', 'Debit card', 'Internet Banking'];
 
-  const handleConfirmPay = () => {
-    // Randomly succeed or fail for demo
-    const success = Math.random() > 0.3;
-    navigate(success ? '/order/success' : '/payment/failed');
+  const handleConfirmPay = async () => {
+    setPaying(true);
+    try {
+      // If we have a Stripe clientSecret from the booking, Stripe.js would confirm it.
+      // For now, update booking status to CONFIRMED on success.
+      if (sessionId) {
+        await bookingApi.updateStatus(sessionId, { status: 'CONFIRMED' });
+      }
+      navigate('/order/success');
+    } catch {
+      navigate('/payment/failed');
+    } finally {
+      setPaying(false);
+    }
   };
 
   return (
@@ -49,7 +87,7 @@ const PaymentPage: React.FC = () => {
       <Typography variant="h4" fontWeight={800} sx={{ mb: 1, letterSpacing: '-0.03em' }}>
         You are just one step away from your live call with{' '}
         <Box component="span" sx={{ color: 'primary.main' }}>
-          Andrew Smith
+          {mentorName}
         </Box>
       </Typography>
 
@@ -60,7 +98,7 @@ const PaymentPage: React.FC = () => {
         </Typography>
         <Videocam color="primary" />
         <Typography variant="body1" sx={{ color: 'primary.main', fontWeight: 600 }}>
-          Andrew Smith
+          {mentorName}
         </Typography>
       </Box>
 
@@ -79,7 +117,7 @@ const PaymentPage: React.FC = () => {
               </Select>
             </FormControl>
             <Typography variant="h6" fontWeight={700}>
-              Total Bill: $20 USD
+              Total Bill: ${totalAmount} USD
             </Typography>
           </Box>
 
@@ -177,9 +215,10 @@ const PaymentPage: React.FC = () => {
                 fullWidth
                 size="large"
                 onClick={handleConfirmPay}
+                disabled={paying}
                 sx={{ py: 1.5, fontWeight: 600 }}
               >
-                Confirm and Pay
+                {paying ? <CircularProgress size={22} color="inherit" /> : 'Confirm and Pay'}
               </Button>
             </Box>
           </Paper>

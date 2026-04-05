@@ -22,6 +22,8 @@ import {
   LocalFireDepartment,
 } from '@mui/icons-material';
 import { sampleSessions } from '../data/mockData';
+import { Session } from '../types';
+import { dashboardApi } from '../services/api';
 import { AnimatedPage, FadeIn, glassSx, AnimatedCounter, ProgressRing } from '../components/animations';
 import { TableSkeleton } from '../components/Skeletons';
 
@@ -30,14 +32,38 @@ const Dashboard: React.FC = () => {
   const theme = useTheme();
   const [mentorToggle, setMentorToggle] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [upcomingSessions, setUpcomingSessions] = useState<Session[]>([]);
+  const [pastSessions, setPastSessions] = useState<Session[]>([]);
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(t);
+    dashboardApi.getLearnerSessions(0, 20)
+      .then((res) => {
+        const sessions = (res.data.content || []).map((s: any) => ({
+          id: String(s.sessionId),
+          learnerId: String(s.learnerId),
+          mentorId: String(s.mentorId),
+          mentorName: s.mentorName || '',
+          mentorAvatar: '',
+          date: s.startTime ? new Date(s.startTime).toLocaleDateString() : '',
+          time: s.startTime ? new Date(s.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+          sessionType: 'Video Call' as const,
+          subject: '',
+          duration: s.startTime && s.endTime ? Math.round((new Date(s.endTime).getTime() - new Date(s.startTime).getTime()) / 60000) : 30,
+          status: (s.status === 'COMPLETED' ? 'completed' : s.status === 'CANCELLED' ? 'cancelled' : 'upcoming') as Session['status'],
+          paymentAmount: 0,
+          currency: 'USD',
+          ratingGiven: null,
+          notes: '',
+        }));
+        setUpcomingSessions(sessions.filter((s: Session) => s.status === 'upcoming'));
+        setPastSessions(sessions.filter((s: Session) => s.status === 'completed'));
+      })
+      .catch(() => {
+        setUpcomingSessions(sampleSessions.filter((s) => s.status === 'upcoming'));
+        setPastSessions(sampleSessions.filter((s) => s.status === 'completed'));
+      })
+      .finally(() => setLoading(false));
   }, []);
-
-  const upcomingSessions = sampleSessions.filter((s) => s.status === 'upcoming');
-  const pastSessions = sampleSessions.filter((s) => s.status === 'completed');
 
   return (
     <AnimatedPage>

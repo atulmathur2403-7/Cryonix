@@ -11,6 +11,8 @@ import {
   useTheme,
   Fade,
   Grow,
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import { Visibility, VisibilityOff, Google, Facebook, Apple, ArrowForward, ArrowBack } from '@mui/icons-material';
 import { useUser } from '../context/UserContext';
@@ -24,19 +26,37 @@ const AuthPage: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [signUpData, setSignUpData] = useState({ fullName: '', username: '', password: '', email: '', phone: '' });
   const [signInData, setSignInData] = useState({ username: '', password: '' });
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(false);
   const { login, signup } = useUser();
 
   useEffect(() => { setMounted(true); }, []);
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    signup(signUpData);
-    navigate('/dashboard');
+    setAuthError(null);
+    setAuthLoading(true);
+    try {
+      await signup({ fullName: signUpData.fullName, username: signUpData.username, email: signUpData.email, password: signUpData.password });
+      navigate('/dashboard');
+    } catch (err: any) {
+      setAuthError(err.message || 'Signup failed. Please try again.');
+    } finally {
+      setAuthLoading(false);
+    }
   };
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(signInData.username, signInData.password);
-    navigate('/dashboard');
+    setAuthError(null);
+    setAuthLoading(true);
+    try {
+      await login(signInData.username, signInData.password);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setAuthError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   return (
@@ -161,6 +181,8 @@ const AuthPage: React.FC = () => {
                     </Typography>
                   </Divider>
 
+                  {authError && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{authError}</Alert>}
+
                   <TextField
                     fullWidth
                     label="Email or Username"
@@ -201,7 +223,8 @@ const AuthPage: React.FC = () => {
                     variant="contained"
                     fullWidth
                     size="large"
-                    endIcon={<ArrowForward />}
+                    disabled={authLoading}
+                    endIcon={authLoading ? <CircularProgress size={20} color="inherit" /> : <ArrowForward />}
                     sx={{
                       py: 1.5,
                       fontSize: '1rem',
@@ -210,7 +233,7 @@ const AuthPage: React.FC = () => {
                       mb: 3,
                     }}
                   >
-                    Sign In
+                    {authLoading ? 'Signing In...' : 'Sign In'}
                   </Button>
 
                   <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
@@ -227,6 +250,7 @@ const AuthPage: React.FC = () => {
               ) : (
                 /* Sign Up */
                 <Box component="form" onSubmit={handleSignUp}>
+                  {authError && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{authError}</Alert>}
                   <TextField
                     fullWidth label="Full Name" variant="outlined" sx={{ mb: 2 }}
                     value={signUpData.fullName}
@@ -268,7 +292,8 @@ const AuthPage: React.FC = () => {
                     variant="contained"
                     fullWidth
                     size="large"
-                    endIcon={<ArrowForward />}
+                    disabled={authLoading}
+                    endIcon={authLoading ? <CircularProgress size={20} color="inherit" /> : <ArrowForward />}
                     sx={{
                       py: 1.5,
                       fontSize: '1rem',
@@ -277,7 +302,7 @@ const AuthPage: React.FC = () => {
                       mb: 3,
                     }}
                   >
-                    Create Account
+                    {authLoading ? 'Creating Account...' : 'Create Account'}
                   </Button>
 
                   <Divider sx={{ mb: 3 }}>

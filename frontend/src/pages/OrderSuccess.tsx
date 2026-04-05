@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -19,6 +19,12 @@ import { AnimatedPage, glassSx } from '../components/animations';
 const OrderSuccess: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const location = useLocation();
+  const state = (location.state as any) || {};
+  const subtotal = state.amount || 20;
+  const tax = Math.round(subtotal * 0.1);
+  const total = subtotal + tax;
+  const sessionId = state.sessionId || 'session-new';
 
   return (
     <AnimatedPage>
@@ -55,11 +61,11 @@ const OrderSuccess: React.FC = () => {
             <TableBody>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>Subtotal</TableCell>
-                <TableCell align="right">$20 USD</TableCell>
+                <TableCell align="right">${subtotal} USD</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>Tax (10%)</TableCell>
-                <TableCell align="right">$2 USD</TableCell>
+                <TableCell align="right">${tax} USD</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>Fees</TableCell>
@@ -74,7 +80,7 @@ const OrderSuccess: React.FC = () => {
                 <TableCell align="right">
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
                     <Chip label="Success" size="small" color="success" />
-                    <Typography fontWeight={700}>$22 USD</Typography>
+                    <Typography fontWeight={700}>${total} USD</Typography>
                   </Box>
                 </TableCell>
               </TableRow>
@@ -92,7 +98,7 @@ const OrderSuccess: React.FC = () => {
           variant="contained"
           size="large"
           fullWidth
-          onClick={() => navigate('/call/live/session-new')}
+          onClick={() => navigate(`/call/${sessionId}`)}
           sx={{ py: 1.5, fontWeight: 600, mb: 2 }}
         >
           Continue with Call

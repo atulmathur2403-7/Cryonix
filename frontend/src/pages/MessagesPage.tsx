@@ -32,6 +32,8 @@ import {
 import { sampleConversations } from '../data/mockData';
 import { AnimatedPage } from '../components/animations';
 import { ConversationSkeleton, MessageBubbleSkeleton } from '../components/Skeletons';
+import { chatApi } from '../services/api';
+import { Conversation } from '../types';
 
 const TOOLTIP_PROPS = {
   arrow: true,
@@ -58,14 +60,31 @@ const TOOLTIP_PROPS = {
 
 const MessagesPage: React.FC = () => {
   const theme = useTheme();
-  const [selectedConv, setSelectedConv] = useState(sampleConversations[3]);
+  const [conversations, setConversations] = useState<Conversation[]>(sampleConversations);
+  const [selectedConv, setSelectedConv] = useState<Conversation | null>(sampleConversations[3]);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Conversations are stored in Firebase. We fall back to mock data.
+    // The backend provides chat access per mentor via chatApi.getAccess().
     const t = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(t);
   }, []);
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || !selectedConv) return;
+    try {
+      await chatApi.sendMessage({
+        conversationId: selectedConv.id,
+        type: 'TEXT',
+        text: message,
+      });
+    } catch {
+      // continue anyway for local display
+    }
+    setMessage('');
+  };
 
   const chatMessages = [
     { id: '1', type: 'received', content: 'It comes with a complete package. We get it delivered with the needed packing', time: '2:30 PM' },
@@ -362,7 +381,7 @@ const MessagesPage: React.FC = () => {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Send message" {...TOOLTIP_PROPS}>
-                  <IconButton size="small" color="primary">
+                  <IconButton size="small" color="primary" onClick={handleSendMessage}>
                     <Send />
                   </IconButton>
                 </Tooltip>

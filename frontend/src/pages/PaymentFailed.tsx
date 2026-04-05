@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -18,6 +18,12 @@ import { AnimatedPage, glassSx } from '../components/animations';
 const PaymentFailed: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const location = useLocation();
+  const state = (location.state as any) || {};
+  const sessionId = state.sessionId || 'new';
+  const subtotal = state.amount || 20;
+  const tax = Math.round(subtotal * 0.1);
+  const total = subtotal + tax;
 
   return (
     <AnimatedPage>
@@ -49,11 +55,11 @@ const PaymentFailed: React.FC = () => {
             <TableBody>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>Subtotal</TableCell>
-                <TableCell align="right">$20 USD</TableCell>
+                <TableCell align="right">${subtotal} USD</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>Tax (10%)</TableCell>
-                <TableCell align="right">$2 USD</TableCell>
+                <TableCell align="right">${tax} USD</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>Fees</TableCell>
@@ -68,7 +74,7 @@ const PaymentFailed: React.FC = () => {
                 <TableCell align="right">
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1 }}>
                     <Chip label="Failed" size="small" color="error" />
-                    <Typography fontWeight={700}>$22 USD</Typography>
+                    <Typography fontWeight={700}>${total} USD</Typography>
                   </Box>
                 </TableCell>
               </TableRow>
@@ -79,7 +85,7 @@ const PaymentFailed: React.FC = () => {
         <Button
           variant="contained"
           size="large"
-          onClick={() => navigate('/payment/new')}
+          onClick={() => navigate(`/payment/${sessionId}`)}
           sx={{ py: 1.5, fontWeight: 600, px: 6 }}
         >
           Try again

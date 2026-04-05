@@ -41,6 +41,8 @@ import {
   Campaign,
 } from '@mui/icons-material';
 import { sampleMentors, sampleVideos, trendingTopics } from '../data/mockData';
+import { Mentor } from '../types';
+import { mentorApi } from '../services/api';
 import { AnimatedPage, FadeIn, RevealOnScroll, glassSx, glowBorderSx } from '../components/animations';
 import { MentorCardSkeleton, VideoCardSkeleton, ChipSkeleton } from '../components/Skeletons';
 import { ParticleCard, GlobalSpotlight, useMobileDetection } from '../components/MagicBento';
@@ -74,13 +76,40 @@ const ExplorePage: React.FC = () => {
   const theme = useTheme();
   const [priceRange, setPriceRange] = useState<number[]>([0, 100]);
   const [loading, setLoading] = useState(true);
+  const [trendingMentors, setTrendingMentors] = useState<Mentor[]>(sampleMentors);
   const onlineGridRef = useRef<HTMLDivElement>(null);
   const categoryGridRef = useRef<HTMLDivElement>(null);
   const isMobile = useMobileDetection();
 
   useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(t);
+    mentorApi.search({ sort: 'relevance', page: 0, size: 20 })
+      .then((res) => {
+        const apiMentors = (res.data.content || []).map((m: any) => ({
+          id: String(m.mentorId),
+          name: m.name || '',
+          username: '',
+          specialty: m.expertiseSummary || '',
+          about: '',
+          avatar: m.profilePic || '',
+          isVerified: false,
+          isOnline: false,
+          isLive: false,
+          followers: m.bookingsCount || 0,
+          following: 0,
+          likes: 0,
+          rating: m.averageRating || 0,
+          totalMentees: m.bookingsCount || 0,
+          reviewCount: m.reviewCount || 0,
+          messagePrice: 0,
+          callPrice: Number(m.callPrice) || 0,
+          subscriptionPrice: 0,
+          youtubeLink: '',
+          location: '',
+        }));
+        if (apiMentors.length > 0) setTrendingMentors(apiMentors);
+      })
+      .catch(() => { /* keep mock data */ })
+      .finally(() => setLoading(false));
   }, []);
   const [audioOnly, setAudioOnly] = useState(false);
   const [verifiedOnly, setVerifiedOnly] = useState(true);
@@ -201,7 +230,7 @@ const ExplorePage: React.FC = () => {
                   '&::-webkit-scrollbar-thumb': { bgcolor: theme.palette.divider, borderRadius: 3 },
                 }}
               >
-                {sampleMentors.slice(0, 8).map((m) => {
+                {trendingMentors.slice(0, 8).map((m) => {
                   const glowColors = [
                     'rgba(124, 92, 252, 0.67)',
                     'rgba(52, 199, 89, 0.67)',
@@ -222,7 +251,7 @@ const ExplorePage: React.FC = () => {
                     'linear-gradient(145deg, #1a1a3fcc 0%, #5856D6aa 100%)',
                     'linear-gradient(145deg, #3a0a1acc 0%, #FF2D55aa 100%)',
                   ];
-                  const idx = sampleMentors.indexOf(m);
+                  const idx = trendingMentors.indexOf(m);
                   return (
                     <Box
                       key={m.id}
@@ -282,7 +311,7 @@ const ExplorePage: React.FC = () => {
               <div className="mentor-bento-section">
                 <GlobalSpotlight gridRef={onlineGridRef} disableAnimations={isMobile} glowColor="76, 175, 80" />
                 <div className="mentor-bento-grid" ref={onlineGridRef}>
-                  {sampleMentors.filter((m) => m.isOnline).map((m, idx) => (
+                  {trendingMentors.filter((m) => m.isOnline).map((m, idx) => (
                     <ParticleCard
                       key={m.id}
                       className="mentor-bento-card mentor-bento-card--border-glow"
@@ -342,7 +371,7 @@ const ExplorePage: React.FC = () => {
               </Box>
             </Box>
             <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2 }}>
-              {sampleMentors.slice(0, 4).map((m) => (
+              {trendingMentors.slice(0, 4).map((m) => (
                 <Card
                   key={'rec-' + m.id}
                   elevation={0}

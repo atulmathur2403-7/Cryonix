@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { currentUser as defaultUser } from '../data/mockData';
 import { useUser } from '../context/UserContext';
+import { userApi } from '../services/api';
 import { AnimatedPage, FadeIn, glassSx, ProgressRing } from '../components/animations';
 
 const TOOLTIP_PROPS = {
@@ -51,8 +52,24 @@ const TOOLTIP_PROPS = {
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { user } = useUser();
+  const { user, updateUser, isLoggedIn } = useUser();
   const currentUser = { ...defaultUser, ...user };
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    userApi.getProfile()
+      .then((res) => {
+        const p = res.data;
+        updateUser({
+          fullName: p.fullName || user.fullName,
+          username: p.username || user.username,
+          email: p.email || user.email,
+          phone: p.phoneNumber || user.phone,
+          avatar: p.profilePhotoUrl || user.avatar,
+        });
+      })
+      .catch(() => {});
+  }, [isLoggedIn]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const quickActions = [
     { icon: <Edit />, label: 'Edit Profile', path: '/profile' },
