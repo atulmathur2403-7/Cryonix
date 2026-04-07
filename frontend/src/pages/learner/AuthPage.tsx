@@ -35,7 +35,7 @@ const AuthPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [signUpData, setSignUpData] = useState({ fullName: '', username: '', password: '', email: '', phone: '' });
-  const [signInData, setSignInData] = useState({ username: '', password: '' });
+  const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [authError, setAuthError] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false);
   const { login, signup } = useUser();
@@ -70,7 +70,7 @@ const AuthPage: React.FC = () => {
     setAuthError(null);
     setAuthLoading(true);
     try {
-      await login(signInData.username, signInData.password);
+      await login(signInData.email, signInData.password);
       navigate(cfg.redirect);
     } catch (err: any) {
       setAuthError(err.message || 'Login failed. Please check your credentials.');
@@ -233,11 +233,12 @@ const AuthPage: React.FC = () => {
 
                   <TextField
                     fullWidth
-                    label="Email or Username"
+                    label="Email"
+                    type="email"
                     variant="outlined"
                     sx={{ mb: 2 }}
-                    value={signInData.username}
-                    onChange={(e) => setSignInData({ ...signInData, username: e.target.value })}
+                    value={signInData.email}
+                    onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                   />
                   <TextField
                     fullWidth
