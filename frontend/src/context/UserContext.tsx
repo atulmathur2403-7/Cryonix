@@ -11,7 +11,10 @@ interface UserContextType {
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  signup: (data: { fullName: string; username: string; email: string; password: string }) => Promise<void>;
+  signup: (data: { fullName: string; username: string; email: string; password: string }) => Promise<{ requiresOtp: boolean; email: string }>;
+  googleLogin: (googleAccessToken: string, role?: string) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   fetchProfile: () => Promise<void>;
@@ -25,7 +28,10 @@ const UserContext = createContext<UserContextType>({
   loading: false,
   error: null,
   login: async () => {},
-  signup: async () => {},
+  signup: async () => ({ requiresOtp: false, email: '' }),
+  googleLogin: async () => {},
+  verifyOtp: async () => {},
+  resendOtp: async () => {},
   logout: () => {},
   updateUser: () => {},
   fetchProfile: async () => {},
@@ -119,31 +125,95 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         password: data.password,
         role: 'LEARNER',
       });
-      const { accessToken, refreshToken } = res.data;
-      localStorage.setItem('mentr-token', accessToken);
-      localStorage.setItem('mentr-refresh-token', refreshToken);
-      const newUser: User = {
-        ...defaultUser,
-        id: 'user-' + Date.now(),
-        fullName: data.fullName,
-        username: data.username,
-        email: data.email,
-        phone: '',
-        bio: '',
-        interests: [],
-        sessionsBooked: 0,
-        sessionsCompleted: 0,
-        avgRatingGiven: 0,
-      };
-      setUser(newUser);
-      setIsLoggedIn(true);
-      persistUser(newUser, true);
+      // Signup now returns { message, email } — OTP required
+      return { requiresOtp: true, email: res.data.email || data.email };
     } catch (err: any) {
       const message = err.response?.data?.message || err.response?.data || 'Signup failed. Please try again.';
       setError(message);
       throw new Error(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const googleLogin = async (googleAccessToken: string, role?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await authApi.googleAuth({ accessToken: googleAccessToken, role });
+      const { accessToken, refreshToken } = res.data;
+      localStorage.setItem('mentr-token', accessToken);
+      localStorage.setItem('mentr-refresh-token', refreshToken);
+      setIsLoggedIn(true);
+      try {
+        const profileRes = await userApi.getProfile();
+        const profile = profileRes.data;
+        const loggedInUser: User = {
+          ...defaultUser,
+          fullName: profile.fullName || '',
+          username: profile.username || '',
+          email: profile.email || '',
+          phone: profile.phoneNumber || '',
+          avatar: profile.profilePhotoUrl || '',
+          roles: profile.roles || [],
+          isMentor: (profile.roles || []).includes('ROLE_MENTOR'),
+        };
+        setUser(loggedInUser);
+        persistUser(loggedInUser, true);
+      } catch {
+        // Could not fetch profile
+      }
+    } catch (err: any) {
+      const message = err.response?.data?.message || err.response?.data || 'Google sign-in failed.';
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await authApi.verifyOtp({ email, otp });
+      const { accessToken, refreshToken } = res.data;
+      localStorage.setItem('mentr-token', accessToken);
+      localStorage.setItem('mentr-refresh-token', refreshToken);
+      setIsLoggedIn(true);
+      try {
+        const profileRes = await userApi.getProfile();
+        const profile = profileRes.data;
+        const loggedInUser: User = {
+          ...defaultUser,
+          fullName: profile.fullName || '',
+          username: profile.username || '',
+          email: profile.email || '',
+          phone: profile.phoneNumber || '',
+          avatar: profile.profilePhotoUrl || '',
+          roles: profile.roles || [],
+          isMentor: (profile.roles || []).includes('ROLE_MENTOR'),
+        };
+        setUser(loggedInUser);
+        persistUser(loggedInUser, true);
+      } catch {
+        // Could not fetch profile
+      }
+    } catch (err: any) {
+      const message = err.response?.data?.message || err.response?.data || 'OTP verification failed.';
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resendOtp = async (email: string) => {
+    try {
+      await authApi.resendOtp({ email });
+    } catch (err: any) {
+      const message = err.response?.data?.message || err.response?.data || 'Failed to resend OTP.';
+      throw new Error(message);
     }
   };
 
@@ -167,7 +237,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAdmin = (user.roles || []).includes('ROLE_ADMIN');
 
   return (
-    <UserContext.Provider value={{ user, isLoggedIn, isMentor, isAdmin, loading, error, login, signup, logout, updateUser, fetchProfile }}>
+    <UserContext.Provider value={{ user, isLoggedIn, isMentor, isAdmin, loading, error, login, signup, googleLogin, verifyOtp, resendOtp, logout, updateUser, fetchProfile }}>
       {children}
     </UserContext.Provider>
   );

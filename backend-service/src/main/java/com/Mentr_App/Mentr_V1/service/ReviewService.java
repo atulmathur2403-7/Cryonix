@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface ReviewService {
     ReviewResponse addReview(Long sessionId, Long learnerId, ReviewRequest request);
+    ReviewResponse addReviewForMentor(Long mentorId, Long learnerId, ReviewRequest request);
     List<ReviewResponse> getReviewsForMentor(Long mentorId);
     Page<ReviewResponse> getAllReviewsForMentor(Long mentorId, int page, int size);
-
 }
 

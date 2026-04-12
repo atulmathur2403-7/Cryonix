@@ -18,6 +18,7 @@ import java.util.Optional;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMentor_MentorId(Long mentorId);
     boolean existsBySession_IdAndLearner_UserId(Long sessionId, Long learnerId);
+    boolean existsByLearner_UserIdAndMentor_MentorId(Long learnerId, Long mentorId);
     Page<Review> findByMentor_MentorId(Long mentorId, Pageable pageable);
 
 

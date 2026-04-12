@@ -28,6 +28,9 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @EntityGraph(attributePaths = {"mentor.user", "learner"})
     Optional<Session> findById(Long id);
 
+    Optional<Session> findTopByLearner_UserIdAndMentor_MentorIdAndStatusOrderByStartTimeDesc(
+            Long learnerId, Long mentorId, SessionStatus status);
+
     // ✅ new pageable versions
     Page<Session> findByMentor_MentorIdOrderByStartTimeDesc(Long mentorId, Pageable pageable);
     Page<Session> findByLearner_UserIdOrderByStartTimeDesc(Long learnerId, Pageable pageable);

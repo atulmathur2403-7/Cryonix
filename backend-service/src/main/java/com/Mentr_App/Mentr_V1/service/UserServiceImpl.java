@@ -6,11 +6,14 @@ package com.Mentr_App.Mentr_V1.service;
 import com.Mentr_App.Mentr_V1.dto.user.UserProfileResponse;
 import com.Mentr_App.Mentr_V1.dto.user.UserUpdateRequestDTO;
 import com.Mentr_App.Mentr_V1.exception.ApiException;
+import com.Mentr_App.Mentr_V1.model.Role;
 import com.Mentr_App.Mentr_V1.model.User;
 import com.Mentr_App.Mentr_V1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,15 +50,21 @@ public class UserServiceImpl implements UserService {
                 ? user.getProfileImageUrl()
                 : user.getProfilePic();
 
+        List<String> roles = user.getRoles() != null
+                ? user.getRoles().stream().map(Role::getName).toList()
+                : List.of();
+
         return UserProfileResponse.builder()
                 .fullName(user.getName())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .pronouns(user.getPronouns())
+                .dateOfBirth(user.getDateOfBirth())
                 .profilePhotoUrl(photo)
                 .phoneNumber(user.getPhoneE164())
                 .phoneCountryIso(user.getPhoneCountryIso())
                 .phoneVerified(user.isPhoneVerified())
+                .roles(roles)
                 .build();
     }
 }

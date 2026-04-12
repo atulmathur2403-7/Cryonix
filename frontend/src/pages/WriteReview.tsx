@@ -62,15 +62,13 @@ const WriteReview: React.FC = () => {
     if (!rating) return;
     setSubmitError(null);
     try {
-      // Use mentorId as sessionId since we need a session context for the review
       const commentText = [review, selectedTags.length > 0 ? `Tags: ${selectedTags.join(', ')}` : ''].filter(Boolean).join('\n');
-      await reviewApi.create(mentorId || '', { rating, comment: commentText });
+      await reviewApi.createForMentor(mentorId || '', { rating, comment: commentText });
       setSubmitted(true);
       setSnackOpen(true);
-    } catch {
-      // Fallback to local success if API fails
-      setSubmitted(true);
-      setSnackOpen(true);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to submit review. Please try again.';
+      setSubmitError(msg);
     }
   };
 

@@ -52,6 +52,8 @@ const SessionComplete: React.FC = () => {
   });
   const [notes, setNotes] = useState('abc .......');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -79,10 +81,12 @@ const SessionComplete: React.FC = () => {
   const handleSubmitReview = async () => {
     if (!sessionId || !rating) return;
     setSubmittingReview(true);
+    setReviewError(null);
     try {
       await reviewApi.create(sessionId, { rating, comment: review });
-    } catch {
-      // ignore
+      setReviewSubmitted(true);
+    } catch (err: any) {
+      setReviewError(err?.response?.data?.message || err?.message || 'Failed to submit review.');
     } finally {
       setSubmittingReview(false);
     }
@@ -211,9 +215,18 @@ const SessionComplete: React.FC = () => {
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
-        <Button variant="contained" startIcon={submittingReview ? <CircularProgress size={16} color="inherit" /> : <MonetizationOn />} onClick={handleSubmitReview} disabled={submittingReview || !rating}>
-          Submit Review
-        </Button>
+        {reviewSubmitted ? (
+          <Button variant="contained" color="success" disabled>
+            ✓ Review Submitted
+          </Button>
+        ) : (
+          <Button variant="contained" startIcon={submittingReview ? <CircularProgress size={16} color="inherit" /> : <MonetizationOn />} onClick={handleSubmitReview} disabled={submittingReview || !rating}>
+            Submit Review
+          </Button>
+        )}
+        {reviewError && (
+          <Typography variant="body2" color="error" sx={{ alignSelf: 'center' }}>{reviewError}</Typography>
+        )}
         <Button variant="contained" startIcon={<Replay />}>
           Rebook Session
         </Button>

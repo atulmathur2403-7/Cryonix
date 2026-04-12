@@ -49,7 +49,6 @@ public class User {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    @NotBlank
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -85,6 +84,12 @@ public class User {
 
     @Column(name = "phone_verified", nullable = false)
     private boolean phoneVerified;
+
+    @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
+    private boolean emailVerified;
+
+    @Column(name = "auth_provider", length = 20, columnDefinition = "varchar(20) default 'LOCAL'")
+    private String authProvider; // LOCAL, GOOGLE
 
     // Optional OTP mode A staging fields (kept nullable)
     @Column(name = "pending_phone_e164", length = 32)

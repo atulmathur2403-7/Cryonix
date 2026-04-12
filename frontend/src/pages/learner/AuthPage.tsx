@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff, Google, Facebook, Apple, ArrowForward, ArrowBack, School, AdminPanelSettings, Person } from '@mui/icons-material';
 import { useUser } from '../../context/UserContext';
+import { useGoogleLogin } from '@react-oauth/google';
 
 type AuthRole = 'learner' | 'mentor' | 'admin';
 
@@ -38,7 +39,14 @@ const AuthPage: React.FC = () => {
   const [signInData, setSignInData] = useState({ email: '', password: '' });
   const [authError, setAuthError] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false);
-  const { login, signup } = useUser();
+  const { login, signup, googleLogin, verifyOtp, resendOtp } = useUser();
+
+  // OTP verification state
+  const [showOtpScreen, setShowOtpScreen] = useState(false);
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
+  const [otpResendCooldown, setOtpResendCooldown] = useState(0);
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Determine role from route
   const getInitialRole = (): AuthRole => {
@@ -50,6 +58,14 @@ const AuthPage: React.FC = () => {
 
   useEffect(() => { setMounted(true); }, []);
 
+  // OTP resend cooldown timer
+  useEffect(() => {
+    if (otpResendCooldown > 0) {
+      const timer = setTimeout(() => setOtpResendCooldown(otpResendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [otpResendCooldown]);
+
   const cfg = roleConfig[selectedRole];
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -57,8 +73,14 @@ const AuthPage: React.FC = () => {
     setAuthError(null);
     setAuthLoading(true);
     try {
-      await signup({ fullName: signUpData.fullName, username: signUpData.username, email: signUpData.email, password: signUpData.password });
-      navigate(cfg.redirect);
+      const result = await signup({ fullName: signUpData.fullName, username: signUpData.username, email: signUpData.email, password: signUpData.password });
+      if (result.requiresOtp) {
+        setOtpEmail(result.email);
+        setShowOtpScreen(true);
+        setOtpResendCooldown(30);
+      } else {
+        navigate(cfg.redirect);
+      }
     } catch (err: any) {
       setAuthError(err.message || 'Signup failed. Please try again.');
     } finally {
@@ -73,11 +95,96 @@ const AuthPage: React.FC = () => {
       await login(signInData.email, signInData.password);
       navigate(cfg.redirect);
     } catch (err: any) {
-      setAuthError(err.message || 'Login failed. Please check your credentials.');
+      if (err.message === 'EMAIL_NOT_VERIFIED') {
+        setOtpEmail(signInData.email);
+        setShowOtpScreen(true);
+        setOtpResendCooldown(30);
+        setAuthError(null);
+      } else {
+        setAuthError(err.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setAuthLoading(false);
     }
   };
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    const newValues = [...otpValues];
+    newValues[index] = value.slice(-1);
+    setOtpValues(newValues);
+    if (value && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otpValues[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    const newValues = [...otpValues];
+    for (let i = 0; i < pastedData.length; i++) {
+      newValues[i] = pastedData[i];
+    }
+    setOtpValues(newValues);
+    const nextIndex = Math.min(pastedData.length, 5);
+    otpInputRefs.current[nextIndex]?.focus();
+  };
+
+  const handleVerifyOtp = async () => {
+    const otp = otpValues.join('');
+    if (otp.length !== 6) {
+      setAuthError('Please enter the full 6-digit code');
+      return;
+    }
+    setAuthError(null);
+    setAuthLoading(true);
+    try {
+      await verifyOtp(otpEmail, otp);
+      navigate(cfg.redirect);
+    } catch (err: any) {
+      setAuthError(err.message || 'Invalid OTP. Please try again.');
+      setOtpValues(['', '', '', '', '', '']);
+      otpInputRefs.current[0]?.focus();
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      await resendOtp(otpEmail);
+      setOtpResendCooldown(30);
+      setAuthError(null);
+    } catch (err: any) {
+      setAuthError(err.message || 'Failed to resend OTP.');
+    }
+  };
+
+  // Google OAuth — uses implicit flow
+  const googleOAuthLogin = useGoogleLogin({
+    flow: 'implicit',
+    onSuccess: async (tokenResponse) => {
+      setAuthError(null);
+      setAuthLoading(true);
+      try {
+        await googleLogin(tokenResponse.access_token, selectedRole);
+        navigate(cfg.redirect);
+      } catch (err: any) {
+        setAuthError(err.message || 'Google sign-in failed.');
+      } finally {
+        setAuthLoading(false);
+      }
+    },
+    onError: () => {
+      setAuthError('Google sign-in was cancelled.');
+    },
+  });
 
   return (
     <Box
@@ -145,7 +252,7 @@ const AuthPage: React.FC = () => {
                 Mentr
               </Typography>
               <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 400 }}>
-                {isSignUp ? 'Create your account to get started' : cfg.subtitle}
+                {showOtpScreen ? 'Enter the verification code' : isSignUp ? 'Create your account to get started' : cfg.subtitle}
               </Typography>
             </Box>
           </Grow>
@@ -193,34 +300,119 @@ const AuthPage: React.FC = () => {
                   : '0 24px 80px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1)',
               }}
             >
-              {!isSignUp ? (
+              {showOtpScreen ? (
+                /* OTP Verification */
+                <Box>
+                  <Box sx={{ textAlign: 'center', mb: 3 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                      Verify your email
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      We sent a 6-digit code to <strong>{otpEmail}</strong>
+                    </Typography>
+                  </Box>
+
+                  {authError && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{authError}</Alert>}
+
+                  <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mb: 3 }} onPaste={handleOtpPaste}>
+                    {otpValues.map((val, i) => (
+                      <TextField
+                        key={i}
+                        inputRef={(el) => { otpInputRefs.current[i] = el; }}
+                        value={val}
+                        onChange={(e) => handleOtpChange(i, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                        inputProps={{
+                          maxLength: 1,
+                          style: { textAlign: 'center', fontSize: '1.5rem', fontWeight: 700, padding: '12px 0' },
+                          inputMode: 'numeric',
+                        }}
+                        sx={{
+                          width: 52,
+                          '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                        }}
+                        autoFocus={i === 0}
+                      />
+                    ))}
+                  </Box>
+
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    size="large"
+                    disabled={authLoading || otpValues.join('').length !== 6}
+                    onClick={handleVerifyOtp}
+                    endIcon={authLoading ? <CircularProgress size={20} color="inherit" /> : <ArrowForward />}
+                    sx={{
+                      py: 1.5, fontSize: '1rem', fontWeight: 700, borderRadius: 3, mb: 2,
+                      bgcolor: cfg.color,
+                      '&:hover': { bgcolor: cfg.color, filter: 'brightness(0.9)' },
+                    }}
+                  >
+                    {authLoading ? 'Verifying...' : 'Verify & Continue'}
+                  </Button>
+
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Didn't receive the code?{' '}
+                      {otpResendCooldown > 0 ? (
+                        <Box component="span" sx={{ fontWeight: 600 }}>Resend in {otpResendCooldown}s</Box>
+                      ) : (
+                        <Box
+                          component="span"
+                          sx={{ color: 'primary.main', fontWeight: 600, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                          onClick={handleResendOtp}
+                        >
+                          Resend
+                        </Box>
+                      )}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ mt: 1, color: 'text.secondary', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                      onClick={() => { setShowOtpScreen(false); setAuthError(null); setOtpValues(['', '', '', '', '', '']); }}
+                    >
+                      ← Back to sign in
+                    </Typography>
+                  </Box>
+                </Box>
+              ) : !isSignUp ? (
                 /* Sign In */
                 <Box component="form" onSubmit={handleSignIn}>
                   {/* Social buttons */}
                   <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
-                    {[
-                      { icon: <Google />, label: 'Google', bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
-                      { icon: <Facebook />, label: 'Facebook', bg: '#1877F2', color: '#fff' },
-                      { icon: <Apple />, label: 'Apple', bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
-                    ].map((s) => (
-                      <Button
-                        key={s.label}
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                          py: 1.3,
-                          bgcolor: s.bg,
-                          color: s.color,
-                          borderRadius: 3,
-                          boxShadow: 'none',
-                          minWidth: 0,
-                          background: s.bg,
-                          '&:hover': { background: s.bg, opacity: 0.9, boxShadow: `0 4px 16px ${s.bg}30`, transform: 'translateY(-2px)' },
-                        }}
-                      >
-                        {s.icon}
-                      </Button>
-                    ))}
+                    <Button
+                      fullWidth variant="contained"
+                      onClick={() => googleOAuthLogin()}
+                      sx={{
+                        py: 1.3, bgcolor: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff',
+                        borderRadius: 3, boxShadow: 'none', minWidth: 0,
+                        '&:hover': { bgcolor: isDark ? '#fff' : '#1d1d1f', opacity: 0.9, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transform: 'translateY(-2px)' },
+                      }}
+                    >
+                      <Google />
+                    </Button>
+                    <Button
+                      fullWidth variant="contained" disabled
+                      sx={{
+                        py: 1.3, bgcolor: '#1877F2', color: '#fff', borderRadius: 3, boxShadow: 'none', minWidth: 0,
+                        '&:hover': { bgcolor: '#1877F2', opacity: 0.9 },
+                        '&.Mui-disabled': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', color: 'text.disabled' },
+                      }}
+                    >
+                      <Facebook />
+                    </Button>
+                    <Button
+                      fullWidth variant="contained" disabled
+                      sx={{
+                        py: 1.3, bgcolor: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff',
+                        borderRadius: 3, boxShadow: 'none', minWidth: 0,
+                        '&:hover': { bgcolor: isDark ? '#fff' : '#1d1d1f', opacity: 0.9 },
+                        '&.Mui-disabled': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', color: 'text.disabled' },
+                      }}
+                    >
+                      <Apple />
+                    </Button>
                   </Box>
 
                   <Divider sx={{ my: 3, '&::before, &::after': { borderColor: theme.palette.divider } }}>
@@ -365,24 +557,36 @@ const AuthPage: React.FC = () => {
                   </Divider>
 
                   <Box sx={{ display: 'flex', gap: 1.5, mb: 3 }}>
-                    {[
-                      { icon: <Google />, bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
-                      { icon: <Facebook />, bg: '#1877F2', color: '#fff' },
-                      { icon: <Apple />, bg: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff' },
-                    ].map((s, i) => (
-                      <Button
-                        key={i}
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                          py: 1.3, bgcolor: s.bg, color: s.color, borderRadius: 3,
-                          boxShadow: 'none', minWidth: 0, background: s.bg,
-                          '&:hover': { background: s.bg, opacity: 0.9, boxShadow: `0 4px 16px ${s.bg}30`, transform: 'translateY(-2px)' },
-                        }}
-                      >
-                        {s.icon}
-                      </Button>
-                    ))}
+                    <Button
+                      fullWidth variant="contained"
+                      onClick={() => googleOAuthLogin()}
+                      sx={{
+                        py: 1.3, bgcolor: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff',
+                        borderRadius: 3, boxShadow: 'none', minWidth: 0,
+                        '&:hover': { bgcolor: isDark ? '#fff' : '#1d1d1f', opacity: 0.9, boxShadow: '0 4px 16px rgba(0,0,0,0.15)', transform: 'translateY(-2px)' },
+                      }}
+                    >
+                      <Google />
+                    </Button>
+                    <Button
+                      fullWidth variant="contained" disabled
+                      sx={{
+                        py: 1.3, bgcolor: '#1877F2', color: '#fff', borderRadius: 3, boxShadow: 'none', minWidth: 0,
+                        '&.Mui-disabled': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', color: 'text.disabled' },
+                      }}
+                    >
+                      <Facebook />
+                    </Button>
+                    <Button
+                      fullWidth variant="contained" disabled
+                      sx={{
+                        py: 1.3, bgcolor: isDark ? '#fff' : '#1d1d1f', color: isDark ? '#1d1d1f' : '#fff',
+                        borderRadius: 3, boxShadow: 'none', minWidth: 0,
+                        '&.Mui-disabled': { bgcolor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)', color: 'text.disabled' },
+                      }}
+                    >
+                      <Apple />
+                    </Button>
                   </Box>
 
                   <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
