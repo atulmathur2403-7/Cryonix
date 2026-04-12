@@ -12,6 +12,7 @@ export interface User {
   avgRatingGiven: number;
   savedVideos: string[];
   isMentor: boolean;
+  roles?: string[];
 }
 
 export interface Mentor {

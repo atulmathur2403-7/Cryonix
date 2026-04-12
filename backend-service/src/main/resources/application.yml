@@ -1,0 +1,118 @@
+# ──────────────────────────────────────────────
+#  Mentr V1 — Application Configuration
+# ──────────────────────────────────────────────
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: mentr-v1
+
+  # ── PostgreSQL ──
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mentr_db
+    username: ${DB_USERNAME:atulmathur}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+
+  # ── JPA / Hibernate ──
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+    open-in-view: false
+
+  # ── File Upload ──
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 210MB
+
+  # ── Async / Scheduling ──
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 20
+        queue-capacity: 100
+      thread-name-prefix: mentr-async-
+    scheduling:
+      pool:
+        size: 10
+      thread-name-prefix: mentr-scheduled-
+
+# ── JWT ──
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:ThisIsADevelopmentOnlySecretKeyThatMustBe256BitsLong!}
+    expiration-ms: 86400000
+    refresh-expiration-ms: 604800000
+  profile-image:
+    max-bytes: 5242880
+    max-dimension: 5000
+
+# ── Firebase ──
+firebase:
+  service-account-path: ${FIREBASE_SERVICE_ACCOUNT_PATH:firebase-service-account.json}
+  storage-bucket: ${FIREBASE_STORAGE_BUCKET:your-bucket.appspot.com}
+
+# ── Google Cloud Storage ──
+gcp:
+  service-account-path: ${GCP_SERVICE_ACCOUNT_PATH:}
+
+# ── Stripe ──
+stripe:
+  api-key: ${STRIPE_API_KEY:sk_test_placeholder}
+  publishable-key: ${STRIPE_PUBLISHABLE_KEY:pk_test_placeholder}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_placeholder}
+  currency: inr
+  platform-commission-percent: 10
+  enable-test-mode: true
+
+# ── Daily.co (Video Calls) ──
+daily:
+  api-key: ${DAILY_API_KEY:placeholder}
+  api-base-url: https://api.daily.co/v1
+  domain: ${DAILY_DOMAIN:https://your-subdomain.daily.co}
+  room-expiry-minutes: 480
+  eject-grace-seconds: 300
+
+# ── Chat ──
+mentr:
+  chat:
+    phone-number-policy-mode: MASK
+    conversations-collection: conversations
+  youtube:
+    shorts:
+      max-videos-per-mentor: 3
+      staging-bucket: ${YOUTUBE_STAGING_BUCKET:mentr-shorts-staging}
+      object-prefix: mentor_shorts
+      signed-url-ttl-seconds: 900
+      reservation-ttl-seconds: 900
+      max-file-bytes: 200000000
+      max-duration-seconds: 180
+      allow-square: true
+      require-vertical-or-square: true
+      worker:
+        poll-delay-ms: 15000
+        batch-size: 3
+        max-attempts: 8
+        base-backoff-seconds: 15
+      youtube:
+        application-name: Mentr App
+        client-id: ${YOUTUBE_CLIENT_ID:placeholder}
+        client-secret: ${YOUTUBE_CLIENT_SECRET:placeholder}
+        refresh-token: ${YOUTUBE_REFRESH_TOKEN:placeholder}
+        privacy-status: unlisted
+        category-id: '22'
+
+# ── Logging ──
+logging:
+  level:
+    root: INFO
+    com.Mentr_App: DEBUG
