@@ -46,6 +46,12 @@ export const authApi = {
     api.post('/auth/signup', data),
   login: (data: { email: string; password: string }) =>
     api.post('/auth/login', data),
+  googleAuth: (data: { accessToken: string; role?: string }) =>
+    api.post('/auth/google', data),
+  verifyOtp: (data: { email: string; otp: string }) =>
+    api.post('/auth/verify-otp', data),
+  resendOtp: (data: { email: string }) =>
+    api.post('/auth/resend-otp', data),
   refreshToken: (refreshToken: string) =>
     api.post('/auth/refresh-token', { refreshToken }),
 };
@@ -95,6 +101,8 @@ export const sessionApi = {
 export const reviewApi = {
   create: (sessionId: string, data: { rating: number; comment: string }) =>
     api.post(`/sessions/${sessionId}/reviews`, data),
+  createForMentor: (mentorId: string, data: { rating: number; comment: string }) =>
+    api.post(`/mentors/${mentorId}/reviews`, data),
   getMentorReviews: (mentorId: string) => api.get(`/reviews/mentor/${mentorId}`),
 };
 

@@ -1,0 +1,316 @@
+import React, { useState, useEffect } from 'react';
+import { AnimatedPage, glassSx } from '../components/animations';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Paper,
+  Button,
+  Rating,
+  TextField,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+  useTheme,
+  CircularProgress,
+} from '@mui/material';
+import {
+  Download,
+  Upload,
+  MonetizationOn,
+  Replay,
+  Report,
+  ArrowBack,
+} from '@mui/icons-material';
+import { sessionApi, reviewApi, noteApi } from '../services/api';
+
+const SessionComplete: React.FC = () => {
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const { sessionId } = useParams<{ sessionId: string }>();
+  const [rating, setRating] = useState<number | null>(0);
+  const [review, setReview] = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportData, setReportData] = useState({
+    issueType: 'Session Didn\'t happen',
+    description: '',
+    requestRefund: false,
+  });
+  const [sessionData, setSessionData] = useState({
+    mentorName: 'Mentor',
+    date: '',
+    sessionType: 'Live Video Call',
+    duration: '29 mins',
+  });
+  const [notes, setNotes] = useState('abc .......');
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    sessionApi.getById(sessionId)
+      .then((res) => {
+        const s = res.data;
+        setSessionData({
+          mentorName: s.mentorName || 'Mentor',
+          date: s.startTime ? new Date(s.startTime).toLocaleDateString() : '',
+          sessionType: s.sessionType || 'Live Video Call',
+          duration: s.durationMinutes ? `Total Duration: ${s.durationMinutes} mins.` : 'Total Duration: 29 mins.',
+        });
+      })
+      .catch(() => {});
+    noteApi.getAll(sessionId)
+      .then((res) => {
+        const allNotes = res.data;
+        if (Array.isArray(allNotes) && allNotes.length > 0) {
+          setNotes(allNotes.map((n: any) => n.content || n.text || '').join('\n'));
+        }
+      })
+      .catch(() => {});
+  }, [sessionId]);
+
+  const handleSubmitReview = async () => {
+    if (!sessionId || !rating) return;
+    setSubmittingReview(true);
+    setReviewError(null);
+    try {
+      await reviewApi.create(sessionId, { rating, comment: review });
+      setReviewSubmitted(true);
+    } catch (err: any) {
+      setReviewError(err?.response?.data?.message || err?.message || 'Failed to submit review.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  return (
+    <AnimatedPage>
+    <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      <Typography variant="h4" fontWeight={800} sx={{ mb: 3, letterSpacing: '-0.03em' }}>
+        "Session Completed Successfully"
+      </Typography>
+
+      <Grid container spacing={3}>
+        {/* Session Details */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              mb: 3,
+            }}
+          >
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Mentor name:</Typography>
+                <Typography fontWeight={600}>{sessionData.mentorName}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Date & Time:</Typography>
+                <Typography fontWeight={600}>{sessionData.date || '21/02/2025'}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Session Type:</Typography>
+                <Typography fontWeight={600}>{sessionData.sessionType}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Call Duration:</Typography>
+                <Typography fontWeight={600}>{sessionData.duration}</Typography>
+              </Box>
+            </Box>
+          </Paper>
+
+          {/* Rating */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              mb: 3,
+            }}
+          >
+            <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+              ⭐ Rate This Session:
+            </Typography>
+            <Rating
+              value={rating}
+              onChange={(_, v) => setRating(v)}
+              size="large"
+              sx={{ mb: 2 }}
+            />
+            <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+              ✏️ Leave a Review:
+            </Typography>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              placeholder="Share your review"
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+            />
+          </Paper>
+        </Grid>
+
+        {/* Right Side */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          {/* Notes */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              mb: 3,
+            }}
+          >
+            <Typography variant="body1" fontWeight={600} sx={{ mb: 1 }}>
+              Notes Taken during Session:
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              {notes}
+            </Typography>
+            <Button variant="outlined" startIcon={<Download />} size="small">
+              Download Notes
+            </Button>
+          </Paper>
+
+          {/* File Management */}
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              borderRadius: 4,
+              ...glassSx(theme.palette.mode === 'dark'),
+              mb: 3,
+            }}
+          >
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="body2">Upload Files if any</Typography>
+              <Button variant="outlined" size="small" startIcon={<Upload />}>
+                Upload Files
+              </Button>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2">Download Files if any</Typography>
+              <Button variant="outlined" size="small" startIcon={<Download />}>
+                Download
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Action Buttons */}
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
+        {reviewSubmitted ? (
+          <Button variant="contained" color="success" disabled>
+            ✓ Review Submitted
+          </Button>
+        ) : (
+          <Button variant="contained" startIcon={submittingReview ? <CircularProgress size={16} color="inherit" /> : <MonetizationOn />} onClick={handleSubmitReview} disabled={submittingReview || !rating}>
+            Submit Review
+          </Button>
+        )}
+        {reviewError && (
+          <Typography variant="body2" color="error" sx={{ alignSelf: 'center' }}>{reviewError}</Typography>
+        )}
+        <Button variant="contained" startIcon={<Replay />}>
+          Rebook Session
+        </Button>
+        <Button
+          variant="contained"
+          startIcon={<Report />}
+          onClick={() => setShowReportModal(true)}
+        >
+          😡 Report an Issue
+        </Button>
+        <Button variant="contained" startIcon={<ArrowBack />} onClick={() => navigate('/dashboard')}>
+          Back to Dashboard
+        </Button>
+      </Box>
+
+      {/* Report Modal */}
+      <Dialog
+        open={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle fontWeight={600}>Report an Issue</DialogTitle>
+        <DialogContent>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 2 }}>
+            Issues: Learner/Mentor was rude, Technical issue, Incorrect charge, Others
+          </Typography>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Issue Type</InputLabel>
+            <Select
+              value={reportData.issueType}
+              label="Issue Type"
+              onChange={(e) => setReportData({ ...reportData, issueType: e.target.value })}
+            >
+              <MenuItem value="Session Didn't happen">Session Didn't happen</MenuItem>
+              <MenuItem value="Technical issue">Technical issue</MenuItem>
+              <MenuItem value="Incorrect charge">Incorrect charge</MenuItem>
+              <MenuItem value="Mentor was rude">Mentor was rude</MenuItem>
+              <MenuItem value="Others">Others</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Describe the Issue"
+            placeholder="Describe the Issue (Min 20 Characters)"
+            sx={{ mb: 2 }}
+            value={reportData.description}
+            onChange={(e) => setReportData({ ...reportData, description: e.target.value })}
+          />
+
+          <Paper elevation={0} sx={{ p: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, mb: 2 }}>
+            <Typography variant="body2" color="text.secondary">Session Details (Autofilled)</Typography>
+            <Typography variant="body2">Mentor: {sessionData.mentorName}</Typography>
+            <Typography variant="body2">Date: {sessionData.date || '21/02/2025'}</Typography>
+            <Typography variant="body2">Type: {sessionData.sessionType}</Typography>
+            <Typography variant="body2">Duration: {sessionData.duration}</Typography>
+          </Paper>
+
+          <Button variant="outlined" startIcon={<Upload />} size="small" sx={{ mb: 2 }}>
+            Upload Screenshots
+          </Button>
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={reportData.requestRefund}
+                onChange={(e) => setReportData({ ...reportData, requestRefund: e.target.checked })}
+              />
+            }
+            label="Request Refund"
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setShowReportModal(false)}>Cancel</Button>
+          <Button variant="contained" onClick={() => setShowReportModal(false)}>
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+    </AnimatedPage>
+  );
+};
+
+export default SessionComplete;

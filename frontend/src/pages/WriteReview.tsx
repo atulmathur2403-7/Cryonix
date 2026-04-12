@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AnimatedPage, glassSx } from '../../components/animations';
+import { AnimatedPage, glassSx } from '../components/animations';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
@@ -16,9 +16,9 @@ import {
   Avatar,
 } from '@mui/material';
 import { Upload, ArrowBack, CheckCircle } from '@mui/icons-material';
-import { sampleMentors } from '../../data/mockData';
-import { Mentor } from '../../types';
-import { mentorApi, reviewApi } from '../../services/api';
+import { sampleMentors } from '../data/mockData';
+import { Mentor } from '../types';
+import { mentorApi, reviewApi } from '../services/api';
 
 const WriteReview: React.FC = () => {
   const { mentorId } = useParams<{ mentorId: string }>();

@@ -97,7 +97,7 @@ public class Payment {
      * Mentors can later withdraw their earnings → recorded in wallet.
      * This flag ensures payment has been settled to mentor wallet.
      */
-    @Column(name = "mentor_payout_processed")
+    @Column(name = "mentor_payout_processed", nullable = false, columnDefinition = "boolean not null default false")
     private boolean mentorPayoutProcessed = false;
 
     /**

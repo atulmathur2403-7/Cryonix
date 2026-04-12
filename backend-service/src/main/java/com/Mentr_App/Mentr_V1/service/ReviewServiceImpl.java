@@ -6,6 +6,7 @@ import com.Mentr_App.Mentr_V1.exception.BookingException;
 import com.Mentr_App.Mentr_V1.model.Review;
 import com.Mentr_App.Mentr_V1.model.Session;
 import com.Mentr_App.Mentr_V1.model.enums.SessionStatus;
+import com.Mentr_App.Mentr_V1.repository.MentorRepository;
 import com.Mentr_App.Mentr_V1.repository.ReviewRepository;
 import com.Mentr_App.Mentr_V1.repository.SessionRepository;
 import com.Mentr_App.Mentr_V1.repository.UserRepository;
@@ -27,6 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final SessionRepository sessionRepository;
     private final UserRepository userRepository;
+    private final MentorRepository mentorRepository;
 
     @Override
     public ReviewResponse addReview(Long sessionId, Long learnerId, ReviewRequest request) {
@@ -47,6 +49,33 @@ public class ReviewServiceImpl implements ReviewService {
                 .session(session)
                 .learner(session.getLearner())
                 .mentor(session.getMentor())
+                .rating(request.getRating())
+                .comment(request.getComment())
+                .build();
+
+        Review saved = reviewRepository.save(review);
+        return toResponse(saved);
+    }
+
+    @Override
+    public ReviewResponse addReviewForMentor(Long mentorId, Long learnerId, ReviewRequest request) {
+        var mentor = mentorRepository.findById(mentorId)
+                .orElseThrow(() -> new BookingException("Mentor not found"));
+
+        if (reviewRepository.existsByLearner_UserIdAndMentor_MentorId(learnerId, mentorId)) {
+            throw new BookingException("You have already submitted a review for this mentor");
+        }
+
+        Session session = sessionRepository
+                .findTopByLearner_UserIdAndMentor_MentorIdAndStatusOrderByStartTimeDesc(
+                        learnerId, mentorId, SessionStatus.COMPLETED)
+                .orElseThrow(() -> new BookingException(
+                        "No completed session found between you and this mentor"));
+
+        Review review = Review.builder()
+                .session(session)
+                .learner(session.getLearner())
+                .mentor(mentor)
                 .rating(request.getRating())
                 .comment(request.getComment())
                 .build();

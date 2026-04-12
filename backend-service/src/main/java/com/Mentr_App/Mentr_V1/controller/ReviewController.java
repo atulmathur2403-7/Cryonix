@@ -30,6 +30,16 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 
+    @PostMapping("/mentors/{mentorId}/reviews")
+    public ResponseEntity<ReviewResponse> addReviewForMentor(
+            @AuthenticationPrincipal CustomUserDetails currentUser,
+            @PathVariable Long mentorId,
+            @Valid @RequestBody ReviewRequest request) {
+
+        ReviewResponse resp = reviewService.addReviewForMentor(mentorId, currentUser.getId(), request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    }
+
     @GetMapping("/reviews/mentor/{mentorId}")
     public ResponseEntity<List<ReviewResponse>> getReviewsForMentor(@PathVariable Long mentorId) {
         return ResponseEntity.ok(reviewService.getReviewsForMentor(mentorId));
